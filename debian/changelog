@@ -1,3 +1,23 @@
+mutt (1.5.9-1) unstable; urgency=medium
+
+  * New upstream release, though the previous upload already included most of
+    it because of the CVS pull. Do another one now (2005-04-03), including the
+    following bits from 1.5.10:
+    + several translation updates (de, id, nl, pl, ru).
+    + a patch by Daniel Jacobowitz to synchronise message flags before moving
+      messages. (Closes: #163616)
+
+  * Also, the header cache patch is now fully integrated upstream, so drop it.
+
+  * Don't set pipe_default in debian/patches/080_Md.Muttrc, and stick to
+    upstream's default (unset). (Closes: #300830)
+
+  * Updated the compressed folders patch to version 1.5.9.
+
+  * Updated patch 080_Md.Muttrc to restore the old behaviour of the index.
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Sun, 03 Apr 2005 20:08:39 +0200
+
 mutt (1.5.8-1) unstable; urgency=low
 
   * New upstream release, with a CVS pull to get all the translation updates
@@ -10,6 +30,8 @@ mutt (1.5.8-1) unstable; urgency=low
       in a message being composed. This permits, for example, to match against
       recipients added manually after writing the mail, which wasn't possible
       with 'send-hook' alone.
+    + Christoph Berg's menu_context patch is also included. Check the
+      $menu_context and $menu_move_off variables.
 
   * This version also includes the following fixes:
     + message flags are not lost after editing a message. (Closes: #275060)
@@ -24,9 +46,10 @@ mutt (1.5.8-1) unstable; urgency=low
 
   * Updated the compressed folders patch to version 1.5.8.
 
-  * Dropped the adjust_line patch from extra-patches/mutt-ja-compat,
-    incorporated upstream. Renamed mutt-ja-compat to assumed-charset, since
-    that's the only patch that remains.
+  * Dropped the adjust_line and adjust_edited_file patches from
+    extra-patches/mutt-ja-compat, incorporated upstream. Renamed
+    mutt-ja-compat to assumed-charset, since that's the only patch that
+    remains.
 
   * Lots of patches in the Debian package have been applied upstream, drop
     them (16 in total). Worth mentioning is the gnutls patch. The
@@ -41,10 +64,7 @@ mutt (1.5.8-1) unstable; urgency=low
     been drastically reduced, since the generic code and the IMAP support has
     been incorporated upstream.
 
-  * Updated the compressed folders patch to version 1.5.7.
-
-  * Dropped the adjust_edited_file patch from extra-patches/mutt-ja-compat,
-    incorporated upstream.
+  * Updated the compressed folders patch to version 1.5.8.
 
   * Use mixmaster-filter by default. (Closes: #299060)
 

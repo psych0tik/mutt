@@ -1,0 +1,2765 @@
+Index: mutt/ChangeLog
+===================================================================
+RCS file: /home/roessler/cvs/mutt/ChangeLog,v
+retrieving revision 3.406
+retrieving revision 3.420
+diff -u -p -r3.406 -r3.420
+--- mutt/ChangeLog	13 Mar 2005 16:29:39 -0000	3.406
++++ mutt/ChangeLog	3 Apr 2005 00:15:36 -0000	3.420
+@@ -1,3 +1,78 @@
++2005-04-03 00:14:51  Daniel Jacobowitz  <dan@debian.org>  (brendan)
++
++	* imap/imap.c, imap/imap_private.h, imap/message.c: Synchronise
++	message flags before moving messages.
++
++2005-03-31 04:55:09  Thomas Glanzmann  <sithglan@stud.uni-erlangen.de>  (brendan)
++
++	* mh.c: Another hcache cygwin portability fix.
++
++2005-03-23 10:51:11  Thomas Glanzmann  <sithglan@stud.uni-erlangen.de>  (roessler)
++
++	* init.h, mh.c, mutt.h: Maildir header cache.
++
++2005-03-22 19:58:15  Horst Schirmeier  <horst@schirmeier.com>  (roessler)
++
++	* Makefile.am: Use install-exec-hook install of
++	install-exec-local.
++
++2005-03-22 19:53:49  Ronny Haryanto  <ronnylist@haryan.to>  (roessler)
++
++	* po/id.po: update
++
++2005-03-22 19:49:31  René Clerc  <rene@clerc.nl>  (roessler)
++
++	* po/nl.po: update
++
++2005-03-22 19:48:35  Roland Rosenfeld  <roland@spinnaker.de>  (roessler)
++
++	* po/de.po: update
++
++2005-03-22 19:46:59  Paul Walker  <paul@black-sun.demon.co.uk>  (roessler)
++
++	* init.c, init.h: remove some unused functions.
++
++2005-03-22 19:43:13  Vsevolod Volkov  <vvv@mutt.org.ua>  (roessler)
++
++	* po/ru.po: update
++
++2005-03-22 03:40:54  Thomas Glanzmann  <sithglan@stud.uni-erlangen.de>  (brendan)
++
++	* hcache.c, imap/imap.c, imap/imap_private.h, imap/message.c,
++        protos.h: Thomas graces us with this patch that resolves a
++	type-size inconsistency in the UIDVALIDITY parser.
++
++        Edited for correctness.
++
++2005-03-17 09:30:06  Pawel Dziekonski  <pawel.dziekonski@pwr.wroc.pl>  (roessler)
++
++	* po/pl.po: update
++
++2005-03-16 07:01:59  Brendan Cully  <brendan@kublai.com>  (brendan)
++
++	* doc/Makefile.in: As Ralf Wildenhues noted, the cygwin EXEEXT
++	patch was incomplete. Note to self: avoid patching on short
++	sleep. Starting tomorrow.
++
++2005-03-16 02:49:33  Brendan Cully  <brendan@kublai.com>  (brendan)
++
++	* configure.in, doc/Makefile.in, hcache.c, Makefile.am: Various
++	cygwin portability fixes
++
++2005-03-15 04:40:40  Brendan Cully  <brendan@kublai.com>  (brendan)
++
++	* crypthash.h: Don't define uint32_t anywhere but in
++	config.h. Spotted by Alain Bench. 
++
++2005-03-13 16:35:35  roessler  (roessler)
++
++	* po/sv.po, po/tr.po, po/uk.po, po/zh_CN.po, po/zh_TW.po,
++	po/id.po, po/it.po, po/ja.po, po/ko.po, po/lt.po, po/nl.po,
++	po/pl.po, po/pt_BR.po, po/ru.po, po/sk.po, VERSION, po/bg.po,
++	po/ca.po, po/cs.po, po/da.po, po/de.po, po/el.po, po/eo.po,
++	po/es.po, po/et.po, po/fr.po, po/gl.po, po/hu.po, reldate.h:
++	automatic post-release commit for mutt-1.5.9
++
+ 2005-03-13 16:29:09  Morten Bo Johansen  <mojo@mbjnet.dk>  (roessler)
+ 
+ 	* po/da.po: update
+@@ -330,7 +405,7 @@
+ 2005-01-29 19:15:07  Thomas Glanzmann  <sithglan@stud.uni-erlangen.de>  (roessler)
+                                  
+      * hcache.c: - make hcache.c conform to mutt codingstyle
+-     - use $Id: ChangeLog,v 3.406 2005/03/13 16:29:39 roessler Exp $ CVS keyword instead of %K% BitKeeper keyword
++     - use $Id: ChangeLog,v 3.420 2005/04/03 00:15:36 brendan Exp $ CVS keyword instead of %K% BitKeeper keyword
+                                  
+ 2005-01-29 19:15:07  Thomas Glanzmann  <sithglan@stud.uni-erlangen.de>  (roessler)
+ 
+Index: mutt/Makefile.am
+===================================================================
+RCS file: /home/roessler/cvs/mutt/Makefile.am,v
+retrieving revision 3.32
+retrieving revision 3.34
+diff -u -p -r3.32 -r3.34
+--- mutt/Makefile.am	13 Feb 2005 09:53:07 -0000	3.32
++++ mutt/Makefile.am	22 Mar 2005 19:58:15 -0000	3.34
+@@ -2,7 +2,7 @@
+ ## Use aclocal -I m4; automake --foreign
+ 
+ AUTOMAKE_OPTIONS = 1.6 foreign
+-EXTRA_PROGRAMS = mutt_dotlock pgpring makedoc
++EXTRA_PROGRAMS = mutt_dotlock pgpring pgpewrap makedoc
+ 
+ if BUILD_IMAP
+ IMAP_SUBDIR = imap
+@@ -127,7 +127,7 @@ reldate:
+ patchlist.c: $(srcdir)/PATCHES $(srcdir)/patchlist.sh
+ 	$(srcdir)/patchlist.sh < $(srcdir)/PATCHES > patchlist.c
+ 
+-install-exec-local:
++install-exec-hook:
+ 	if test -f $(DESTDIR)$(bindir)/mutt.dotlock && test -f $(DESTDIR)$(bindir)/mutt_dotlock ; then	\
+ 		rm -f $(DESTDIR)$(bindir)/mutt.dotlock ;		\
+ 		ln -sf $(DESTDIR)$(bindir)/mutt_dotlock $(DESTDIR)$(bindir)/mutt.dotlock ; \
+Index: mutt/configure.in
+===================================================================
+RCS file: /home/roessler/cvs/mutt/configure.in,v
+retrieving revision 3.24
+retrieving revision 3.25
+diff -u -p -r3.24 -r3.25
+--- mutt/configure.in	13 Feb 2005 00:25:37 -0000	3.24
++++ mutt/configure.in	16 Mar 2005 02:49:33 -0000	3.25
+@@ -129,7 +129,7 @@ else
+         if test x$have_pgp != xno ; then
+                 AC_DEFINE(CRYPT_BACKEND_CLASSIC_PGP,1,
+                     [ Define if you want classic PGP support. ])
+-                PGPAUX_TARGET="pgpring pgpewrap"
++                PGPAUX_TARGET="pgpring\$(EXEEXT) pgpewrap\$(EXEEXT)"
+                 MUTT_LIB_OBJECTS="$MUTT_LIB_OBJECTS pgp.o pgpinvoke.o pgpkey.o pgplib.o gnupgparse.o pgpmicalg.o pgppacket.o crypt-mod-pgp-classic.o"
+         fi
+ 
+Index: mutt/crypthash.h
+===================================================================
+RCS file: /home/roessler/cvs/mutt/crypthash.h,v
+retrieving revision 3.2
+retrieving revision 3.3
+diff -u -p -r3.2 -r3.3
+--- mutt/crypthash.h	5 Feb 2005 14:11:36 -0000	3.2
++++ mutt/crypthash.h	15 Mar 2005 04:40:40 -0000	3.3
+@@ -14,12 +14,4 @@
+ /* POINTER defines a generic pointer type */
+ typedef unsigned char *POINTER;
+ 
+-# ifndef HAVE_UINT32_T
+-#  if SIZEOF_INT == 4
+-typedef unsigned int uint32_t;
+-#  elif SIZEOF_LONG == 4
+-typedef unsigned long uint32_t;
+-#  endif
+-# endif
+-
+ #endif
+Index: mutt/hcache.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/hcache.c,v
+retrieving revision 3.4
+retrieving revision 3.6
+diff -u -p -r3.4 -r3.6
+--- mutt/hcache.c	3 Feb 2005 19:46:53 -0000	3.4
++++ mutt/hcache.c	22 Mar 2005 03:40:54 -0000	3.6
+@@ -30,6 +30,9 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#if HAVE_SYS_TIME_H
++#include <sys/time.h>
++#endif
+ #include "mutt.h"
+ #ifdef USE_IMAP
+ #include "message.h"
+@@ -60,7 +63,7 @@ static struct header_cache
+ typedef union
+ {
+   struct timeval timeval;
+-  uint64_t uid_validity;
++  unsigned long uid_validity;
+ } validate;
+ 
+ static void *
+@@ -447,7 +450,7 @@ generate_crc32()
+   SPAM_LIST *sp = SpamList;
+   RX_LIST *rx = NoSpamList;
+ 
+-  crc = crc32(crc, (unsigned char const *) "$Id: hcache.c,v 3.4 2005/02/03 19:46:53 roessler Exp $", mutt_strlen("$Id: hcache.c,v 3.4 2005/02/03 19:46:53 roessler Exp $"));
++  crc = crc32(crc, (unsigned char const *) "$Id: hcache.c,v 3.6 2005/03/22 03:40:54 brendan Exp $", mutt_strlen("$Id: hcache.c,v 3.6 2005/03/22 03:40:54 brendan Exp $"));
+ 
+ #if HAVE_LANGINFO_CODESET
+   crc = crc32(crc, (unsigned char const *) Charset, mutt_strlen(Charset));
+@@ -547,7 +550,7 @@ mutt_hcache_per_folder(const char *path,
+  * db_store */
+ static void *
+ mutt_hcache_dump(void *_db, HEADER * h, int *off,
+-		 uint64_t uid_validity)
++		 unsigned long uid_validity)
+ {
+   struct header_cache *db = _db;
+   unsigned char *d = NULL;
+@@ -556,7 +559,7 @@ mutt_hcache_dump(void *_db, HEADER * h, 
+   d = lazy_malloc(sizeof (validate));
+ 
+   if (uid_validity)
+-    memcpy(d, &uid_validity, sizeof (uint64_t));
++    memcpy(d, &uid_validity, sizeof (unsigned long));
+   else
+   {
+     struct timeval now;
+@@ -693,7 +696,7 @@ mutt_hcache_fetch(void *db, const char *
+ 
+ int
+ mutt_hcache_store(void *db, const char *filename, HEADER * header,
+-		  uint64_t uid_validity,
++		  unsigned long uid_validity,
+ 		  size_t(*keylen) (const char *fn))
+ {
+   struct header_cache *h = db;
+@@ -883,7 +886,7 @@ mutt_hcache_fetch(void *db, const char *
+ 
+ int
+ mutt_hcache_store(void *db, const char *filename, HEADER * header,
+-		  uint64_t uid_validity,
++		  unsigned long uid_validity,
+ 		  size_t(*keylen) (const char *fn))
+ {
+   DBT key;
+Index: mutt/init.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/init.c,v
+retrieving revision 3.30
+retrieving revision 3.31
+diff -u -p -r3.30 -r3.31
+--- mutt/init.c	12 Feb 2005 19:12:40 -0000	3.30
++++ mutt/init.c	22 Mar 2005 19:46:59 -0000	3.31
+@@ -585,42 +585,6 @@ static int parse_list (BUFFER *buf, BUFF
+   return 0;
+ }
+ 
+-static int _parse_rx_list (BUFFER *buf, BUFFER *s, unsigned long data, BUFFER *err, int flags)
+-{
+-  do 
+-  {
+-    mutt_extract_token (buf, s, 0);
+-    if (add_to_rx_list ((RX_LIST **) data, buf->data, flags, err) != 0)
+-      return -1;
+-	
+-  }
+-  while (MoreArgs (s));
+-  
+-  return 0;
+-}
+-
+-static int parse_rx_list (BUFFER *buf, BUFFER *s, unsigned long data, BUFFER *err)
+-{
+-  return _parse_rx_list (buf, s, data, err, REG_ICASE);
+-}
+-
+-static int parse_rx_unlist (BUFFER *buf, BUFFER *s, unsigned long data, BUFFER *err)
+-{
+-  do
+-  {
+-    mutt_extract_token (buf, s, 0);
+-    if (mutt_strcmp (buf->data, "*") == 0)
+-    {
+-      mutt_free_rx_list ((RX_LIST **) data);
+-      break;
+-    }
+-    remove_from_rx_list ((RX_LIST **) data, buf->data);
+-  }
+-  while (MoreArgs (s));
+-  
+-  return 0;
+-}
+-
+ static void _alternates_clean (void)
+ {
+   int i;
+Index: mutt/init.h
+===================================================================
+RCS file: /home/roessler/cvs/mutt/init.h,v
+retrieving revision 3.68
+retrieving revision 3.70
+diff -u -p -r3.68 -r3.70
+--- mutt/init.h	1 Mar 2005 15:52:33 -0000	3.68
++++ mutt/init.h	23 Mar 2005 10:51:11 -0000	3.70
+@@ -1032,6 +1032,13 @@ struct option_t MuttVars[] = {
+   ** be a single global header cache. By default it is unset and so no
+   ** header caching will be used.
+   */
++  { "maildir_header_cache_verify", DT_BOOL, R_NONE, OPTHCACHEVERIFY, 1 },
++  /*
++  ** .pp
++  ** Check for Maildir unaware programs other than mutt having modified maildir
++  ** files when the header cache is in use.  This incurs one stat(2) per
++  ** message every time the folder is opened.
++  */
+   { "header_cache_pagesize", DT_STR, R_NONE, UL &HeaderCachePageSize, UL "16384" },
+   /*
+   ** .pp
+@@ -2885,10 +2892,8 @@ const struct mapping_t SortKeyMethods[] 
+ /* functions used to parse commands in a rc file */
+ 
+ static int parse_list (BUFFER *, BUFFER *, unsigned long, BUFFER *);
+-static int parse_rx_list (BUFFER *, BUFFER *, unsigned long, BUFFER *);
+ static int parse_spam_list (BUFFER *, BUFFER *, unsigned long, BUFFER *);
+ static int parse_unlist (BUFFER *, BUFFER *, unsigned long, BUFFER *);
+-static int parse_rx_unlist (BUFFER *, BUFFER *, unsigned long, BUFFER *);
+ 
+ static int parse_lists (BUFFER *, BUFFER *, unsigned long, BUFFER *);
+ static int parse_unlists (BUFFER *, BUFFER *, unsigned long, BUFFER *);
+Index: mutt/mh.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/mh.c,v
+retrieving revision 3.23
+retrieving revision 3.25
+diff -u -p -r3.23 -r3.25
+--- mutt/mh.c	3 Feb 2005 17:01:43 -0000	3.23
++++ mutt/mh.c	31 Mar 2005 04:55:09 -0000	3.25
+@@ -47,6 +47,10 @@
+ #include <string.h>
+ #include <utime.h>
+ 
++#if HAVE_SYS_TIME_H
++#include <sys/time.h>
++#endif
++
+ struct maildir
+ {
+   HEADER *h;
+@@ -791,6 +795,14 @@ static int maildir_move_to_context (CONT
+   return r;
+ }
+ 
++#if USE_HCACHE
++static size_t maildir_hcache_keylen (const char *fn)
++{
++  const char * p = strrchr (fn, ':');
++  return p ? (size_t) (p - fn) : mutt_strlen(fn);
++}
++#endif
++
+ #ifdef USE_INODESORT
+ /*
+  * Merge two maildir lists according to the inode numbers.
+@@ -886,27 +898,67 @@ static struct maildir* maildir_sort_inod
+  * This function does the second parsing pass for a maildir-style
+  * folder.
+  */
+-
+ void maildir_delayed_parsing (CONTEXT * ctx, struct maildir *md)
+ {
+   struct maildir *p;
+   char fn[_POSIX_PATH_MAX];
+   int count;
+ 
++#if USE_HCACHE
++  void *hc = NULL;
++  void *data;
++  struct timeval *when = NULL;
++  struct stat lastchanged;
++  int ret;
++
++  hc = mutt_hcache_open (HeaderCache, ctx->path);
++#endif
++
+   for (p = md, count = 0; p; p = p->next, count++)
+-    if (p && p->h && !p->header_parsed)
+-    {
+-      if (!ctx->quiet && ReadInc && ((count % ReadInc) == 0 || count == 1))
+-	mutt_message (_("Reading %s... %d"), ctx->path, count);
+-      snprintf (fn, sizeof (fn), "%s/%s", ctx->path, p->h->path);
+-      if (maildir_parse_message (ctx->magic, fn, p->h->old, p->h))
+-	p->header_parsed = 1;
+-      else
+-	mutt_free_header (&p->h);
+-    }
+-}
++  {
++    if (! (p && p->h && !p->header_parsed))
++      continue;
+ 
++    if (!ctx->quiet && ReadInc && ((count % ReadInc) == 0 || count == 1))
++      mutt_message (_("Reading %s... %d"), ctx->path, count);
+ 
++#if USE_HCACHE
++    data = mutt_hcache_fetch (hc, p->h->path + 3, &maildir_hcache_keylen);
++    when = (struct timeval *) data;
++#endif
++
++    snprintf (fn, sizeof (fn), "%s/%s", ctx->path, p->h->path);
++
++#if USE_HCACHE
++    if (option(OPTHCACHEVERIFY))
++      ret = stat(fn, &lastchanged);
++    else {
++      lastchanged.st_mtime = 0;
++      ret = 0;
++    }
++    
++    if (data != NULL && !ret && lastchanged.st_mtime <= when->tv_sec)
++    {
++      p->h = mutt_hcache_restore ((unsigned char *)data, &p->h);
++      maildir_parse_flags (p->h, fn);
++    } else
++#endif
++    if (maildir_parse_message (ctx->magic, fn, p->h->old, p->h))
++    {
++      p->header_parsed = 1;
++#if USE_HCACHE
++      mutt_hcache_store (hc, p->h->path + 3, p->h, 0, &maildir_hcache_keylen);
++#endif
++    } else
++      mutt_free_header (&p->h);
++#if USE_HCACHE
++    FREE(&data);
++#endif
++  }
++#if USE_HCACHE
++  mutt_hcache_close (hc);
++#endif
++}
+ 
+ /* Read a MH/maildir style mailbox.
+  *
+@@ -1403,6 +1455,9 @@ int mh_sync_mailbox (CONTEXT * ctx, int 
+ {
+   char path[_POSIX_PATH_MAX], tmp[_POSIX_PATH_MAX];
+   int i, j;
++#if USE_HCACHE
++  void *hc = NULL;
++#endif /* USE_HCACHE */
+ 
+   if (ctx->magic == M_MH)
+     i = mh_check_mailbox (ctx, index_hint);
+@@ -1412,6 +1467,11 @@ int mh_sync_mailbox (CONTEXT * ctx, int 
+   if (i != 0)
+     return i;
+ 
++#if USE_HCACHE
++  if (ctx->magic == M_MAILDIR)
++    hc = mutt_hcache_open(HeaderCache, ctx->path);
++#endif /* USE_HCACHE */
++
+   for (i = 0; i < ctx->msgcount; i++)
+   {
+     if (ctx->hdrs[i]->deleted
+@@ -1420,7 +1480,13 @@ int mh_sync_mailbox (CONTEXT * ctx, int 
+       snprintf (path, sizeof (path), "%s/%s", ctx->path, ctx->hdrs[i]->path);
+       if (ctx->magic == M_MAILDIR
+ 	  || (option (OPTMHPURGE) && ctx->magic == M_MH))
++      {
++#if USE_HCACHE
++        if (ctx->magic == M_MAILDIR)
++          mutt_hcache_delete (hc, ctx->hdrs[i]->path + 3, &maildir_hcache_keylen);
++#endif /* USE_HCACHE */
+ 	unlink (path);
++      }
+       else if (ctx->magic == M_MH)
+       {
+ 	/* MH just moves files out of the way when you delete them */
+@@ -1442,16 +1508,21 @@ int mh_sync_mailbox (CONTEXT * ctx, int 
+       if (ctx->magic == M_MAILDIR)
+       {
+ 	if (maildir_sync_message (ctx, i) == -1)
+-	  return -1;
++	  goto err;
+       }
+       else
+       {
+ 	if (mh_sync_message (ctx, i) == -1)
+-	  return -1;
++	  goto err;
+       }
+     }
+   }
+ 
++#if USE_HCACHE
++  if (ctx->magic == M_MAILDIR)
++    mutt_hcache_close (hc);
++#endif /* USE_HCACHE */
++
+   if (ctx->magic == M_MH)
+     mh_update_sequences (ctx);
+ 
+@@ -1472,6 +1543,13 @@ int mh_sync_mailbox (CONTEXT * ctx, int 
+   }
+ 
+   return 0;
++
++err:
++#if USE_HCACHE
++  if (ctx->magic == M_MAILDIR)
++    mutt_hcache_close (hc);
++#endif /* USE_HCACHE */
++  return -1;
+ }
+ 
+ static char *maildir_canon_filename (char *dest, const char *src, size_t l)
+Index: mutt/mutt.h
+===================================================================
+RCS file: /home/roessler/cvs/mutt/mutt.h,v
+retrieving revision 3.40
+retrieving revision 3.41
+diff -u -p -r3.40 -r3.41
+--- mutt/mutt.h	28 Feb 2005 15:15:23 -0000	3.40
++++ mutt/mutt.h	23 Mar 2005 10:51:11 -0000	3.41
+@@ -351,6 +351,9 @@ enum
+   OPTFORCENAME,
+   OPTFORWDECODE,
+   OPTFORWQUOTE,
++#if USE_HCACHE
++  OPTHCACHEVERIFY,
++#endif
+   OPTHDRS,
+   OPTHEADER,
+   OPTHELP,
+Index: mutt/protos.h
+===================================================================
+RCS file: /home/roessler/cvs/mutt/protos.h,v
+retrieving revision 3.25
+retrieving revision 3.26
+diff -u -p -r3.25 -r3.26
+--- mutt/protos.h	1 Feb 2005 03:36:39 -0000	3.25
++++ mutt/protos.h	22 Mar 2005 03:40:54 -0000	3.26
+@@ -111,7 +111,7 @@ void *mutt_hcache_open(const char *path,
+ void mutt_hcache_close(void *db);
+ HEADER *mutt_hcache_restore(const unsigned char *d, HEADER **oh);
+ void *mutt_hcache_fetch(void *db, const char *filename, size_t (*keylen)(const char *fn));
+-int mutt_hcache_store(void *db, const char *filename, HEADER *h, uint64_t uid_validity, size_t (*keylen)(const char *fn));
++int mutt_hcache_store(void *db, const char *filename, HEADER *h, unsigned long uid_validity, size_t (*keylen)(const char *fn));
+ int mutt_hcache_delete(void *db, const char *filename, size_t (*keylen)(const char *fn));
+ #endif /* USE_HCACHE */
+ 
+Index: mutt/doc/Makefile.in
+===================================================================
+RCS file: /home/roessler/cvs/mutt/doc/Makefile.in,v
+retrieving revision 3.5
+retrieving revision 3.7
+diff -u -p -r3.5 -r3.7
+--- mutt/doc/Makefile.in	15 Feb 2005 19:28:24 -0000	3.5
++++ mutt/doc/Makefile.in	16 Mar 2005 07:01:59 -0000	3.7
+@@ -1,4 +1,4 @@
+-# $Id: Makefile.in,v 3.5 2005/02/15 19:28:24 roessler Exp $
++# $Id: Makefile.in,v 3.7 2005/03/16 07:01:59 brendan Exp $
+ 
+ SHELL = /bin/sh
+ 
+@@ -21,6 +21,7 @@ VPATH = @srcdir@
+ INSTALL = @INSTALL@
+ CC = @CC@
+ CPP = @CPP@
++EXEEXT = @EXEEXT@
+ XCPPFLAGS = -I. @CPPFLAGS@
+ CFLAGS = @CFLAGS@ $(XCPPFLAGS)
+ LDFLAGS = @LDFLAGS@
+@@ -65,10 +66,10 @@ topsrcdir_DOCFILES = COPYRIGHT GPL INSTA
+ 
+ all: muttrc.man try-html try-txt
+ 
+-try-html: ../makedoc
++try-html: ../makedoc$(EXEEXT)
+ 	test -f manual.html || $(MAKE) manual.html || cp $(srcdir)/manual*.html ./
+ 
+-try-txt: ../makedoc
++try-txt: ../makedoc$(EXEEXT)
+ 	test -f manual.txt || $(MAKE) manual.txt || cp $(srcdir)/manual.txt ./
+ 
+ install: all instdoc
+@@ -149,21 +150,21 @@ dist distdir: Makefile $(DISTFILES)
+ 		|| cp -p $$file $(distdir) ;			\
+ 	done
+ 
+-../makedoc: $(top_srcdir)/makedoc.c
+-	(cd .. && $(MAKE) makedoc)
++../makedoc$(EXEEXT): $(top_srcdir)/makedoc.c
++	(cd .. && $(MAKE) makedoc$(EXEEXT))
+ 
+ # hack around autoconf mixing up patterns.
+ at = @
+ 
+-update-doc:  ../makedoc stamp-doc-sgml stamp-doc-man manual.txt manual.html
++update-doc:  ../makedoc$(EXEEXT) stamp-doc-sgml stamp-doc-man manual.txt manual.html
+ 
+-muttrc.man stamp-doc-man: ../makedoc $(top_srcdir)/init.h muttrc.man.head muttrc.man.tail
++muttrc.man stamp-doc-man: ../makedoc$(EXEEXT) $(top_srcdir)/init.h muttrc.man.head muttrc.man.tail
+ 	$(MAKEDOC_CPP) $(top_srcdir)/init.h | ../makedoc -m | 	    \
+ 		cat $(srcdir)/muttrc.man.head - $(srcdir)/muttrc.man.tail\
+ 		> muttrc.man
+ 	touch stamp-doc-man
+ 
+-manual.sgml stamp-doc-sgml: ../makedoc $(top_srcdir)/init.h manual.sgml.head manual.sgml.tail $(top_srcdir)/VERSION
++manual.sgml stamp-doc-sgml: ../makedoc$(EXEEXT) $(top_srcdir)/init.h manual.sgml.head manual.sgml.tail $(top_srcdir)/VERSION
+ 	( sed -e "s/$(at)VERSION$(at)/`cat $(top_srcdir)/VERSION`/" $(srcdir)/manual.sgml.head ;\
+ 	  $(MAKEDOC_CPP) $(top_srcdir)/init.h | ../makedoc -s ) |      \
+ 		cat - $(srcdir)/manual.sgml.tail > manual.sgml
+Index: mutt/imap/imap.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/imap/imap.c,v
+retrieving revision 3.21
+retrieving revision 3.23
+diff -u -p -r3.21 -r3.23
+--- mutt/imap/imap.c	17 Feb 2005 03:33:00 -0000	3.21
++++ mutt/imap/imap.c	3 Apr 2005 00:14:51 -0000	3.23
+@@ -1,7 +1,7 @@
+ /*
+  * Copyright (C) 1996-8 Michael R. Elkins <me@mutt.org>
+  * Copyright (C) 1996-9 Brandon Long <blong@fiction.net>
+- * Copyright (C) 1999-2003 Brendan Cully <brendan@kublai.com>
++ * Copyright (C) 1999-2005 Brendan Cully <brendan@kublai.com>
+  * 
+  *     This program is free software; you can redistribute it and/or modify
+  *     it under the terms of the GNU General Public License as published by
+@@ -635,7 +635,7 @@ int imap_open_mailbox (CONTEXT* ctx)
+       dprint(2, (debugfile, "Getting mailbox UIDVALIDITY\n"));
+       pc += 3;
+       pc = imap_next_word(pc);
+-      sscanf(pc, "%u", &(idata->uid_validity));
++      sscanf(pc, "%lu", &(idata->uid_validity));
+     }
+ #endif
+     else
+@@ -921,6 +921,76 @@ int imap_make_msg_set (IMAP_DATA* idata,
+   return count;
+ }
+ 
++/* Update the IMAP server to reflect the flags a single message.  */
++
++int imap_sync_message (IMAP_DATA *idata, HEADER *hdr, BUFFER *cmd,
++		       int *err_continue)
++{
++  char flags[LONG_STRING];
++  char uid[11];
++
++  hdr->changed = 0;
++
++  snprintf (uid, sizeof (uid), "%u", HEADER_DATA(hdr)->uid);
++  cmd->dptr = cmd->data;
++  mutt_buffer_addstr (cmd, "UID STORE ");
++  mutt_buffer_addstr (cmd, uid);
++
++  flags[0] = '\0';
++      
++  imap_set_flag (idata, IMAP_ACL_SEEN, hdr->read, "\\Seen ",
++		 flags, sizeof (flags));
++  imap_set_flag (idata, IMAP_ACL_WRITE, hdr->flagged,
++		 "\\Flagged ", flags, sizeof (flags));
++  imap_set_flag (idata, IMAP_ACL_WRITE, hdr->replied,
++		 "\\Answered ", flags, sizeof (flags));
++  imap_set_flag (idata, IMAP_ACL_DELETE, hdr->deleted,
++		 "\\Deleted ", flags, sizeof (flags));
++
++  /* now make sure we don't lose custom tags */
++  if (mutt_bit_isset (idata->rights, IMAP_ACL_WRITE))
++    imap_add_keywords (flags, hdr, idata->flags, sizeof (flags));
++
++  mutt_remove_trailing_ws (flags);
++
++  /* UW-IMAP is OK with null flags, Cyrus isn't. The only solution is to
++   * explicitly revoke all system flags (if we have permission) */
++  if (!*flags)
++  {
++    imap_set_flag (idata, IMAP_ACL_SEEN, 1, "\\Seen ", flags, sizeof (flags));
++    imap_set_flag (idata, IMAP_ACL_WRITE, 1, "\\Flagged ", flags, sizeof (flags));
++    imap_set_flag (idata, IMAP_ACL_WRITE, 1, "\\Answered ", flags, sizeof (flags));
++    imap_set_flag (idata, IMAP_ACL_DELETE, 1, "\\Deleted ", flags, sizeof (flags));
++
++    mutt_remove_trailing_ws (flags);
++
++    mutt_buffer_addstr (cmd, " -FLAGS.SILENT (");
++  } else
++    mutt_buffer_addstr (cmd, " FLAGS.SILENT (");
++
++  mutt_buffer_addstr (cmd, flags);
++  mutt_buffer_addstr (cmd, ")");
++
++  /* dumb hack for bad UW-IMAP 4.7 servers spurious FLAGS updates */
++  hdr->active = 0;
++
++  /* after all this it's still possible to have no flags, if you
++   * have no ACL rights */
++  if (*flags && (imap_exec (idata, cmd->data, 0) != 0) &&
++      err_continue && (*err_continue != M_YES))
++  {
++    *err_continue = imap_continue ("imap_sync_message: STORE failed",
++				   idata->cmd.buf);
++    if (*err_continue != M_YES)
++      return -1;
++  }
++
++  hdr->active = 1;
++  idata->ctx->changed--;
++
++  return 0;
++}
++
+ /* update the IMAP server to reflect message changes done within mutt.
+  * Arguments
+  *   ctx: the current context
+@@ -932,12 +1002,10 @@ int imap_sync_mailbox (CONTEXT* ctx, int
+   IMAP_DATA* idata;
+   CONTEXT* appendctx = NULL;
+   BUFFER cmd;
+-  char flags[LONG_STRING];
+-  char uid[11];
+   int deleted;
+   int n;
+-  int err_continue = M_NO;	/* continue on error? */
+   int rc;
++  int err_continue = M_NO;	/* continue on error? */
+ 
+   idata = (IMAP_DATA*) ctx->data;
+ 
+@@ -994,16 +1062,9 @@ int imap_sync_mailbox (CONTEXT* ctx, int
+   {
+     if (ctx->hdrs[n]->active && ctx->hdrs[n]->changed)
+     {
+-      ctx->hdrs[n]->changed = 0;
+-
+       mutt_message (_("Saving message status flags... [%d/%d]"), n+1,
+         ctx->msgcount);
+ 
+-      snprintf (uid, sizeof (uid), "%u", HEADER_DATA(ctx->hdrs[n])->uid);
+-      cmd.dptr = cmd.data;
+-      mutt_buffer_addstr (&cmd, "UID STORE ");
+-      mutt_buffer_addstr (&cmd, uid);
+-
+       /* if attachments have been deleted we delete the message and reupload
+        * it. This works better if we're expunging, of course. */
+       if (ctx->hdrs[n]->attach_del)
+@@ -1018,60 +1079,12 @@ int imap_sync_mailbox (CONTEXT* ctx, int
+ 	else
+ 	  _mutt_save_message (ctx->hdrs[n], appendctx, 1, 0, 0);
+       }
+-      flags[0] = '\0';
+-      
+-      imap_set_flag (idata, IMAP_ACL_SEEN, ctx->hdrs[n]->read, "\\Seen ",
+-        flags, sizeof (flags));
+-      imap_set_flag (idata, IMAP_ACL_WRITE, ctx->hdrs[n]->flagged,
+-        "\\Flagged ", flags, sizeof (flags));
+-      imap_set_flag (idata, IMAP_ACL_WRITE, ctx->hdrs[n]->replied,
+-        "\\Answered ", flags, sizeof (flags));
+-      imap_set_flag (idata, IMAP_ACL_DELETE, ctx->hdrs[n]->deleted,
+-        "\\Deleted ", flags, sizeof (flags));
+-
+-      /* now make sure we don't lose custom tags */
+-      if (mutt_bit_isset (idata->rights, IMAP_ACL_WRITE))
+-        imap_add_keywords (flags, ctx->hdrs[n], idata->flags, sizeof (flags));
+-      
+-      mutt_remove_trailing_ws (flags);
+-      
+-      /* UW-IMAP is OK with null flags, Cyrus isn't. The only solution is to
+-       * explicitly revoke all system flags (if we have permission) */
+-      if (!*flags)
+-      {
+-        imap_set_flag (idata, IMAP_ACL_SEEN, 1, "\\Seen ", flags, sizeof (flags));
+-        imap_set_flag (idata, IMAP_ACL_WRITE, 1, "\\Flagged ", flags, sizeof (flags));
+-        imap_set_flag (idata, IMAP_ACL_WRITE, 1, "\\Answered ", flags, sizeof (flags));
+-        imap_set_flag (idata, IMAP_ACL_DELETE, 1, "\\Deleted ", flags, sizeof (flags));
+-
+-        mutt_remove_trailing_ws (flags);
+-
+-	mutt_buffer_addstr (&cmd, " -FLAGS.SILENT (");
+-      }
+-      else
+-	mutt_buffer_addstr (&cmd, " FLAGS.SILENT (");
+-      
+-      mutt_buffer_addstr (&cmd, flags);
+-      mutt_buffer_addstr (&cmd, ")");
+ 
+-      /* dumb hack for bad UW-IMAP 4.7 servers spurious FLAGS updates */
+-      ctx->hdrs[n]->active = 0;
+-
+-      /* after all this it's still possible to have no flags, if you
+-       * have no ACL rights */
+-      if (*flags && (imap_exec (idata, cmd.data, 0) != 0) &&
+-        (err_continue != M_YES))
++      if (imap_sync_message (idata, ctx->hdrs[n], &cmd, &err_continue) < 0)
+       {
+-        err_continue = imap_continue ("imap_sync_mailbox: STORE failed",
+-          idata->cmd.buf);
+-        if (err_continue != M_YES)
+-	{
+-	  rc = -1;
+-	  goto out;
+-	}
++	rc = -1;
++	goto out;
+       }
+-
+-      ctx->hdrs[n]->active = 1;
+     }
+   }
+   ctx->changed = 0;
+Index: mutt/imap/imap_private.h
+===================================================================
+RCS file: /home/roessler/cvs/mutt/imap/imap_private.h,v
+retrieving revision 3.5
+retrieving revision 3.7
+diff -u -p -r3.5 -r3.7
+--- mutt/imap/imap_private.h	17 Feb 2005 03:33:00 -0000	3.5
++++ mutt/imap/imap_private.h	3 Apr 2005 00:14:51 -0000	3.7
+@@ -180,7 +180,7 @@ typedef struct
+   IMAP_CACHE cache[IMAP_CACHE_LEN];
+   unsigned int noclose : 1;
+ #ifdef USE_HCACHE
+-  uint64_t uid_validity;
++  unsigned long uid_validity;
+ #endif
+   
+   /* all folder flags - system flags AND keywords */
+@@ -203,6 +203,8 @@ int imap_parse_list_response(IMAP_DATA* 
+ int imap_read_literal (FILE* fp, IMAP_DATA* idata, long bytes);
+ void imap_expunge_mailbox (IMAP_DATA* idata);
+ void imap_logout (IMAP_DATA* idata);
++int imap_sync_message (IMAP_DATA *idata, HEADER *hdr, BUFFER *cmd,
++  int *err_continue);
+ 
+ /* auth.c */
+ int imap_authenticate (IMAP_DATA* idata);
+Index: mutt/imap/message.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/imap/message.c,v
+retrieving revision 3.19
+retrieving revision 3.21
+diff -u -p -r3.19 -r3.21
+--- mutt/imap/message.c	27 Feb 2005 03:18:23 -0000	3.19
++++ mutt/imap/message.c	3 Apr 2005 00:14:51 -0000	3.21
+@@ -69,7 +69,7 @@ int imap_read_headers (IMAP_DATA* idata,
+ 
+ #if USE_HCACHE
+   void *hc   = NULL;
+-  uint64_t *uid_validity = NULL;
++  unsigned long *uid_validity = NULL;
+   char uid_buf[64];
+ #endif /* USE_HCACHE */
+ 
+@@ -154,7 +154,7 @@ int imap_read_headers (IMAP_DATA* idata,
+       fputs ("\n\n", fp);
+ 
+       sprintf(uid_buf, "/%u", h.data->uid); /* XXX --tg 21:41 04-07-11 */
+-      uid_validity = (uint64_t *) mutt_hcache_fetch (hc, uid_buf, &imap_hcache_keylen);
++      uid_validity = (unsigned long *) mutt_hcache_fetch (hc, uid_buf, &imap_hcache_keylen);
+ 
+       if (uid_validity != NULL
+       && *uid_validity == idata->uid_validity) {
+@@ -640,13 +640,14 @@ int imap_append_message (CONTEXT *ctx, M
+ int imap_copy_messages (CONTEXT* ctx, HEADER* h, char* dest, int delete)
+ {
+   IMAP_DATA* idata;
+-  BUFFER cmd;
++  BUFFER cmd, sync_cmd;
+   char uid[11];
+   char mbox[LONG_STRING];
+   char mmbox[LONG_STRING];
+   int rc;
+   int n;
+   IMAP_MBOX mx;
++  int err_continue = M_NO;
+ 
+   idata = (IMAP_DATA*) ctx->data;
+ 
+@@ -672,6 +673,7 @@ int imap_copy_messages (CONTEXT* ctx, HE
+   
+   imap_fix_path (idata, mx.mbox, mbox, sizeof (mbox));
+ 
++  memset (&sync_cmd, 0, sizeof (sync_cmd));
+   memset (&cmd, 0, sizeof (cmd));
+   mutt_buffer_addstr (&cmd, "UID COPY ");
+ 
+@@ -688,6 +690,17 @@ int imap_copy_messages (CONTEXT* ctx, HE
+ 	dprint (3, (debugfile, "imap_copy_messages: Message contains attachments to be deleted\n"));
+ 	return 1;
+       }
++
++      if (ctx->hdrs[n]->tagged && ctx->hdrs[n]->active &&
++	  ctx->hdrs[n]->changed)
++      {
++	rc = imap_sync_message (idata, ctx->hdrs[n], &sync_cmd, &err_continue);
++	if (rc < 0)
++	{
++	  dprint (1, (debugfile, "imap_copy_messages: could not sync\n"));
++	  goto fail;
++	}
++      }
+     }
+ 
+     rc = imap_make_msg_set (idata, &cmd, M_TAG, 0);
+@@ -703,6 +716,16 @@ int imap_copy_messages (CONTEXT* ctx, HE
+     mutt_message (_("Copying message %d to %s..."), h->index+1, mbox);
+     snprintf (uid, sizeof (uid), "%u", HEADER_DATA (h)->uid);
+     mutt_buffer_addstr (&cmd, uid);
++
++    if (h->active && h->changed)
++    {
++      rc = imap_sync_message (idata, h, &sync_cmd, &err_continue);
++      if (rc < 0)
++      {
++	dprint (1, (debugfile, "imap_copy_messages: could not sync\n"));
++	goto fail;
++      }
++    }
+   }
+ 
+   /* let's get it on */
+@@ -761,12 +784,16 @@ int imap_copy_messages (CONTEXT* ctx, HE
+ 
+   if (cmd.data)
+     FREE (&cmd.data);
++  if (sync_cmd.data)
++    FREE (&sync_cmd.data);
+   FREE (&mx.mbox);
+   return 0;
+ 
+  fail:
+   if (cmd.data)
+     FREE (&cmd.data);
++  if (sync_cmd.data)
++    FREE (&sync_cmd.data);
+   FREE (&mx.mbox);
+   return -1;
+ }
+@@ -923,7 +950,6 @@ static size_t imap_hcache_keylen (const 
+ static int msg_fetch_header_fetch (CONTEXT* ctx, IMAP_HEADER* h, char* buf, FILE* fp)
+ {
+   IMAP_DATA* idata;
+-  long bytes;
+   int rc = -1; /* default now is that string isn't FETCH response*/
+ 
+   idata = (IMAP_DATA*) ctx->data;
+Index: mutt/po/de.po
+===================================================================
+RCS file: /home/roessler/cvs/mutt/po/de.po,v
+retrieving revision 3.22
+retrieving revision 3.23
+diff -u -p -r3.22 -r3.23
+--- mutt/po/de.po	13 Mar 2005 16:35:33 -0000	3.22
++++ mutt/po/de.po	22 Mar 2005 19:48:35 -0000	3.23
+@@ -1,9 +1,9 @@
+ msgid ""
+ msgstr ""
+-"Project-Id-Version: 1.5.8\n"
++"Project-Id-Version: 1.5.9\n"
+ "Report-Msgid-Bugs-To: \n"
+ "POT-Creation-Date: 2005-03-13 17:38+0100\n"
+-"PO-Revision-Date: 2005-02-13 18:28+0100\n"
++"PO-Revision-Date: 2005-03-20 14:03+0100\n"
+ "Last-Translator: Roland Rosenfeld <roland@spinnaker.de>\n"
+ "Language-Team: German <mutt-po@mutt.org>\n"
+ "MIME-Version: 1.0\n"
+@@ -204,9 +204,8 @@ msgid "Create is only supported for IMAP
+ msgstr "Es können nur IMAP Mailboxen erzeugt werden"
+ 
+ #: browser.c:880
+-#, fuzzy
+ msgid "Rename is only supported for IMAP mailboxes"
+-msgstr "Es können nur IMAP Mailboxen erzeugt werden"
++msgstr "Es können nur IMAP Mailboxen umbenannt werden"
+ 
+ #: browser.c:901
+ msgid "Delete is only supported for IMAP mailboxes"
+@@ -1400,19 +1399,18 @@ msgid "Mailbox created."
+ msgstr "Mailbox erzeugt."
+ 
+ #: imap/browse.c:325
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename mailbox %s to: "
+-msgstr "Erzeuge Mailbox: "
++msgstr "Benenne Mailbox %s um in: "
+ 
+ #: imap/browse.c:338
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename failed: %s"
+-msgstr "SSL fehlgeschlagen: %s"
++msgstr "Umbenennung fehlgeschlagen: %s"
+ 
+ #: imap/browse.c:343
+-#, fuzzy
+ msgid "Mailbox renamed."
+-msgstr "Mailbox erzeugt."
++msgstr "Mailbox umbenannt."
+ 
+ #: imap/command.c:294
+ msgid "Mailbox closed"
+@@ -2325,9 +2323,8 @@ msgid "{internal}"
+ msgstr "{intern}"
+ 
+ #: keymap_alldefs.h:151
+-#, fuzzy
+ msgid "rename the current mailbox (IMAP only)"
+-msgstr "Lösche die aktuelle Mailbox (nur für IMAP)"
++msgstr "benenne die aktuelle Mailbox um (nur für IMAP)"
+ 
+ #: keymap_alldefs.h:152
+ msgid "reply to a message"
+Index: mutt/po/id.po
+===================================================================
+RCS file: /home/roessler/cvs/mutt/po/id.po,v
+retrieving revision 3.21
+retrieving revision 3.22
+diff -u -p -r3.21 -r3.22
+--- mutt/po/id.po	13 Mar 2005 16:35:34 -0000	3.21
++++ mutt/po/id.po	22 Mar 2005 19:53:49 -0000	3.22
+@@ -4,10 +4,10 @@
+ #
+ msgid ""
+ msgstr ""
+-"Project-Id-Version: 1.5.8i\n"
++"Project-Id-Version: 1.5.9i\n"
+ "Report-Msgid-Bugs-To: \n"
+ "POT-Creation-Date: 2005-03-13 17:38+0100\n"
+-"PO-Revision-Date: 2005-02-14 10:59+0700\n"
++"PO-Revision-Date: 2005-03-21 17:31+1100\n"
+ "Last-Translator: Ronny Haryanto <ronny-mutt-po-file@haryan.to>\n"
+ "Language-Team: Indonesia <web@linux.or.id>\n"
+ "MIME-Version: 1.0\n"
+@@ -207,9 +207,8 @@ msgid "Create is only supported for IMAP
+ msgstr "Pembuatan hanya didukung untuk kotak surat jenis IMAP."
+ 
+ #: browser.c:880
+-#, fuzzy
+ msgid "Rename is only supported for IMAP mailboxes"
+-msgstr "Pembuatan hanya didukung untuk kotak surat jenis IMAP."
++msgstr "Penggantian nama hanya didukung untuk kotak surat jenis IMAP."
+ 
+ #: browser.c:901
+ msgid "Delete is only supported for IMAP mailboxes"
+@@ -1403,19 +1402,18 @@ msgid "Mailbox created."
+ msgstr "Kotak surat telah dibuat."
+ 
+ #: imap/browse.c:325
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename mailbox %s to: "
+-msgstr "Membuat kotak surat: "
++msgstr "Ganti nama kotak surat %s ke: "
+ 
+ #: imap/browse.c:338
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename failed: %s"
+-msgstr "SSL gagal: %s"
++msgstr "Penggantian nama gagal: %s"
+ 
+ #: imap/browse.c:343
+-#, fuzzy
+ msgid "Mailbox renamed."
+-msgstr "Kotak surat telah dibuat."
++msgstr "Kotak surat telah diganti namanya."
+ 
+ #: imap/command.c:294
+ msgid "Mailbox closed"
+@@ -1783,11 +1781,11 @@ msgstr "tampilkan nama file yang sedang 
+ 
+ #: keymap_alldefs.h:15
+ msgid "subscribe to current mailbox (IMAP only)"
+-msgstr "berlangganan ke kotak surat (untuk IMAP)"
++msgstr "berlangganan ke kotak surat ini (untuk IMAP)"
+ 
+ #: keymap_alldefs.h:16
+ msgid "unsubscribe to current mailbox (IMAP only)"
+-msgstr "berhenti langganan dari kotak surat (untuk IMAP)"
++msgstr "berhenti langganan dari kotak surat ini (untuk IMAP)"
+ 
+ #: keymap_alldefs.h:17
+ msgid "toggle view all/subscribed mailboxes (IMAP only)"
+@@ -1947,11 +1945,11 @@ msgstr "buat salinan (text/plain) yang s
+ 
+ #: keymap_alldefs.h:56
+ msgid "delete the current entry"
+-msgstr "hapus entry"
++msgstr "hapus entry ini"
+ 
+ #: keymap_alldefs.h:57
+ msgid "delete the current mailbox (IMAP only)"
+-msgstr "hapus kotak surat (untuk IMAP)"
++msgstr "hapus kotak surat ini (untuk IMAP)"
+ 
+ #: keymap_alldefs.h:58
+ msgid "delete all messages in subthread"
+@@ -2095,7 +2093,7 @@ msgstr "forward surat dengan komentar"
+ 
+ #: keymap_alldefs.h:93
+ msgid "select the current entry"
+-msgstr "pilih entry"
++msgstr "pilih entry ini"
+ 
+ #: keymap_alldefs.h:94
+ msgid "reply to all recipients"
+@@ -2223,11 +2221,11 @@ msgstr "ke surat sebelumnya yang belum d
+ 
+ #: keymap_alldefs.h:125
+ msgid "mark the current thread as read"
+-msgstr "tandai thread 'sudah dibaca'"
++msgstr "tandai thread ini 'sudah dibaca'"
+ 
+ #: keymap_alldefs.h:126
+ msgid "mark the current subthread as read"
+-msgstr "tandai subthread 'sudah dibaca'"
++msgstr "tandai subthread ini 'sudah dibaca'"
+ 
+ #: keymap_alldefs.h:127
+ msgid "set a status flag on a message"
+@@ -2299,7 +2297,7 @@ msgstr "ke halaman sebelumnya"
+ 
+ #: keymap_alldefs.h:144
+ msgid "print the current entry"
+-msgstr "cetak entry"
++msgstr "cetak entry ini"
+ 
+ #: keymap_alldefs.h:145
+ msgid "query external program for addresses"
+@@ -2326,9 +2324,8 @@ msgid "{internal}"
+ msgstr "{jerohan}"
+ 
+ #: keymap_alldefs.h:151
+-#, fuzzy
+ msgid "rename the current mailbox (IMAP only)"
+-msgstr "hapus kotak surat (untuk IMAP)"
++msgstr "ganti nama kotak surat ini (untuk IMAP)"
+ 
+ #: keymap_alldefs.h:152
+ msgid "reply to a message"
+@@ -2336,7 +2333,7 @@ msgstr "balas surat"
+ 
+ #: keymap_alldefs.h:153
+ msgid "use the current message as a template for a new one"
+-msgstr "gunakan surat sebagai template"
++msgstr "gunakan surat ini sebagai template"
+ 
+ #: keymap_alldefs.h:154
+ msgid "save message/attachment to a file"
+@@ -2376,7 +2373,7 @@ msgstr "urutkan terbalik surat-surat"
+ 
+ #: keymap_alldefs.h:163
+ msgid "tag the current entry"
+-msgstr "tandai entry"
++msgstr "tandai entry ini"
+ 
+ #: keymap_alldefs.h:164
+ msgid "apply next function to tagged messages"
+@@ -2388,11 +2385,11 @@ msgstr "lakukan fungsi berikutnya HANYA 
+ 
+ #: keymap_alldefs.h:166
+ msgid "tag the current subthread"
+-msgstr "tandai subthread"
++msgstr "tandai subthread ini"
+ 
+ #: keymap_alldefs.h:167
+ msgid "tag the current thread"
+-msgstr "tandai thread"
++msgstr "tandai thread ini"
+ 
+ #: keymap_alldefs.h:168
+ msgid "toggle a message's 'new' flag"
+@@ -2412,7 +2409,7 @@ msgstr "ke awal halaman"
+ 
+ #: keymap_alldefs.h:172
+ msgid "undelete the current entry"
+-msgstr "tidak jadi hapus entry"
++msgstr "tidak jadi hapus entry ini"
+ 
+ #: keymap_alldefs.h:173
+ msgid "undelete all messages in thread"
+@@ -2440,11 +2437,11 @@ msgstr "tampilkan keycode untuk penekana
+ 
+ #: keymap_alldefs.h:179
+ msgid "show currently active limit pattern"
+-msgstr "tampilkan kriteria batas yang aktif"
++msgstr "tampilkan kriteria batas yang sedang aktif"
+ 
+ #: keymap_alldefs.h:180
+ msgid "collapse/uncollapse current thread"
+-msgstr "collapse/uncollapse thread"
++msgstr "collapse/uncollapse thread ini"
+ 
+ #: keymap_alldefs.h:181
+ msgid "collapse/uncollapse all threads"
+@@ -3213,7 +3210,7 @@ msgstr "Cari: "
+ 
+ #: pager.c:2081
+ msgid "Help is currently being shown."
+-msgstr "Bantuan sudah ditampilkan."
++msgstr "Bantuan sedang ditampilkan."
+ 
+ #: pager.c:2110
+ msgid "No more quoted text."
+Index: mutt/po/nl.po
+===================================================================
+RCS file: /home/roessler/cvs/mutt/po/nl.po,v
+retrieving revision 3.22
+retrieving revision 3.23
+diff -u -p -r3.22 -r3.23
+--- mutt/po/nl.po	13 Mar 2005 16:35:34 -0000	3.22
++++ mutt/po/nl.po	22 Mar 2005 19:49:31 -0000	3.23
+@@ -1,10 +1,10 @@
+-# $Id: nl.po,v 3.21 2005/02/12 20:56:33 roessler Exp $
++# $Id: nl.po,v 3.23 2005/03/22 19:49:31 roessler Exp $
+ msgid ""
+ msgstr ""
+-"Project-Id-Version: Mutt 1.5.6\n"
++"Project-Id-Version: Mutt 1.5.9\n"
+ "Report-Msgid-Bugs-To: \n"
+ "POT-Creation-Date: 2005-03-13 17:38+0100\n"
+-"PO-Revision-Date: 2005-01-28 15:08+0100\n"
++"PO-Revision-Date: 2005-03-20 15:17+0100\n"
+ "Last-Translator: René Clerc <rene@clerc.nl>\n"
+ "Language-Team: René Clerc <rene@clerc.nl>\n"
+ "MIME-Version: 1.0\n"
+@@ -203,9 +203,8 @@ msgid "Create is only supported for IMAP
+ msgstr "Alleen IMAP folders kunnen aangemaakt worden"
+ 
+ #: browser.c:880
+-#, fuzzy
+ msgid "Rename is only supported for IMAP mailboxes"
+-msgstr "Alleen IMAP folders kunnen aangemaakt worden"
++msgstr "Alleen IMAP folders kunnen hernoemd worden"
+ 
+ #: browser.c:901
+ msgid "Delete is only supported for IMAP mailboxes"
+@@ -1195,7 +1194,7 @@ msgstr "[-- Foutenuitvoer van %s --]\n"
+ 
+ #: handler.c:1643
+ msgid "[-- Error: message/external-body has no access-type parameter --]\n"
+-msgstr "[-- Fout: message/external-body heeft geen access-type paramter --]\n"
++msgstr "[-- Fout: message/external-body heeft geen access-type parameter --]\n"
+ 
+ #: handler.c:1662
+ #, c-format
+@@ -1398,19 +1397,18 @@ msgid "Mailbox created."
+ msgstr "Mailfolder is aangemaakt."
+ 
+ #: imap/browse.c:325
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename mailbox %s to: "
+-msgstr "Mailfolder aanmaken: "
++msgstr "Mailfolder %s hernoemen naar: "
+ 
+ #: imap/browse.c:338
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename failed: %s"
+-msgstr "SSL mislukt: %s"
++msgstr "Hernoemen mislukt: %s"
+ 
+ #: imap/browse.c:343
+-#, fuzzy
+ msgid "Mailbox renamed."
+-msgstr "Mailfolder is aangemaakt."
++msgstr "Mailfolder is hernoemd."
+ 
+ #: imap/command.c:294
+ msgid "Mailbox closed"
+@@ -2321,9 +2319,8 @@ msgid "{internal}"
+ msgstr "(intern)"
+ 
+ #: keymap_alldefs.h:151
+-#, fuzzy
+ msgid "rename the current mailbox (IMAP only)"
+-msgstr "verwijder de huidige mailfolder (alleen met IMAP)"
++msgstr "hernoem de huidige mailfolder (alleen met IMAP)"
+ 
+ #: keymap_alldefs.h:152
+ msgid "reply to a message"
+@@ -2599,7 +2596,6 @@ msgstr ""
+ "USA.\n"
+ 
+ #: main.c:99
+-#, fuzzy
+ msgid ""
+ "usage: mutt [ -nRyzZ ] [ -e <cmd> ] [ -F <file> ] [ -m <type> ] [ -f "
+ "<file> ]\n"
+@@ -2653,18 +2649,18 @@ msgstr ""
+ "  -e <opdracht>\tspecificeer een uit te voeren opdracht na initialisatie\n"
+ "  -f <file>\tspecificeer de te lezen mailfolder\n"
+ "  -F <file>\tspecificeer een alternatieve muttrc\n"
+-"  -H <file>\tspecificeer een een bestand om de headers uit te lezen\n"
++"  -H <file>\tspecificeer een bestand om de headers uit te lezen\n"
+ "  -i <file>\tspecificeer een bestand dat Mutt moet bijsluiten in het "
+-"antwoord\n"
++"bericht\n"
+ "  -m <type>\tspecificeer een standaard mailfolder type\n"
+-"  -n\t\tzorgt dat Mutt niet de systeem Muttrc inleest\n"
++"  -n\t\tzorgt dat Mutt de systeem Muttrc niet inleest\n"
+ "  -p\t\troept een uitgesteld bericht op\n"
+ "  -Q <variabele>\tvraagt de waarde van een configuratievariabele op\n"
+ "  -R\t\topent de mailfolder met alleen-lezen rechten\n"
+ "  -s <ond>\tspecificeer een onderwerp (tussen aanhalingstekens i.g.v. "
+ "spaties)\n"
+ "  -v\t\ttoont het versienummer en opties tijdens het compileren\n"
+-"  -x\t\tsimuleert de mailx verstuurmodus\n"
++"  -x\t\tsimuleert de mailx verzendmodus\n"
+ "  -y\t\tselecteert een mailfolder gespecificeerd in de `mailboxes' lijst\n"
+ "  -z\t\tbeëindigt meteen als er geen berichten in de mailfolder staan\n"
+ "  -Z\t\topent de eerste mailfolder met nieuwe berichten, eindigt indien "
+Index: mutt/po/pl.po
+===================================================================
+RCS file: /home/roessler/cvs/mutt/po/pl.po,v
+retrieving revision 3.24
+retrieving revision 3.25
+diff -u -p -r3.24 -r3.25
+--- mutt/po/pl.po	13 Mar 2005 16:35:34 -0000	3.24
++++ mutt/po/pl.po	17 Mar 2005 09:30:06 -0000	3.25
+@@ -6,10 +6,10 @@
+ # get your own copy of PePeSza from http://www.ids.pl/~pkollegu/pepesza.html
+ msgid ""
+ msgstr ""
+-"Project-Id-Version: mutt-cvs-2004.08.16\n"
++"Project-Id-Version: mutt-1.5.8\n"
+ "Report-Msgid-Bugs-To: \n"
+-"POT-Creation-Date: 2005-03-13 17:38+0100\n"
+-"PO-Revision-Date: 2004-08-16\n"
++"POT-Creation-Date: 2005-02-15 13:41+0100\n"
++"PO-Revision-Date: 2005-02-15\n"
+ "Last-Translator: Pawe³ Dziekoñski <dzieko@pwr.wroc.pl>\n"
+ "Language-Team: POLISH <pl@li.org>\n"
+ "MIME-Version: 1.0\n"
+@@ -175,7 +175,7 @@ msgstr "Zmieñ katalog"
+ msgid "Mask"
+ msgstr "Wzorzec"
+ 
+-#: browser.c:381 browser.c:989
++#: browser.c:381 browser.c:968
+ #, c-format
+ msgid "%s is not a directory."
+ msgstr "%s nie jest katalogiem."
+@@ -199,7 +199,7 @@ msgstr "Katalog [%s], wzorzec nazw plikó
+ msgid "Can't attach a directory!"
+ msgstr "Za³±cznikiem nie mo¿e zostaæ katalog!"
+ 
+-#: browser.c:655 browser.c:1056 browser.c:1153
++#: browser.c:655 browser.c:1035 browser.c:1132
+ msgid "No files match the file mask"
+ msgstr "¯aden plik nie pasuje do wzorca"
+ 
+@@ -208,60 +208,55 @@ msgid "Create is only supported for IMAP
+ msgstr "Tworzenie skrzynek jest obs³ugiwane tylko dla skrzynek IMAP"
+ 
+ #: browser.c:880
+-#, fuzzy
+-msgid "Rename is only supported for IMAP mailboxes"
+-msgstr "Tworzenie skrzynek jest obs³ugiwane tylko dla skrzynek IMAP"
+-
+-#: browser.c:901
+ msgid "Delete is only supported for IMAP mailboxes"
+ msgstr "Usuwanie skrzynek jest obs³ugiwane tylko dla skrzynek IMAP"
+ 
+-#: browser.c:909
++#: browser.c:888
+ #, c-format
+ msgid "Really delete mailbox \"%s\"?"
+ msgstr "Naprawdê usun±æ skrzynkê \"%s\"?"
+ 
+-#: browser.c:923
++#: browser.c:902
+ msgid "Mailbox deleted."
+ msgstr "Skrzynka zosta³a usuniêta."
+ 
+-#: browser.c:929
++#: browser.c:908
+ msgid "Mailbox not deleted."
+ msgstr "Skrzynka nie zosta³a usuniêta."
+ 
+-#: browser.c:948
++#: browser.c:927
+ msgid "Chdir to: "
+ msgstr "Zmieñ katalog na: "
+ 
+-#: browser.c:977 browser.c:1049
++#: browser.c:956 browser.c:1028
+ msgid "Error scanning directory."
+ msgstr "B³±d przegl±dania katalogu."
+ 
+-#: browser.c:1000
++#: browser.c:979
+ msgid "File Mask: "
+ msgstr "Wzorzec nazw plików: "
+ 
+-#: browser.c:1072
++#: browser.c:1051
+ msgid "Reverse sort by (d)ate, (a)lpha, si(z)e or do(n)'t sort? "
+ msgstr "Sortowanie odwrotne wg (d)aty, (a)lfabetu, (w)ielko¶ci, ¿ad(n)e?"
+ 
+-#: browser.c:1073
++#: browser.c:1052
+ msgid "Sort by (d)ate, (a)lpha, si(z)e or do(n)'t sort? "
+ msgstr "Sortowanie wg (d)aty, (a)lfabetu, (w)ielko¶ci, ¿ad(n)e?"
+ 
+-#: browser.c:1074
++#: browser.c:1053
+ msgid "dazn"
+ msgstr "dawn"
+ 
+-#: browser.c:1140
++#: browser.c:1119
+ msgid "New file name: "
+ msgstr "Nazwa nowego pliku: "
+ 
+-#: browser.c:1171
++#: browser.c:1150
+ msgid "Can't view a directory"
+ msgstr "Nie mo¿na przegl±daæ tego katalogu"
+ 
+-#: browser.c:1188
++#: browser.c:1167
+ msgid "Error trying to view file"
+ msgstr "B³±d podczas próby przegl±dania pliku"
+ 
+@@ -448,19 +443,12 @@ msgid "Messages could not be printed"
+ msgstr "Listy nie zosta³y wydrukowane"
+ 
+ #: commands.c:508
+-msgid ""
+-"Rev-Sort (d)ate/(f)rm/(r)ecv/(s)ubj/t(o)/(t)hread/(u)nsort/si(z)e/s(c)ore/s"
+-"(p)am?: "
+-msgstr ""
+-"Odwr-Sort (d)ata/(a)ut/o(t)rzym/t(e)m/d(o)/(w)±t/(b)ez/ro(z)m/wa(g)a/(s)"
+-"pam?: "
++msgid "Rev-Sort (d)ate/(f)rm/(r)ecv/(s)ubj/t(o)/(t)hread/(u)nsort/si(z)e/s(c)ore/s(p)am?: "
++msgstr "Odwr-Sort (d)ata/(a)ut/o(t)rzym/t(e)m/d(o)/(w)±t/(b)ez/ro(z)m/wa(g)a/(s)pam?: "
+ 
+ #: commands.c:509
+-msgid ""
+-"Sort (d)ate/(f)rm/(r)ecv/(s)ubj/t(o)/(t)hread/(u)nsort/si(z)e/s(c)ore/s(p)"
+-"am?: "
+-msgstr ""
+-"Sortuj (d)ata/(a)ut/o(t)rzym/t(e)mat/d(o)/(w)±t/(b)ez/ro(z)m/wa(g)a/(s)pam?: "
++msgid "Sort (d)ate/(f)rm/(r)ecv/(s)ubj/t(o)/(t)hread/(u)nsort/si(z)e/s(c)ore/s(p)am?: "
++msgstr "Sortuj (d)ata/(a)ut/o(t)rzym/t(e)mat/d(o)/(w)±t/(b)ez/ro(z)m/wa(g)a/(s)pam?: "
+ 
+ #: commands.c:510
+ msgid "dfrsotuzcp"
+@@ -746,68 +734,44 @@ msgstr "Nie mo¿na wys³aæ listu w trybie 
+ msgid "Mail not sent."
+ msgstr "List nie zosta³ wys³any."
+ 
+-#: crypt.c:398
++#: crypt.c:395
+ msgid "S/MIME messages with no hints on content are unsupported."
+ msgstr "Listy S/MIME bez wskazówek co do zawarto¶ci nie s± obs³ugiwane."
+ 
+-#: crypt.c:617 crypt.c:661
++#: crypt.c:614 crypt.c:658
+ msgid "Trying to extract PGP keys...\n"
+ msgstr "Próba skopiowania kluczy PGP...\n"
+ 
+-#: crypt.c:641 crypt.c:681
++#: crypt.c:638 crypt.c:678
+ msgid "Trying to extract S/MIME certificates...\n"
+ msgstr "Próba skopiowania kluczy S/MIME...\n"
+ 
+-#: crypt.c:802
+-msgid ""
+-"[-- Error: Inconsistent multipart/signed structure! --]\n"
+-"\n"
+-msgstr ""
+-"[-- B³±d: Niespójna struktura multipart/signed ! --]\n"
+-"\n"
+-
+-#: crypt.c:824
+-#, c-format
+-msgid ""
+-"[-- Error: Unknown multipart/signed protocol %s! --]\n"
+-"\n"
+-msgstr ""
+-"[-- B³±d: Nieznany protokó³ multipart/signed %s! --]\n"
+-"\n"
+-
+-#: crypt.c:864
+-#, c-format
+-msgid ""
+-"[-- Warning: We can't verify %s/%s signatures. --]\n"
+-"\n"
+-msgstr ""
+-"[-- Ostrze¿enie: nie mo¿na zweryfikowaæ podpisów %s/%s --]\n"
+-"\n"
++#: crypt.c:799
++msgid "[-- Error: Inconsistent multipart/signed structure! --]\n\n"
++msgstr "[-- B³±d: Niespójna struktura multipart/signed ! --]\n\n"
++
++#: crypt.c:821
++#, c-format
++msgid "[-- Error: Unknown multipart/signed protocol %s! --]\n\n"
++msgstr "[-- B³±d: Nieznany protokó³ multipart/signed %s! --]\n\n"
++
++#: crypt.c:861
++#, c-format
++msgid "[-- Warning: We can't verify %s/%s signatures. --]\n\n"
++msgstr "[-- Ostrze¿enie: nie mo¿na zweryfikowaæ podpisów %s/%s --]\n\n"
+ 
+ #. Now display the signed body
+-#: crypt.c:876
+-msgid ""
+-"[-- The following data is signed --]\n"
+-"\n"
+-msgstr ""
+-"[-- Poni¿sze dane s± podpisane --]\n"
+-"\n"
+-
+-#: crypt.c:882
+-msgid ""
+-"[-- Warning: Can't find any signatures. --]\n"
+-"\n"
+-msgstr ""
+-"[-- Ostrze¿enie: Nie znaleziono ¿adnych podpisów. --]\n"
+-"\n"
+-
+-#: crypt.c:888
+-msgid ""
+-"\n"
+-"[-- End of signed data --]\n"
+-msgstr ""
+-"\n"
+-"[-- Koniec podpisanych danych --]\n"
++#: crypt.c:873
++msgid "[-- The following data is signed --]\n\n"
++msgstr "[-- Poni¿sze dane s± podpisane --]\n\n"
++
++#: crypt.c:879
++msgid "[-- Warning: Can't find any signatures. --]\n\n"
++msgstr "[-- Ostrze¿enie: Nie znaleziono ¿adnych podpisów. --]\n\n"
++
++#: crypt.c:885
++msgid "\n[-- End of signed data --]\n"
++msgstr "\n[-- Koniec podpisanych danych --]\n"
+ 
+ #: curs_lib.c:190
+ msgid "yes"
+@@ -902,7 +866,7 @@ msgstr "Skrzynka zosta³a zmodyfikowana z
+ msgid "No tagged messages."
+ msgstr "Brak zaznaczonych listów."
+ 
+-#: curs_main.c:657 menu.c:906
++#: curs_main.c:657 menu.c:901
+ msgid "Nothing to do."
+ msgstr "Brak akcji do wykonania."
+ 
+@@ -1035,44 +999,8 @@ msgstr "Nie mo¿na edytowaæ listów na ser
+ #. * declared "static" (sigh)
+ #.
+ #: edit.c:41
+-msgid ""
+-"~~\t\tinsert a line begining with a single ~\n"
+-"~b users\tadd users to the Bcc: field\n"
+-"~c users\tadd users to the Cc: field\n"
+-"~f messages\tinclude messages\n"
+-"~F messages\tsame as ~f, except also include headers\n"
+-"~h\t\tedit the message header\n"
+-"~m messages\tinclude and quote messages\n"
+-"~M messages\tsame as ~m, except include headers\n"
+-"~p\t\tprint the message\n"
+-"~q\t\twrite file and quit editor\n"
+-"~r file\t\tread a file into the editor\n"
+-"~t users\tadd users to the To: field\n"
+-"~u\t\trecall the previous line\n"
+-"~v\t\tedit message with the $visual editor\n"
+-"~w file\t\twrite message to file\n"
+-"~x\t\tabort changes and quit editor\n"
+-"~?\t\tthis message\n"
+-".\t\ton a line by itself ends input\n"
+-msgstr ""
+-"~~\t\twstaw liniê zaczynaj±c± siê pojedyñczym ~\n"
+-"~b u¿ytkownicy\tdodaj u¿ytkowników do pola BCC:\n"
+-"~c u¿ytkownicy\tdodaj u¿ytkowników do pola Cc:\n"
+-"~f listy\tdo³±cz listy\n"
+-"~F listy\tto samo co ~f ale do³±cz te¿ nag³ówki\n"
+-"~h\t\tedytuj nag³ówki\n"
+-"~m listy\tdodaj i komentuj listy\n"
+-"~M listy\tto samo co ~m ale do³±cz te¿ nag³ówki\n"
+-"~p\t\tdrukuj list\n"
+-"~q\t\tzapisz plik i wyjd¼ z edytora\n"
+-"~r plik\t\twczytaj plik do edytora\n"
+-"~t u¿ytkownicy\tdodaj u¿ytkowników do pola To:\n"
+-"~u\t\todtwórz poprzedni± liniê\n"
+-"~v\t\tedytuj list edytorem $visual\n"
+-"~w plik\t\tzapisz list do pliku\n"
+-"~x\t\tporzuæ zmiany i wyjd¼ z edytora\n"
+-"~?\t\tten list\n"
+-".\t\tstoj±c sama w linii koñczy wpisywanie\n"
++msgid "~~\t\tinsert a line begining with a single ~\n~b users\tadd users to the Bcc: field\n~c users\tadd users to the Cc: field\n~f messages\tinclude messages\n~F messages\tsame as ~f, except also include headers\n~h\t\tedit the message header\n~m messages\tinclude and quote messages\n~M messages\tsame as ~m, except include headers\n~p\t\tprint the message\n~q\t\twrite file and quit editor\n~r file\t\tread a file into the editor\n~t users\tadd users to the To: field\n~u\t\trecall the previous line\n~v\t\tedit message with the $visual editor\n~w file\t\twrite message to file\n~x\t\tabort changes and quit editor\n~?\t\tthis message\n.\t\ton a line by itself ends input\n"
++msgstr "~~\t\twstaw liniê zaczynaj±c± siê pojedyñczym ~\n~b u¿ytkownicy\tdodaj u¿ytkowników do pola BCC:\n~c u¿ytkownicy\tdodaj u¿ytkowników do pola Cc:\n~f listy\tdo³±cz listy\n~F listy\tto samo co ~f ale do³±cz te¿ nag³ówki\n~h\t\tedytuj nag³ówki\n~m listy\tdodaj i komentuj listy\n~M listy\tto samo co ~m ale do³±cz te¿ nag³ówki\n~p\t\tdrukuj list\n~q\t\tzapisz plik i wyjd¼ z edytora\n~r plik\t\twczytaj plik do edytora\n~t u¿ytkownicy\tdodaj u¿ytkowników do pola To:\n~u\t\todtwórz poprzedni± liniê\n~v\t\tedytuj list edytorem $visual\n~w plik\t\tzapisz list do pliku\n~x\t\tporzuæ zmiany i wyjd¼ z edytora\n~?\t\tten list\n.\t\tstoj±c sama w linii koñczy wpisywanie\n"
+ 
+ #: edit.c:186
+ #, c-format
+@@ -1161,9 +1089,7 @@ msgstr "Wyczy¶æ flagê"
+ 
+ #: handler.c:1349
+ msgid "[-- Error:  Could not display any parts of Multipart/Alternative! --]\n"
+-msgstr ""
+-"[--B³±d: Nie mo¿na wy¶wietliæ ¿adnego z fragmentów Multipart/Alternative! "
+-"--]\n"
++msgstr "[--B³±d: Nie mo¿na wy¶wietliæ ¿adnego z fragmentów Multipart/Alternative! --]\n"
+ 
+ #: handler.c:1459
+ #, c-format
+@@ -1197,8 +1123,7 @@ msgstr "[-- Komunikaty b³êdów %s --]\n"
+ 
+ #: handler.c:1643
+ msgid "[-- Error: message/external-body has no access-type parameter --]\n"
+-msgstr ""
+-"[-- B³±d: message/external-body nie ma ustawionego rodzaju dostêpu --]\n"
++msgstr "[-- B³±d: message/external-body nie ma ustawionego rodzaju dostêpu --]\n"
+ 
+ #: handler.c:1662
+ #, c-format
+@@ -1230,12 +1155,8 @@ msgid "[-- This %s/%s attachment is not 
+ msgstr "[-- Ten za³±cznik typu %s/%s nie jest zawarty, --]\n"
+ 
+ #: handler.c:1696
+-msgid ""
+-"[-- and the indicated external source has --]\n"
+-"[-- expired. --]\n"
+-msgstr ""
+-"[-- a podane ¼ród³o zewnêtrzne jest --]\n"
+-"[-- nieaktualne. --]\n"
++msgid "[-- and the indicated external source has --]\n[-- expired. --]\n"
++msgstr "[-- a podane ¼ród³o zewnêtrzne jest --]\n[-- nieaktualne. --]\n"
+ 
+ #: handler.c:1714
+ #, c-format
+@@ -1282,24 +1203,12 @@ msgid "<UNKNOWN>"
+ msgstr "<NIEZNANY>"
+ 
+ #: help.c:336
+-msgid ""
+-"\n"
+-"Generic bindings:\n"
+-"\n"
+-msgstr ""
+-"\n"
+-"Standardowe przypisania klawiszy:\n"
+-"\n"
++msgid "\nGeneric bindings:\n\n"
++msgstr "\nStandardowe przypisania klawiszy:\n\n"
+ 
+ #: help.c:340
+-msgid ""
+-"\n"
+-"Unbound functions:\n"
+-"\n"
+-msgstr ""
+-"\n"
+-"Nie przypisane klawiszom funkcje:\n"
+-"\n"
++msgid "\nUnbound functions:\n\n"
++msgstr "\nNie przypisane klawiszom funkcje:\n\n"
+ 
+ #: help.c:348
+ #, c-format
+@@ -1307,7 +1216,6 @@ msgid "Help for %s"
+ msgstr "Pomoc dla menu %s"
+ 
+ #: hook.c:246
+-#, c-format
+ msgid "unhook: Can't do unhook * from within a hook."
+ msgstr "unhook: Nie mo¿na wykonaæ \"unhook *\" wewn±trz innego polecenia hook."
+ 
+@@ -1371,7 +1279,7 @@ msgstr "Uwierzytelnianie (%s)..."
+ msgid "SASL authentication failed."
+ msgstr "Uwierzytelnianie SASL nie powiod³o siê."
+ 
+-#: imap/browse.c:68 imap/imap.c:559
++#: imap/browse.c:68 imap/imap.c:542
+ #, c-format
+ msgid "%s is an invalid IMAP path"
+ msgstr "%s jest b³êdn± ¶cie¿k± IMAP"
+@@ -1392,7 +1300,7 @@ msgstr "Brak skrzynki"
+ msgid "Create mailbox: "
+ msgstr "Nazwa skrzynki: "
+ 
+-#: imap/browse.c:286 imap/browse.c:332
++#: imap/browse.c:286
+ msgid "Mailbox must have a name."
+ msgstr "Skrzynka musi zostaæ nazwana."
+ 
+@@ -1400,21 +1308,6 @@ msgstr "Skrzynka musi zostaæ nazwana."
+ msgid "Mailbox created."
+ msgstr "Skrzynka zosta³a utworzona."
+ 
+-#: imap/browse.c:325
+-#, fuzzy, c-format
+-msgid "Rename mailbox %s to: "
+-msgstr "Nazwa skrzynki: "
+-
+-#: imap/browse.c:338
+-#, fuzzy, c-format
+-msgid "Rename failed: %s"
+-msgstr "SSL nie powiod³o siê: %s"
+-
+-#: imap/browse.c:343
+-#, fuzzy
+-msgid "Mailbox renamed."
+-msgstr "Skrzynka zosta³a utworzona."
+-
+ #: imap/command.c:294
+ msgid "Mailbox closed"
+ msgstr "Skrzynka zosta³a zamkniêta"
+@@ -1426,84 +1319,84 @@ msgstr "Skrzynka zosta³a zamkniêta"
+ msgid "Fatal error.  Message count is out of sync!"
+ msgstr "B³±d krytyczny. Niezidentyfikowana ilo¶æ listów!"
+ 
+-#: imap/imap.c:168
++#: imap/imap.c:151
+ #, c-format
+ msgid "Closing connection to %s..."
+ msgstr "Zamykanie po³±czenia do %s..."
+ 
+-#: imap/imap.c:328
++#: imap/imap.c:311
+ msgid "This IMAP server is ancient. Mutt does not work with it."
+ msgstr "Zbyt stara wersja serwera IMAP. Praca z tym serwerem nie jest mo¿liwa."
+ 
+-#: imap/imap.c:419
++#: imap/imap.c:402
+ #, c-format
+ msgid "Unexpected response received from server: %s"
+ msgstr "Otrzymano nieoczekiwan± odpowied¼ od serwera: %s"
+ 
+-#: imap/imap.c:439 pop_lib.c:284
++#: imap/imap.c:422 pop_lib.c:284
+ msgid "Secure connection with TLS?"
+ msgstr "Po³±czyæ u¿ywaj±c TLS?"
+ 
+-#: imap/imap.c:452 pop_lib.c:308
++#: imap/imap.c:435 pop_lib.c:308
+ msgid "Could not negotiate TLS connection"
+ msgstr "Po³±czenie TSL nie zosta³o wynegocjowane"
+ 
+-#: imap/imap.c:590
++#: imap/imap.c:573
+ #, c-format
+ msgid "Selecting %s..."
+ msgstr "Wybieranie %s..."
+ 
+-#: imap/imap.c:726
++#: imap/imap.c:709
+ msgid "Error opening mailbox"
+ msgstr "B³±d otwarcia skrzynki"
+ 
+ #. STATUS not supported
+-#: imap/imap.c:780
++#: imap/imap.c:763
+ msgid "Unable to append to IMAP mailboxes at this server"
+ msgstr "Nie mo¿na dopisaæ do skrzynek IMAP na tym serwerze"
+ 
+ #. command failed cause folder doesn't exist
+-#: imap/imap.c:789 imap/message.c:723 muttlib.c:1234
++#: imap/imap.c:772 imap/message.c:720 muttlib.c:1234
+ #, c-format
+ msgid "Create %s?"
+ msgstr "Utworzyæ %s?"
+ 
+-#: imap/imap.c:975 pop.c:465
++#: imap/imap.c:958 pop.c:465
+ #, c-format
+ msgid "Marking %d messages deleted..."
+ msgstr "Zaznaczanie %d listów jako skasowanych..."
+ 
+-#: imap/imap.c:984
++#: imap/imap.c:967
+ msgid "Expunge failed"
+ msgstr "Skasowanie nie powiod³o siê"
+ 
+-#: imap/imap.c:999
++#: imap/imap.c:982
+ #, c-format
+ msgid "Saving message status flags... [%d/%d]"
+ msgstr "Zapisywanie stanu flag listów... [%d/%d]"
+ 
+-#: imap/imap.c:1083
++#: imap/imap.c:1066
+ msgid "Expunging messages from server..."
+ msgstr "Kasowanie listów na serwerze... "
+ 
+-#: imap/imap.c:1088
++#: imap/imap.c:1071
+ msgid "imap_sync_mailbox: EXPUNGE failed"
+ msgstr "imap_sync_mailbox: skasowanie nie powiod³o siê"
+ 
+-#: imap/imap.c:1122
++#: imap/imap.c:1105
+ msgid "CLOSE failed"
+ msgstr "Polecenie CLOSE nie powiod³o siê"
+ 
+-#: imap/imap.c:1365
++#: imap/imap.c:1348
+ msgid "Bad mailbox name"
+ msgstr "B³êdna nazwa skrzynki"
+ 
+-#: imap/imap.c:1377
++#: imap/imap.c:1360
+ #, c-format
+ msgid "Subscribing to %s..."
+ msgstr "Subskrybowanie %s..."
+ 
+-#: imap/imap.c:1379
++#: imap/imap.c:1362
+ #, c-format
+ msgid "Unsubscribing to %s..."
+ msgstr "Odsubskrybowanie %s..."
+@@ -1519,9 +1412,9 @@ msgid "Could not create temporary file %
+ msgstr "Nie mo¿na utworzyæ pliku tymczasowego %s"
+ 
+ #: imap/message.c:134
+-#, fuzzy, c-format
++#, c-format
+ msgid "Evaluating cache... [%d/%d]"
+-msgstr "Pobieranie nag³ówków listów... [%d/%d]"
++msgstr "Szacowanie bufora... [%d/%d]"
+ 
+ #: imap/message.c:202 pop.c:210
+ #, c-format
+@@ -1536,16 +1429,16 @@ msgstr "Pobieranie listu..."
+ msgid "The message index is incorrect. Try reopening the mailbox."
+ msgstr "B³êdny indeks listów. Spróbuj ponownie otworzyæ skrzynkê."
+ 
+-#: imap/message.c:589
++#: imap/message.c:586
+ msgid "Uploading message ..."
+ msgstr "£adowanie listu ..."
+ 
+-#: imap/message.c:699
++#: imap/message.c:696
+ #, c-format
+ msgid "Copying %d messages to %s..."
+ msgstr "Kopiowanie %d listów do %s..."
+ 
+-#: imap/message.c:703
++#: imap/message.c:700
+ #, c-format
+ msgid "Copying message %d to %s..."
+ msgstr "Kopiowanie listu %d do %s..."
+@@ -1596,12 +1489,10 @@ msgid "%s: unknown variable"
+ msgstr "%s: nieznana zmienna"
+ 
+ #: init.c:1243
+-#, c-format
+ msgid "prefix is illegal with reset"
+ msgstr "reset: nieprawid³owy prefiks"
+ 
+ #: init.c:1249
+-#, c-format
+ msgid "value is illegal with reset"
+ msgstr "reset: nieprawid³owa warto¶æ"
+ 
+@@ -1789,8 +1680,7 @@ msgstr "odsubskrybuj bie¿±c± skrzynkê (t
+ 
+ #: keymap_alldefs.h:17
+ msgid "toggle view all/subscribed mailboxes (IMAP only)"
+-msgstr ""
+-"zmieñ tryb przegl±dania skrzynek: wszystkie/zasubskrybowane (tylko IMAP)"
++msgstr "zmieñ tryb przegl±dania skrzynek: wszystkie/zasubskrybowane (tylko IMAP)"
+ 
+ #: keymap_alldefs.h:18
+ msgid "list mailboxes with new mail"
+@@ -2325,199 +2215,194 @@ msgid "{internal}"
+ msgstr "{wewnêtrzne}"
+ 
+ #: keymap_alldefs.h:151
+-#, fuzzy
+-msgid "rename the current mailbox (IMAP only)"
+-msgstr "usuñ bie¿±c± skrzynkê (tylko IMAP)"
+-
+-#: keymap_alldefs.h:152
+ msgid "reply to a message"
+ msgstr "odpowiedz na list"
+ 
+-#: keymap_alldefs.h:153
++#: keymap_alldefs.h:152
+ msgid "use the current message as a template for a new one"
+ msgstr "u¿yj bie¿±cego listu jako wzorca dla nowych wiadomo¶ci"
+ 
+-#: keymap_alldefs.h:154
++#: keymap_alldefs.h:153
+ msgid "save message/attachment to a file"
+ msgstr "zapisz list/za³±cznik do pliku"
+ 
+-#: keymap_alldefs.h:155
++#: keymap_alldefs.h:154
+ msgid "search for a regular expression"
+ msgstr "szukaj wyra¿enia regularnego"
+ 
+-#: keymap_alldefs.h:156
++#: keymap_alldefs.h:155
+ msgid "search backwards for a regular expression"
+ msgstr "szukaj wstecz wyra¿enia regularnego"
+ 
+-#: keymap_alldefs.h:157
++#: keymap_alldefs.h:156
+ msgid "search for next match"
+ msgstr "szukaj nastêpnego pozytywnego rezultatu"
+ 
+-#: keymap_alldefs.h:158
++#: keymap_alldefs.h:157
+ msgid "search for next match in opposite direction"
+ msgstr "szukaj wstecz nastêpnego pozytywnego rezultatu"
+ 
+-#: keymap_alldefs.h:159
++#: keymap_alldefs.h:158
+ msgid "toggle search pattern coloring"
+ msgstr "ustala czy szukana fraza ma byæ zaznaczona kolorem"
+ 
+-#: keymap_alldefs.h:160
++#: keymap_alldefs.h:159
+ msgid "invoke a command in a subshell"
+ msgstr "wywo³aj polecenie w podpow³oce"
+ 
+-#: keymap_alldefs.h:161
++#: keymap_alldefs.h:160
+ msgid "sort messages"
+ msgstr "uszereguj listy"
+ 
+-#: keymap_alldefs.h:162
++#: keymap_alldefs.h:161
+ msgid "sort messages in reverse order"
+ msgstr "uszereguj listy w odwrotnej kolejno¶ci"
+ 
+-#: keymap_alldefs.h:163
++#: keymap_alldefs.h:162
+ msgid "tag the current entry"
+ msgstr "zaznacz bie¿±c± pozycjê"
+ 
+-#: keymap_alldefs.h:164
++#: keymap_alldefs.h:163
+ msgid "apply next function to tagged messages"
+ msgstr "wykonaj nastêpne polecenie na zaznaczonych listach"
+ 
+-#: keymap_alldefs.h:165
++#: keymap_alldefs.h:164
+ msgid "apply next function ONLY to tagged messages"
+ msgstr "wykonaj nastêpne polecenie TYLKO na zaznaczonych listach"
+ 
+-#: keymap_alldefs.h:166
++#: keymap_alldefs.h:165
+ msgid "tag the current subthread"
+ msgstr "zaznacz bie¿±cy podw±tek"
+ 
+-#: keymap_alldefs.h:167
++#: keymap_alldefs.h:166
+ msgid "tag the current thread"
+ msgstr "zaznacz bie¿±cy w±tek"
+ 
+-#: keymap_alldefs.h:168
++#: keymap_alldefs.h:167
+ msgid "toggle a message's 'new' flag"
+ msgstr "ustaw flagê listu na 'nowy'"
+ 
+-#: keymap_alldefs.h:169
++#: keymap_alldefs.h:168
+ msgid "toggle whether the mailbox will be rewritten"
+ msgstr "ustala czy skrzynka bêdzie ponownie zapisana"
+ 
+-#: keymap_alldefs.h:170
++#: keymap_alldefs.h:169
+ msgid "toggle whether to browse mailboxes or all files"
+ msgstr "ustala czy przegl±daæ skrzynki czy wszystkie pliki"
+ 
+-#: keymap_alldefs.h:171
++#: keymap_alldefs.h:170
+ msgid "move to the top of the page"
+ msgstr "przejd¼ na pocz±tek strony"
+ 
+-#: keymap_alldefs.h:172
++#: keymap_alldefs.h:171
+ msgid "undelete the current entry"
+ msgstr "odtwórz bie¿±c± pozycjê listy"
+ 
+-#: keymap_alldefs.h:173
++#: keymap_alldefs.h:172
+ msgid "undelete all messages in thread"
+ msgstr "odtwórz wszystkie listy z tego w±tku"
+ 
+-#: keymap_alldefs.h:174
++#: keymap_alldefs.h:173
+ msgid "undelete all messages in subthread"
+ msgstr "odtwórz wszystkie listy z tego podw±tku"
+ 
+-#: keymap_alldefs.h:175
++#: keymap_alldefs.h:174
+ msgid "show the Mutt version number and date"
+ msgstr "poka¿ wersjê i datê programu pocztowego Mutt"
+ 
+-#: keymap_alldefs.h:176
++#: keymap_alldefs.h:175
+ msgid "view attachment using mailcap entry if necessary"
+ msgstr "poka¿ za³±cznik u¿ywaj±c, je¶li to niezbêdne, pliku 'mailcap'"
+ 
+-#: keymap_alldefs.h:177
++#: keymap_alldefs.h:176
+ msgid "show MIME attachments"
+ msgstr "poka¿ za³±czniki MIME"
+ 
+-#: keymap_alldefs.h:178
++#: keymap_alldefs.h:177
+ msgid "display the keycode for a key press"
+ msgstr "wy¶wietl kod wprowadzonego znaku"
+ 
+-#: keymap_alldefs.h:179
++#: keymap_alldefs.h:178
+ msgid "show currently active limit pattern"
+ msgstr "poka¿ bie¿±cy wzorzec ograniczaj±cy"
+ 
+-#: keymap_alldefs.h:180
++#: keymap_alldefs.h:179
+ msgid "collapse/uncollapse current thread"
+ msgstr "zwiñ/rozwiñ bie¿±cy w±tek"
+ 
+-#: keymap_alldefs.h:181
++#: keymap_alldefs.h:180
+ msgid "collapse/uncollapse all threads"
+ msgstr "zwiñ/rozwiñ wszystkie w±tki"
+ 
+-#: keymap_alldefs.h:182
++#: keymap_alldefs.h:181
+ msgid "attach a PGP public key"
+ msgstr "do³±cz w³asny klucz publiczny PGP"
+ 
+-#: keymap_alldefs.h:183
++#: keymap_alldefs.h:182
+ msgid "show PGP options"
+ msgstr "poka¿ opcje PGP"
+ 
+-#: keymap_alldefs.h:184
++#: keymap_alldefs.h:183
+ msgid "mail a PGP public key"
+ msgstr "wy¶lij w³asny klucz publiczny PGP"
+ 
+-#: keymap_alldefs.h:185
++#: keymap_alldefs.h:184
+ msgid "verify a PGP public key"
+ msgstr "zweryfikuj klucz publiczny PGP"
+ 
+-#: keymap_alldefs.h:186
++#: keymap_alldefs.h:185
+ msgid "view the key's user id"
+ msgstr "obejrzyj identyfikator u¿ytkownika klucza"
+ 
+-#: keymap_alldefs.h:187
++#: keymap_alldefs.h:186
+ msgid "check for classic pgp"
+ msgstr "u¿yj starej wersji pgp"
+ 
+-#: keymap_alldefs.h:188
++#: keymap_alldefs.h:187
+ msgid "Accept the chain constructed"
+ msgstr "Potwierd¼ skonstruowany ³añcuch"
+ 
+-#: keymap_alldefs.h:189
++#: keymap_alldefs.h:188
+ msgid "Append a remailer to the chain"
+ msgstr "Dodaj remailera do ³añcucha"
+ 
+-#: keymap_alldefs.h:190
++#: keymap_alldefs.h:189
+ msgid "Insert a remailer into the chain"
+ msgstr "Wprowadz remailera do ³añcucha"
+ 
+-#: keymap_alldefs.h:191
++#: keymap_alldefs.h:190
+ msgid "Delete a remailer from the chain"
+ msgstr "Usuñ remailera z ³añcucha"
+ 
+-#: keymap_alldefs.h:192
++#: keymap_alldefs.h:191
+ msgid "Select the previous element of the chain"
+ msgstr "Wybierz poprzedni element ³añcucha"
+ 
+-#: keymap_alldefs.h:193
++#: keymap_alldefs.h:192
+ msgid "Select the next element of the chain"
+ msgstr "Wybierz nastepny element ³añcucha"
+ 
+-#: keymap_alldefs.h:194
++#: keymap_alldefs.h:193
+ msgid "send the message through a mixmaster remailer chain"
+ msgstr "przeslij list przez ³añcuch anonimowych remailerów typu mixmaster"
+ 
+-#: keymap_alldefs.h:195
++#: keymap_alldefs.h:194
+ msgid "make decrypted copy and delete"
+ msgstr "utwórz rozszyfrowana± kopiê i usuñ orygina³"
+ 
+-#: keymap_alldefs.h:196
++#: keymap_alldefs.h:195
+ msgid "make decrypted copy"
+ msgstr "utwórz rozszyfrowan± kopiê"
+ 
+-#: keymap_alldefs.h:197
++#: keymap_alldefs.h:196
+ msgid "wipe passphrase(s) from memory"
+ msgstr "wyma¿ has³o z pamiêci operacyjnej"
+ 
+-#: keymap_alldefs.h:198
++#: keymap_alldefs.h:197
+ msgid "extract supported public keys"
+ msgstr "kopiuj klucze publiczne"
+ 
+-#: keymap_alldefs.h:199
++#: keymap_alldefs.h:198
+ msgid "show S/MIME options"
+ msgstr "poka¿ opcje S/MIME"
+ 
+@@ -2530,159 +2415,24 @@ msgid "Out of memory!"
+ msgstr "Brak pamiêci!"
+ 
+ #: main.c:51
+-msgid ""
+-"To contact the developers, please mail to <mutt-dev@mutt.org>.\n"
+-"To report a bug, please use the flea(1) utility.\n"
+-msgstr ""
+-"Aby powiadomiæ autorów, proszê pisaæ na <mutt-dev@mutt.org>.\n"
+-"Aby zg³osiæ b³±d u¿yj programu flea(1).\n"
++msgid "To contact the developers, please mail to <mutt-dev@mutt.org>.\nTo report a bug, please use the flea(1) utility.\n"
++msgstr "Aby powiadomiæ autorów, proszê pisaæ na <mutt-dev@mutt.org>.\nAby zg³osiæ b³±d u¿yj programu flea(1).\n"
+ 
+ #: main.c:55
+-msgid ""
+-"Copyright (C) 1996-2002 Michael R. Elkins and others.\n"
+-"Mutt comes with ABSOLUTELY NO WARRANTY; for details type `mutt -vv'.\n"
+-"Mutt is free software, and you are welcome to redistribute it\n"
+-"under certain conditions; type `mutt -vv' for details.\n"
+-msgstr ""
+-"Copyright (C) 1996-2002 Michael R. Elkins i inni.\n"
+-"Program nie jest objêty ¯ADN¡ gwarancj±; szczegó³y poznasz pisz±c 'mutt -"
+-"vv'.\n"
+-"Mutt jest darmowym oprogramowaniem, jeste¶ jak najbardziej uprawniony do\n"
+-"jego redystrybucji pod pewnymi warunkami, szczegó³y poznasz pisz±c 'mutt -"
+-"vv'.\n"
++msgid "Copyright (C) 1996-2002 Michael R. Elkins and others.\nMutt comes with ABSOLUTELY NO WARRANTY; for details type `mutt -vv'.\nMutt is free software, and you are welcome to redistribute it\nunder certain conditions; type `mutt -vv' for details.\n"
++msgstr "Copyright (C) 1996-2002 Michael R. Elkins i inni.\nProgram nie jest objêty ¯ADN¡ gwarancj±; szczegó³y poznasz pisz±c 'mutt -vv'.\nMutt jest darmowym oprogramowaniem, jeste¶ jak najbardziej uprawniony do\njego redystrybucji pod pewnymi warunkami, szczegó³y poznasz pisz±c 'mutt -vv'.\n"
+ 
+ #: main.c:61
+-msgid ""
+-"Copyright (C) 1996-2002 Michael R. Elkins <me@mutt.org>\n"
+-"Copyright (C) 1996-2002 Brandon Long <blong@fiction.net>\n"
+-"Copyright (C) 1997-2002 Thomas Roessler <roessler@does-not-exist.org>\n"
+-"Copyright (C) 1998-2002 Werner Koch <wk@isil.d.shuttle.de>\n"
+-"Copyright (C) 1999-2002 Brendan Cully <brendan@kublai.com>\n"
+-"Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\n"
+-"Copyright (C) 2000-2002 Edmund Grimley Evans <edmundo@rano.org>\n"
+-"\n"
+-"Lots of others not mentioned here contributed lots of code,\n"
+-"fixes, and suggestions.\n"
+-"\n"
+-"    This program is free software; you can redistribute it and/or modify\n"
+-"    it under the terms of the GNU General Public License as published by\n"
+-"    the Free Software Foundation; either version 2 of the License, or\n"
+-"    (at your option) any later version.\n"
+-"\n"
+-"    This program is distributed in the hope that it will be useful,\n"
+-"    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+-"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+-"    GNU General Public License for more details.\n"
+-"\n"
+-"    You should have received a copy of the GNU General Public License\n"
+-"    along with this program; if not, write to the Free Software\n"
+-"    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.\n"
+-msgstr ""
+-"Copyright (C) 1996-2002 Michael R. Elkins <me@mutt.org>\n"
+-"Copyright (C) 1996-2002 Brandon Long <blong@fiction.net>\n"
+-"Copyright (C) 1997-2002 Thomas Roessler <roessler@does-not-exist.org>\n"
+-"Copyright (C) 1998-2002 Werner Koch <wk@isil.d.shuttle.de>\n"
+-"Copyright (C) 1999-2002 Brendan Cully <brendan@kublai.com>\n"
+-"Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\n"
+-"Copyright (C) 2000-2002 Edmund Grimley Evans <edmundo@rano.org>\n"
+-"\n"
+-"Wielu innych twórców, nie wspomnianych tutaj,\n"
+-"wnios³o wiele nowego kodu, poprawek i sugestii.\n"
+-"\n"
+-"   Ten program jest darmowy; mo¿esz rozprowadzaæ go i/lub modyfikowaæ\n"
+-"   zachowuj±c warunki Powszechnej Licencji Publicznej GNU (General Public\n"
+-"   Licence), opublikowanej przez Free Software Foundation, w wersji 2\n"
+-"   lub wy¿szej.\n"
+-"\n"
+-"   Program ten jest rozprowadzany w nadziei, ¿e bêdzie przydatny,\n"
+-"   ale BEZ ¯ADNYCH GWARANCJI, wyra¿onych wprost lub domy¶lnie nawet,\n"
+-"   w tym gwarancji mo¿liwo¶ci SPRZEDA¯Y i PRZYDATNO¦CI DO KONKRETNYCH "
+-"CELÓW.\n"
+-"   Szczegó³y znajdziesz w Powszechnej Licencji Publicznej GNU.\n"
+-"\n"
+-"   W dokumentacji tego programu powinna znajdowaæ siê kopia Powszechnej\n"
+-"   Licencji Publicznej GNU. Je¶li tak nie jest, napisz do Free Software\n"
+-"   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.\n"
++msgid "Copyright (C) 1996-2002 Michael R. Elkins <me@mutt.org>\nCopyright (C) 1996-2002 Brandon Long <blong@fiction.net>\nCopyright (C) 1997-2002 Thomas Roessler <roessler@does-not-exist.org>\nCopyright (C) 1998-2002 Werner Koch <wk@isil.d.shuttle.de>\nCopyright (C) 1999-2002 Brendan Cully <brendan@kublai.com>\nCopyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\nCopyright (C) 2000-2002 Edmund Grimley Evans <edmundo@rano.org>\n\nLots of others not mentioned here contributed lots of code,\nfixes, and suggestions.\n\n    This program is free software; you can redistribute it and/or modify\n    it under the terms of the GNU General Public License as published by\n    the Free Software Foundation; either version 2 of the License, or\n    (at your option) any later version.\n\n    This program is distributed in the hope that it will be useful,\n    but WITHOUT ANY WARRANTY; without even the implied warranty of\n    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n    GNU General Public License for more details.\n\n    You should have received a copy of the GNU General Public License\n    along with this program; if not, write to the Free Software\n    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA.\n"
++msgstr "Copyright (C) 1996-2002 Michael R. Elkins <me@mutt.org>\nCopyright (C) 1996-2002 Brandon Long <blong@fiction.net>\nCopyright (C) 1997-2002 Thomas Roessler <roessler@does-not-exist.org>\nCopyright (C) 1998-2002 Werner Koch <wk@isil.d.shuttle.de>\nCopyright (C) 1999-2002 Brendan Cully <brendan@kublai.com>\nCopyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\nCopyright (C) 2000-2002 Edmund Grimley Evans <edmundo@rano.org>\n\nWielu innych twórców, nie wspomnianych tutaj,\nwnios³o wiele nowego kodu, poprawek i sugestii.\n\n   Ten program jest darmowy; mo¿esz rozprowadzaæ go i/lub modyfikowaæ\n   zachowuj±c warunki Powszechnej Licencji Publicznej GNU (General Public\n   Licence), opublikowanej przez Free Software Foundation, w wersji 2\n   lub wy¿szej.\n\n   Program ten jest rozprowadzany w nadziei, ¿e bêdzie przydatny,\n   ale BEZ ¯ADNYCH GWARANCJI, wyra¿onych wprost lub domy¶lnie nawet,\n   w tym gwarancji mo¿liwo¶ci SPRZEDA¯Y i PRZYDATNO¦CI DO KONKRETNYCH CELÓW.\n   Szczegó³y znajdziesz w Powszechnej Licencji Publicznej GNU.\n\n   W dokumentacji tego programu powinna znajdowaæ siê kopia Powszechnej\n   Licencji Publicznej GNU. Je¶li tak nie jest, napisz do Free Software\n   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.\n"
+ 
+ #: main.c:99
+-#, fuzzy
+-msgid ""
+-"usage: mutt [ -nRyzZ ] [ -e <cmd> ] [ -F <file> ] [ -m <type> ] [ -f "
+-"<file> ]\n"
+-"       mutt [ -nR ] [ -e <cmd> ] [ -F <file> ] -Q <query> [ -Q <query> ] "
+-"[...]\n"
+-"       mutt [ -nR ] [ -e <cmd> ] [ -F <file> ] -A <alias> [ -A <alias> ] "
+-"[...]\n"
+-"       mutt [ -nx ] [ -e <cmd> ] [ -a <file> ] [ -F <file> ] [ -H <file> ] "
+-"[ -i <file> ] [ -s <subj> ] [ -b <addr> ] [ -c <addr> ] <addr> [ ... ]\n"
+-"       mutt [ -n ] [ -e <cmd> ] [ -F <file> ] -p\n"
+-"       mutt -v[v]\n"
+-"\n"
+-"options:\n"
+-"  -A <alias>\texpand the given alias\n"
+-"  -a <file>\tattach a file to the message\n"
+-"  -b <address>\tspecify a blind carbon-copy (BCC) address\n"
+-"  -c <address>\tspecify a carbon-copy (CC) address\n"
+-"  -e <command>\tspecify a command to be executed after initialization\n"
+-"  -f <file>\tspecify which mailbox to read\n"
+-"  -F <file>\tspecify an alternate muttrc file\n"
+-"  -H <file>\tspecify a draft file to read header and body from\n"
+-"  -i <file>\tspecify a file which Mutt should include in the body\n"
+-"  -m <type>\tspecify a default mailbox type\n"
+-"  -n\t\tcauses Mutt not to read the system Muttrc\n"
+-"  -p\t\trecall a postponed message\n"
+-"  -Q <variable>\tquery a configuration variable\n"
+-"  -R\t\topen mailbox in read-only mode\n"
+-"  -s <subj>\tspecify a subject (must be in quotes if it has spaces)\n"
+-"  -v\t\tshow version and compile-time definitions\n"
+-"  -x\t\tsimulate the mailx send mode\n"
+-"  -y\t\tselect a mailbox specified in your `mailboxes' list\n"
+-"  -z\t\texit immediately if there are no messages in the mailbox\n"
+-"  -Z\t\topen the first folder with new message, exit immediately if none\n"
+-"  -h\t\tthis help message"
+-msgstr ""
+-"u¿ycie: mutt [ -nRyzZ ] [ -e <polec> ] [ -F <plik> ] [ -m <typ> ] [ -f "
+-"<plik> ]\n"
+-"        mutt [ -nR ] [ -e <polec> ] [ -F <plik> ] -Q <pytanie> [ -Q "
+-"<pytanie> ] [...]\n"
+-"        mutt [ -nR ] [ -e <polec> ] [ -F <plik> ] -A <alias> [ -A <alias> ] "
+-"[...]\n"
+-"        mutt [ -nx ] [ -e <polec> ] [ -F <plik> ] [ -a <plik> ] [ -H "
+-"<plik> ] [ -i <plik> ] [ -s <tytu³> ] [ -b <adres> ] [ -c <adres> ] <adres> "
+-"[ ... ]\n"
+-"        mutt [ -n ]  [ -e <polec> ] [ -F <plik> ] -p\n"
+-"        mutt -v[v]\n"
+-"\n"
+-"opcje:\n"
+-"  -A <alias>\tu¿yj aliasu\n"
+-"  -a <plik>\tdo³±cz plik do listu\n"
+-"  -b <adres>\tpodaj adres blind carbon-copy (BCC)\n"
+-"  -c <adres>\tpodaj adres carbon-copy (CC)\n"
+-"  -e <polec>\tpodaj polecenie do wykonania po inicjalizacji\n"
+-"  -f <plik>\totwórz najpierw t± skrzynkê\n"
+-"  -F <plik>\tu¿yj alternatywnego pliku muttrc\n"
+-"  -H <plik>\tczytaj nag³ówki z pliku\n"
+-"  -i <plik>\twstaw ten plik w odpowiedzi\n"
+-"  -m <typ>\tpodaj typ skrzynki\n"
+-"  -n\t\tnie czytaj systemowego Muttrc\n"
+-"  -p\t\tponownie edytuj zarzucony list\n"
+-"  -Q <zmienna>\tpodaj warto¶æ zmiennej konfiguracyjnej\n"
+-"  -R\t\totwórz skrzynkê w trybie tylko do odczytu\n"
+-"  -s <tytu³>\tpodaj tytu³ (musi byæ w apostrofach, je¶li zawiera spacje)\n"
+-"  -v\t\tpoka¿ wersjê i wkompilowane parametry\n"
+-"  -x\t\tsymuluj zachowanie mailx\n"
+-"  -y\t\twybierz skrzynkê podan± w twojej li¶cie `mailboxes'\n"
+-"  -z\t\twyjd¼ natychmiast je¶li brak nowych listów w skrzynce\n"
+-"  -Z\t\totwórz pierwsz± skrzynkê z nowym listem i wyjd¼ je¶li brak nowych\n"
+-"  -h\t\tten tekst"
++msgid "usage: mutt [ -nRyzZ ] [ -e <cmd> ] [ -F <file> ] [ -m <type> ] [ -f <file> ]\n       mutt [ -nR ] [ -e <cmd> ] [ -F <file> ] -Q <query> [ -Q <query> ] [...]\n       mutt [ -nR ] [ -e <cmd> ] [ -F <file> ] -A <alias> [ -A <alias> ] [...]\n       mutt [ -nx ] [ -e <cmd> ] [ -a <file> ] [ -F <file> ] [ -H <file> ] [ -i <file> ] [ -s <subj> ] [ -b <addr> ] [ -c <addr> ] <addr> [ ... ]\n       mutt [ -n ] [ -e <cmd> ] [ -F <file> ] -p\n       mutt -v[v]\n\noptions:\n  -A <alias>\texpand the given alias\n  -a <file>\tattach a file to the message\n  -b <address>\tspecify a blind carbon-copy (BCC) address\n  -c <address>\tspecify a carbon-copy (CC) address\n  -e <command>\tspecify a command to be executed after initialization\n  -f <file>\tspecify which mailbox to read\n  -F <file>\tspecify an alternate muttrc file\n  -H <file>\tspecify a draft file to read header and body from\n  -i <file>\tspecify a file which Mutt should include in the body\n  -m <type>\tspecify a default mailbox type\n  -n\t\tcauses Mutt not to read the system Muttrc\n  -p\t\trecall a postponed message\n  -Q <variable>\tquery a configuration variable\n  -R\t\topen mailbox in read-only mode\n  -s <subj>\tspecify a subject (must be in quotes if it has spaces)\n  -v\t\tshow version and compile-time definitions\n  -x\t\tsimulate the mailx send mode\n  -y\t\tselect a mailbox specified in your `mailboxes' list\n  -z\t\texit immediately if there are no messages in the mailbox\n  -Z\t\topen the first folder with new message, exit immediately if none\n  -h\t\tthis help message"
++msgstr "u¿ycie: mutt [ -nRyzZ ] [ -e <polec> ] [ -F <plik> ] [ -m <typ> ] [ -f <plik> ]\n        mutt [ -nR ] [ -e <polec> ] [ -F <plik> ] -Q <pytanie> [ -Q <pytanie> ] [...]\n        mutt [ -nR ] [ -e <polec> ] [ -F <plik> ] -A <alias> [ -A <alias> ] [...]\n        mutt [ -nx ] [ -e <polec> ] [ -F <plik> ] [ -a <plik> ] [ -H <plik> ] [ -i <plik> ] [ -s <tytu³> ] [ -b <adres> ] [ -c <adres> ] <adres> [ ... ]\n        mutt [ -n ]  [ -e <polec> ] [ -F <plik> ] -p\n        mutt -v[v]\n\nopcje:\n  -A <alias>\tu¿yj aliasu\n  -a <plik>\tdo³±cz plik do listu\n  -b <adres>\tpodaj adres blind carbon-copy (BCC)\n  -c <adres>\tpodaj adres carbon-copy (CC)\n  -e <polec>\tpodaj polecenie do wykonania po inicjalizacji\n  -f <plik>\totwórz najpierw t± skrzynkê\n  -F <plik>\tu¿yj alternatywnego pliku muttrc\n  -H <plik>\twczytaj szablon nag³ówków i tre¶ci listu z pliku\n  -i <plik>\twstaw ten plik w odpowiedzi\n  -m <typ>\tpodaj typ skrzynki\n  -n\t\tnie czytaj systemowego Muttrc\n  -p\t\tponownie edytuj zarzucony list\n  -Q <zmienna>\tpodaj warto¶æ zmiennej konfiguracyjnej\n  -R\t\totwórz skrzynkê w trybie tylko do odczytu\n  -s <tytu³>\tpodaj tytu³ (musi byæ w apostrofach, je¶li zawiera spacje)\n  -v\t\tpoka¿ wersjê i wkompilowane parametry\n  -x\t\tsymuluj zachowanie mailx\n  -y\t\twybierz skrzynkê podan± w twojej li¶cie `mailboxes'\n  -z\t\twyjd¼ natychmiast je¶li brak nowych listów w skrzynce\n  -Z\t\totwórz pierwsz± skrzynkê z nowym listem i wyjd¼ je¶li brak nowych\n  -h\t\tten tekst"
+ 
+ #: main.c:167
+-msgid ""
+-"\n"
+-"Compile options:"
+-msgstr ""
+-"\n"
+-"Parametry kompilacji:"
++msgid "\nCompile options:"
++msgstr "\nParametry kompilacji:"
+ 
+ #: main.c:478
+ msgid "Error initializing terminal."
+@@ -2755,9 +2505,7 @@ msgstr "Nie mo¿na zablokowaæ skrzynki po
+ #.
+ #: mbox.c:754
+ msgid "sync: mbox modified, but no modified messages! (report this bug)"
+-msgstr ""
+-"sync: skrzynka zmodyfikowana, ale ¿aden z listów nie zosta³ zmieniony! "
+-"(zg³o¶ ten b³±d)"
++msgstr "sync: skrzynka zmodyfikowana, ale ¿aden z listów nie zosta³ zmieniony! (zg³o¶ ten b³±d)"
+ 
+ #: mbox.c:793
+ #, c-format
+@@ -2792,72 +2540,72 @@ msgstr "Przeskocz do: "
+ msgid "Invalid index number."
+ msgstr "Niew³a¶ciwy numer indeksu."
+ 
+-#: menu.c:429 menu.c:450 menu.c:488 menu.c:531 menu.c:547 menu.c:558
+-#: menu.c:569 menu.c:611 menu.c:622 menu.c:635 menu.c:648 menu.c:1043
++#: menu.c:429 menu.c:447 menu.c:483 menu.c:526 menu.c:542 menu.c:553
++#: menu.c:564 menu.c:606 menu.c:617 menu.c:630 menu.c:643 menu.c:1038
+ msgid "No entries."
+ msgstr "Brak pozycji."
+ 
+-#: menu.c:447
++#: menu.c:444
+ msgid "You cannot scroll down farther."
+ msgstr "Nie mo¿na ni¿ej przewin±æ."
+ 
+-#: menu.c:465
++#: menu.c:460
+ msgid "You cannot scroll up farther."
+ msgstr "Nie mo¿na wy¿ej przewin±æ."
+ 
+-#: menu.c:485
++#: menu.c:480
+ msgid "You are on the last page."
+ msgstr "To jest ostatnia strona."
+ 
+-#: menu.c:509
++#: menu.c:504
+ msgid "You are on the first page."
+ msgstr "To jest pierwsza strona."
+ 
+-#: menu.c:588
++#: menu.c:583
+ msgid "First entry is shown."
+ msgstr "Pokazana jest pierwsza pozycja."
+ 
+-#: menu.c:608
++#: menu.c:603
+ msgid "Last entry is shown."
+ msgstr "Pokazana jest ostatnia pozycja."
+ 
+-#: menu.c:659
++#: menu.c:654
+ msgid "You are on the last entry."
+ msgstr "To jest ostatnia pozycja."
+ 
+-#: menu.c:670
++#: menu.c:665
+ msgid "You are on the first entry."
+ msgstr "To jest pierwsza pozycja."
+ 
+-#: menu.c:730 pattern.c:1242
++#: menu.c:725 pattern.c:1242
+ msgid "Search for: "
+ msgstr "Szukaj frazy: "
+ 
+-#: menu.c:731 pattern.c:1243
++#: menu.c:726 pattern.c:1243
+ msgid "Reverse search for: "
+ msgstr "Szukaj frazy w przeciwnym kierunku: "
+ 
+-#: menu.c:741 pattern.c:1275
++#: menu.c:736 pattern.c:1275
+ msgid "No search pattern."
+ msgstr "Nie ustalono wzorca poszukiwañ."
+ 
+-#: menu.c:771 pager.c:1931 pager.c:1947 pager.c:2055 pattern.c:1340
++#: menu.c:766 pager.c:1931 pager.c:1947 pager.c:2055 pattern.c:1340
+ msgid "Not found."
+ msgstr "Nic nie znaleziono."
+ 
+-#: menu.c:895
++#: menu.c:890
+ msgid "No tagged entries."
+ msgstr "Brak zaznaczonych pozycji listy."
+ 
+-#: menu.c:1000
++#: menu.c:995
+ msgid "Search is not implemented for this menu."
+ msgstr "Poszukiwanie nie jest mo¿liwe w tym menu."
+ 
+-#: menu.c:1005
++#: menu.c:1000
+ msgid "Jumping is not implemented for dialogs."
+ msgstr "Przeskakiwanie nie jest mo¿liwe w oknach dialogowych."
+ 
+-#: menu.c:1046
++#: menu.c:1041
+ msgid "Tagging is not supported."
+ msgstr "Zaznaczanie nie jest obs³ugiwane."
+ 
+@@ -2992,7 +2740,6 @@ msgid "Unknown"
+ msgstr "Nieznany"
+ 
+ #: mutt_ssl.c:413
+-#, c-format
+ msgid "[unable to calculate]"
+ msgstr "[niemo¿liwe do wyznaczenia]"
+ 
+@@ -3017,7 +2764,6 @@ msgid "This certificate was issued by:"
+ msgstr "Ten certyfikat zosta³ wydany przez:"
+ 
+ #: mutt_ssl.c:608
+-#, c-format
+ msgid "This certificate is valid"
+ msgstr "Ten certyfikat jest wa¿ny"
+ 
+@@ -3270,7 +3016,6 @@ msgid "%c: not supported in this mode"
+ msgstr "%c: nie obs³ugiwane w tym trybie"
+ 
+ #: pattern.c:807
+-#, c-format
+ msgid "missing parameter"
+ msgstr "brakuj±cy parametr"
+ 
+@@ -3325,32 +3070,20 @@ msgid "[-- Error: unable to create PGP s
+ msgstr "[-- B³±d: nie mo¿na utworzyæ podprocesu PGP! --]\n"
+ 
+ #: pgp.c:379 pgp.c:596 pgp.c:797
+-msgid ""
+-"[-- End of PGP output --]\n"
+-"\n"
+-msgstr ""
+-"[-- Koniec komunikatów PGP --]\n"
+-"\n"
++msgid "[-- End of PGP output --]\n\n"
++msgstr "[-- Koniec komunikatów PGP --]\n\n"
+ 
+ #: pgp.c:394
+-msgid ""
+-"[-- BEGIN PGP MESSAGE --]\n"
+-"\n"
+-msgstr ""
+-"[-- POCZ¡TEK LISTU PGP --]\n"
+-"\n"
++msgid "[-- BEGIN PGP MESSAGE --]\n\n"
++msgstr "[-- POCZ¡TEK LISTU PGP --]\n\n"
+ 
+ #: pgp.c:396
+ msgid "[-- BEGIN PGP PUBLIC KEY BLOCK --]\n"
+ msgstr "[-- POCZ¡TEK KLUCZA PUBLICZNEGO PGP --]\n"
+ 
+ #: pgp.c:398
+-msgid ""
+-"[-- BEGIN PGP SIGNED MESSAGE --]\n"
+-"\n"
+-msgstr ""
+-"[-- POCZ¡TEK LISTU PODPISANEGO PGP --]\n"
+-"\n"
++msgid "[-- BEGIN PGP SIGNED MESSAGE --]\n\n"
++msgstr "[-- POCZ¡TEK LISTU PODPISANEGO PGP --]\n\n"
+ 
+ #: pgp.c:423
+ msgid "[-- END PGP MESSAGE --]\n"
+@@ -3365,44 +3098,28 @@ msgid "[-- END PGP SIGNED MESSAGE --]\n"
+ msgstr "[-- KONIEC LISTU PODPISANEGO PGP --]\n"
+ 
+ #: pgp.c:454
+-msgid ""
+-"[-- Error: could not find beginning of PGP message! --]\n"
+-"\n"
+-msgstr ""
+-"[-- B³±d: nie mo¿na odnale¼æ pocz±tku listu PGP! --]\n"
+-"\n"
++msgid "[-- Error: could not find beginning of PGP message! --]\n\n"
++msgstr "[-- B³±d: nie mo¿na odnale¼æ pocz±tku listu PGP! --]\n\n"
+ 
+ #: pgp.c:704
+ msgid "Internal error. Inform <roessler@does-not-exist.org>."
+ msgstr "B³±d wewnêtrzny. Zg³o¶ go pod adres <roessler@does-not-exist.org>."
+ 
+ #: pgp.c:764
+-msgid ""
+-"[-- Error: could not create a PGP subprocess! --]\n"
+-"\n"
+-msgstr ""
+-"[-- B³±d: nie mo¿na utworzyæ podprocesu PGP! --]\n"
+-"\n"
++msgid "[-- Error: could not create a PGP subprocess! --]\n\n"
++msgstr "[-- B³±d: nie mo¿na utworzyæ podprocesu PGP! --]\n\n"
+ 
+ #: pgp.c:873
+-msgid ""
+-"[-- Error: malformed PGP/MIME message! --]\n"
+-"\n"
+-msgstr ""
+-"[-- B³±d: uszkodzony list PGP/MIME! --]\n"
+-"\n"
++msgid "[-- Error: malformed PGP/MIME message! --]\n\n"
++msgstr "[-- B³±d: uszkodzony list PGP/MIME! --]\n\n"
+ 
+ #: pgp.c:886
+ msgid "[-- Error: could not create temporary file! --]\n"
+ msgstr "[-- B³±d: nie mo¿na utworzyæ pliku tymczasowego! --]\n"
+ 
+ #: pgp.c:895
+-msgid ""
+-"[-- The following data is PGP/MIME encrypted --]\n"
+-"\n"
+-msgstr ""
+-"[-- Nastêpuj±ce dane s± zaszyfrowane PGP/MIME --]\n"
+-"\n"
++msgid "[-- The following data is PGP/MIME encrypted --]\n\n"
++msgstr "[-- Nastêpuj±ce dane s± zaszyfrowane PGP/MIME --]\n\n"
+ 
+ #: pgp.c:915
+ msgid "[-- End of PGP/MIME encrypted data --]\n"
+@@ -3426,25 +3143,25 @@ msgstr "Wprowad¼ numer klucza dla %s: "
+ msgid "Can't invoke PGP"
+ msgstr "Nie mo¿na wywo³aæ PGP"
+ 
+-#: pgp.c:1496
++#: pgp.c:1491
+ #, c-format
+ msgid "PGP (e)ncrypt, (s)ign, sign (a)s, (b)oth, %s, or (c)lear? "
+ msgstr "PGP: (z)aszyfruj, podpi(s)z, podpisz j(a)ko, o(b)a, %s , b(e)z PGP? "
+ 
+-#: pgp.c:1497
++#: pgp.c:1492
+ msgid "PGP/M(i)ME"
+ msgstr "PGP/M(i)ME"
+ 
+-#: pgp.c:1497
++#: pgp.c:1492
+ msgid "(i)nline"
+ msgstr "(i)nline"
+ 
+-#: pgp.c:1499
++#: pgp.c:1494
+ msgid "esabifc"
+ msgstr "zsabife"
+ 
+ #. sign (a)s
+-#: pgp.c:1514 smime.c:1981
++#: pgp.c:1509 smime.c:1981
+ msgid "Sign as: "
+ msgstr "Podpisz jako: "
+ 
+@@ -3533,7 +3250,6 @@ msgid "Looking for keys matching \"%s\".
+ msgstr "Wyszukiwanie odpowiednich kluczy dla \"%s\"..."
+ 
+ #: pop.c:90 pop_lib.c:201
+-#, c-format
+ msgid "Command TOP is not supported by server."
+ msgstr "Polecenie TOP nie jest obs³ugiwane przez serwer."
+ 
+@@ -3542,7 +3258,6 @@ msgid "Can't write header to temporary f
+ msgstr "Nie mo¿na zapisaæ nag³ówka do pliku tymczasowego!"
+ 
+ #: pop.c:198 pop_lib.c:203
+-#, c-format
+ msgid "Command UIDL is not supported by server."
+ msgstr "Polecenie UIDL nie jest obs³ugiwane przez serwer."
+ 
+@@ -3606,7 +3321,6 @@ msgid "APOP authentication failed."
+ msgstr "Uwierzytelnianie APOP nie powiod³o siê."
+ 
+ #: pop_auth.c:268
+-#, c-format
+ msgid "Command USER is not supported by server."
+ msgstr "Polecenie USER nie jest obs³ugiwane przez serwer."
+ 
+@@ -3676,7 +3390,6 @@ msgid "Query command not defined."
+ msgstr "Pytanie nie zosta³o okre¶lone."
+ 
+ #: query.c:290
+-#, c-format
+ msgid "Query"
+ msgstr "Pytanie"
+ 
+@@ -3783,8 +3496,7 @@ msgstr "Przes³aæ dalej jako za³±czniki?"
+ 
+ #: recvcmd.c:462
+ msgid "Can't decode all tagged attachments.  MIME-forward the others?"
+-msgstr ""
+-"Nie mo¿na zdekodowaæ zaznaczonych za³. Przes³aæ pozosta³e dalej (MIME)?"
++msgstr "Nie mo¿na zdekodowaæ zaznaczonych za³. Przes³aæ pozosta³e dalej (MIME)?"
+ 
+ #: recvcmd.c:587
+ msgid "Forward MIME encapsulated?"
+@@ -3805,8 +3517,7 @@ msgstr "Nie znaleziono list pocztowych!"
+ 
+ #: recvcmd.c:824
+ msgid "Can't decode all tagged attachments.  MIME-encapsulate the others?"
+-msgstr ""
+-"Nie mo¿na zdekodowaæ wszystkich wybranych za³. Za³±czyæ (MIME) pozosta³e?"
++msgstr "Nie mo¿na zdekodowaæ wszystkich wybranych za³. Za³±czyæ (MIME) pozosta³e?"
+ 
+ #: remailer.c:484
+ msgid "Append"
+@@ -3859,8 +3570,7 @@ msgid "Mixmaster doesn't accept Cc or Bc
+ msgstr "Mixmaster nie akceptuje nag³ówków Cc i Bcc."
+ 
+ #: remailer.c:738
+-msgid ""
+-"Please set the hostname variable to a proper value when using mixmaster!"
++msgid "Please set the hostname variable to a proper value when using mixmaster!"
+ msgstr "Ustaw poprawn± warto¶æ hostname je¶li chcesz u¿ywaæ mixmastera!"
+ 
+ #: remailer.c:772
+@@ -4018,16 +3728,16 @@ msgstr "%s nie jest zwyk³ym plikiem."
+ msgid "Could not open %s"
+ msgstr "Nie mo¿na otworzyæ %s"
+ 
+-#: sendlib.c:2060
++#: sendlib.c:2057
+ #, c-format
+ msgid "Error sending message, child exited %d (%s)."
+ msgstr "B³±d podczas wysy³ania listu, proces potomny zwróci³ %d (%s)."
+ 
+-#: sendlib.c:2066
++#: sendlib.c:2063
+ msgid "Output of the delivery process"
+ msgstr "Wynik procesu dostarczania"
+ 
+-#: sendlib.c:2272
++#: sendlib.c:2267
+ #, c-format
+ msgid "Bad IDN %s while preparing resent-from."
+ msgstr "B³êdny IDN %s w trakcie przygotowywania resent-from."
+@@ -4106,9 +3816,7 @@ msgstr "U¿yæ identyfikatora %s dla %s ?"
+ #: smime.c:637
+ #, c-format
+ msgid "Warning: You have not yet decided to trust ID %s. (any key to continue)"
+-msgstr ""
+-"Ostrze¿enie: nie oke¶lono poziomu zaufania dla %s (dow. klawisz by "
+-"kontynuowaæ)."
++msgstr "Ostrze¿enie: nie oke¶lono poziomu zaufania dla %s (dow. klawisz by kontynuowaæ)."
+ 
+ #: smime.c:796
+ #, c-format
+@@ -4145,12 +3853,8 @@ msgid "No output from OpenSSL..."
+ msgstr "Brak wyników dzia³ania OpenSSL..."
+ 
+ #: smime.c:1636 smime.c:1758
+-msgid ""
+-"[-- End of OpenSSL output --]\n"
+-"\n"
+-msgstr ""
+-"[-- Koniec komunikatów OpenSSL --]\n"
+-"\n"
++msgid "[-- End of OpenSSL output --]\n\n"
++msgstr "[-- Koniec komunikatów OpenSSL --]\n\n"
+ 
+ #: smime.c:1719 smime.c:1729
+ msgid "[-- Error: unable to create OpenSSL subprocess! --]\n"
+@@ -4165,34 +3869,23 @@ msgid "[-- The following data is S/MIME 
+ msgstr "[-- Poni¿sze dane s± podpisane S/MIME --]\n"
+ 
+ #: smime.c:1829
+-msgid ""
+-"\n"
+-"[-- End of S/MIME encrypted data. --]\n"
+-msgstr ""
+-"\n"
+-"[-- Koniec danych zaszyfrowanych S/MIME. --]\n"
++msgid "\n[-- End of S/MIME encrypted data. --]\n"
++msgstr "\n[-- Koniec danych zaszyfrowanych S/MIME. --]\n"
+ 
+ #: smime.c:1831
+-msgid ""
+-"\n"
+-"[-- End of S/MIME signed data. --]\n"
+-msgstr ""
+-"\n"
+-"[-- Koniec danych podpisanych S/MIME. --]\n"
++msgid "\n[-- End of S/MIME signed data. --]\n"
++msgstr "\n[-- Koniec danych podpisanych S/MIME. --]\n"
+ 
+ #: smime.c:1935
+-msgid ""
+-"S/MIME (e)ncrypt, (s)ign, encrypt (w)ith, sign (a)s, (b)oth, or (c)lear? "
+-msgstr ""
+-"S/MIME: (z)aszyfruj, (p)odpisz, (m)etoda, podp. (j)ako, (o)ba, (a)nuluj?"
++msgid "S/MIME (e)ncrypt, (s)ign, encrypt (w)ith, sign (a)s, (b)oth, or (c)lear? "
++msgstr "S/MIME: (z)aszyfruj, (p)odpisz, (m)etoda, podp. (j)ako, (o)ba, (a)nuluj?"
+ 
+ #: smime.c:1936
+ msgid "eswabfc"
+ msgstr "zpmjoa"
+ 
+ #: smime.c:1945
+-msgid ""
+-"1: DES, 2: Triple-DES, 3: RC2-40, 4: RC2-64, 5: RC2-128, or (f)orget it? "
++msgid "1: DES, 2: Triple-DES, 3: RC2-40, 4: RC2-64, 5: RC2-128, or (f)orget it? "
+ msgstr "1: DES, 2: Triple-DES, 3: RC2-40, 4: RC2-64, 5: RC2-128, (a)nuluj? "
+ 
+ #: smime.c:1947
+@@ -4217,15 +3910,9 @@ msgstr "(brak skrzynki)"
+ 
+ #: thread.c:1089
+ msgid "Parent message is not visible in this limited view."
+-msgstr ""
+-"Pierwszy list w±tku nie jest widoczny w trybie ograniczonego przegl±dania."
++msgstr "Pierwszy list w±tku nie jest widoczny w trybie ograniczonego przegl±dania."
+ 
+ #: thread.c:1095
+ msgid "Parent message is not available."
+ msgstr "Pierwszy list tego w±tku nie jest dostêpny."
+ 
+-#~ msgid "unspecified protocol error"
+-#~ msgstr "nieznany b³±d protoko³u"
+-
+-#~ msgid "Closing connection to IMAP server..."
+-#~ msgstr "Zamykanie po³±czenia z serwerem IMAP..."
+Index: mutt/po/ru.po
+===================================================================
+RCS file: /home/roessler/cvs/mutt/po/ru.po,v
+retrieving revision 3.26
+retrieving revision 3.27
+diff -u -p -r3.26 -r3.27
+--- mutt/po/ru.po	13 Mar 2005 16:35:34 -0000	3.26
++++ mutt/po/ru.po	22 Mar 2005 19:43:13 -0000	3.27
+@@ -10,10 +10,10 @@
+ #
+ msgid ""
+ msgstr ""
+-"Project-Id-Version: mutt-1.5.8i\n"
++"Project-Id-Version: mutt-1.5.9i\n"
+ "Report-Msgid-Bugs-To: \n"
+ "POT-Creation-Date: 2005-03-13 17:38+0100\n"
+-"PO-Revision-Date: 2005-02-13 11:51+0200\n"
++"PO-Revision-Date: 2005-03-13 19:49+0200\n"
+ "Last-Translator: mutt-ru@woe.spb.ru\n"
+ "Language-Team: RUSSIAN <mutt-ru@woe.spb.ru>\n"
+ "MIME-Version: 1.0\n"
+@@ -213,9 +213,9 @@ msgid "Create is only supported for IMAP
+ msgstr "óÏÚÄÁÎÉÅ ÐÏÄÄÅÒÖÉ×ÁÅÔÓÑ ÔÏÌØËÏ ÄÌÑ ÐÏÞÔÏ×ÙÈ ÑÝÉËÏ× ÎÁ IMAP-ÓÅÒ×ÅÒÁÈ"
+ 
+ #: browser.c:880
+-#, fuzzy
+ msgid "Rename is only supported for IMAP mailboxes"
+-msgstr "óÏÚÄÁÎÉÅ ÐÏÄÄÅÒÖÉ×ÁÅÔÓÑ ÔÏÌØËÏ ÄÌÑ ÐÏÞÔÏ×ÙÈ ÑÝÉËÏ× ÎÁ IMAP-ÓÅÒ×ÅÒÁÈ"
++msgstr ""
++"ðÅÒÅÉÍÅÎÏ×ÁÎÉÅ ÐÏÄÄÅÒÖÉ×ÁÅÔÓÑ ÔÏÌØËÏ ÄÌÑ ÐÏÞÔÏ×ÙÈ ÑÝÉËÏ× ÎÁ IMAP-ÓÅÒ×ÅÒÁÈ"
+ 
+ #: browser.c:901
+ msgid "Delete is only supported for IMAP mailboxes"
+@@ -1410,19 +1410,18 @@ msgid "Mailbox created."
+ msgstr "ðÏÞÔÏ×ÙÊ ÑÝÉË ÓÏÚÄÁÎ."
+ 
+ #: imap/browse.c:325
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename mailbox %s to: "
+-msgstr "óÏÚÄÁÔØ ÐÏÞÔÏ×ÙÊ ÑÝÉË: "
++msgstr "ðÅÒÅÉÍÅÎÏ×ÁÔØ ÐÏÞÔÏ×ÙÊ ÑÝÉË %s ×: "
+ 
+ #: imap/browse.c:338
+-#, fuzzy, c-format
++#, c-format
+ msgid "Rename failed: %s"
+-msgstr "îÅ ÕÄÁÌÏÓØ ÕÓÔÁÎÏ×ÉÔØ SSL-ÓÏÅÄÉÎÅÎÉÅ: %s"
++msgstr "îÅ ÕÄÁÌÏÓØ ÐÅÒÅÉÍÅÎÏ×ÁÔØ: %s"
+ 
+ #: imap/browse.c:343
+-#, fuzzy
+ msgid "Mailbox renamed."
+-msgstr "ðÏÞÔÏ×ÙÊ ÑÝÉË ÓÏÚÄÁÎ."
++msgstr "ðÏÞÔÏ×ÙÊ ÑÝÉË ÐÅÒÅÉÍÅÎÏ×ÁÎ."
+ 
+ #: imap/command.c:294
+ msgid "Mailbox closed"
+@@ -2341,9 +2340,8 @@ msgid "{internal}"
+ msgstr "{×ÎÕÔÒÅÎÎÉÊ}"
+ 
+ #: keymap_alldefs.h:151
+-#, fuzzy
+ msgid "rename the current mailbox (IMAP only)"
+-msgstr "ÕÄÁÌÉÔØ ÔÅËÕÝÉÊ ÐÏÞÔÏ×ÙÊ ÑÝÉË (ÔÏÌØËÏ IMAP)"
++msgstr "ÐÅÒÅÉÍÅÎÏ×ÁÔØ ÔÅËÕÝÉÊ ÐÏÞÔÏ×ÙÊ ÑÝÉË (ÔÏÌØËÏ IMAP)"
+ 
+ #: keymap_alldefs.h:152
+ msgid "reply to a message"

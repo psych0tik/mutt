@@ -1,14 +1,14 @@
-diff -urN mutt-1.5.3.orig/Muttrc.head.in mutt-1.5.3/Muttrc.head.in
---- mutt-1.5.3.orig/Muttrc.head.in	2000-03-20 11:25:49.000000000 +0100
-+++ mutt-1.5.3/Muttrc.head.in	2003-01-12 17:16:41.000000000 +0100
-@@ -6,6 +6,38 @@
+diff -ruN mutt-1.5.9.orig/Muttrc.head.in mutt-1.5.9/Muttrc.head.in
+--- mutt-1.5.9.orig/Muttrc.head.in	2002-01-24 13:10:47.000000000 +0100
++++ mutt-1.5.9/Muttrc.head.in	2005-04-10 13:54:02.000000000 +0200
+@@ -6,6 +6,41 @@
  #
  ignore "from " received content- mime-version status x-status message-id
  ignore sender references return-path lines
 +ignore date delivered-to precedence errors-to in-reply-to user-agent
-+ignore x-loop x-sender x-mailer x-msmail-priority x-mimeole x-priority
-+ignore x-accept-language x-authentication-warning thread- priority
-+ignore domainkey-signature
++ignore x-loop x-sender x-mailer x-msmail-priority x-mimeole x-ms- x-priority
++ignore x-accept-language x-authentication-warning thread- priority importance
++ignore x-original-to domainkey-signature
 +
 +# emacs-like bindings
 +bind editor    "\e<delete>"    kill-word
@@ -21,6 +21,9 @@ diff -urN mutt-1.5.3.orig/Muttrc.head.in mutt-1.5.3/Muttrc.head.in
 +#set pager_stop
 +#bind pager <up> previous-line
 +#bind pager <down> next-line
++
++# restore the behaviour of mutt versions up to 1.5.7
++set menu_move_off
 +
 +# don't add the hostname to the From header
 +unset use_domain
@@ -40,11 +43,8 @@ diff -urN mutt-1.5.3.orig/Muttrc.head.in mutt-1.5.3/Muttrc.head.in
  
  # imitate the old search-body function
  macro index \eb '/~b ' 'search in message bodies'
-@@ -13,11 +44,20 @@
- # simulate the old url menu
- macro index \cb |urlview\n 'call urlview to extract URLs out of a message'
+@@ -15,9 +50,17 @@
  macro pager \cb |urlview\n 'call urlview to extract URLs out of a message'
-+set pipe_decode
  
  # Show documentation when pressing F1
 -macro generic <f1> "!less @docdir@/manual.txt\n" "Show Mutt documentation"
@@ -64,7 +64,7 @@ diff -urN mutt-1.5.3.orig/Muttrc.head.in mutt-1.5.3/Muttrc.head.in
  
  # If Mutt is unable to determine your site's domain name correctly, you can
  # set the default here.
-@@ -28,7 +68,22 @@
+@@ -28,7 +71,22 @@
  #
  # set use_8bitmime
  
