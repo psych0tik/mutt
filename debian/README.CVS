@@ -1,0 +1,25 @@
+#!/bin/sh -e
+# you can use this script to build the CVS source tarball
+
+cd upstream/tarballs/
+cvs -z3 -d :pserver:anonymous@cvs.mutt.org:/home/roessler/cvs co mutt
+cd mutt/
+./prepare
+make distclean
+rm -rf autom4te.cache/ doc/instdoc.sh imap/Makefile
+cd ..
+tar czf mutt-1.5.4+$(date +%Y%m%d).tar.gz mutt/
+rm -rf mutt/
+exit 0
+
+# update procedure:
+cd upstream/tarballs/
+tar xzf mutt-*.tar.gz 
+rm mutt-*.tar.gz 
+cd mutt/
+cvs -z3 update
+# run ./prepare etc if appropriate
+cd ..
+tar czf mutt-1.5.4+$(date +%Y%m%d).tar.gz mutt/
+rm -rf mutt/
+

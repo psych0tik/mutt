@@ -1,0 +1,11 @@
+--- mutt-1.3.25.orig/po/Makefile.in.in	Tue Jan  1 21:17:15 2002
++++ mutt-1.3.25/po/Makefile.in.in	Wed Jan  2 00:53:40 2002
+@@ -85,7 +85,7 @@
+ # otherwise packages like GCC can not be built if only parts of the source
+ # have been downloaded.
+ 
+-$(srcdir)/$(PACKAGE).pot: $(POTFILES) $(srcdir)/POTFILES.in
++$(srcdir)/$(PACKAGE).pot: #$(POTFILES) $(srcdir)/POTFILES.in
+ 	$(XGETTEXT) --default-domain=$(PACKAGE) --directory=$(top_srcdir) \
+ 	  --add-comments --keyword=_ --keyword=N_ \
+ 	  --files-from=$(srcdir)/POTFILES.in \

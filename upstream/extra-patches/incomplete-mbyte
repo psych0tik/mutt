@@ -1,0 +1,55 @@
+# vi: ft=diff
+This is the incomplete multibyte patch by Anders Helmersson
+<anders.helmersson@telia.com>.
+
+It was received at Debian's BTS, Bug#260623.
+
+* Patch last synced with upstream:
+  - Date: 2004-07-22
+  - File: http://bugs.debian.org/cgi-bin/bugreport.cgi/patch-incomplete_multibyte-2?bug=260623&msg=3&att=1
+
+* Changes made:
+  - 2004-07-22: added entry to PATCHES file.
+  - 2004-07-22: adjusted paths in the diff (to apply with patch -p1).
+  
+== END PATCH
+Index: pager.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/pager.c,v
+retrieving revision 3.16
+diff -u -r3.16 pager.c
+--- a/pager.c	12 Jul 2004 13:35:27 -0000	3.16
++++ b/pager.c	21 Jul 2004 08:10:06 -0000
+@@ -972,6 +972,9 @@
+   unsigned char *p;
+   static int b_read;
+ 
++  size_t k, n;
++  wchar_t wc;
++  
+   if (*buf_ready == 0)
+      {
+     buf[blen - 1] = 0;
+@@ -986,6 +989,18 @@
+     b_read = (int) (*last_pos - offset);
+     *buf_ready = 1;
+ 
++    /* trim tail of buf so that it contains complete multibyte characters */
++    for (n = b_read, p = buf; n > 0; p += k, n -= k)
++    {
++      k = mbrtowc (&wc, (char *) p, n, NULL);
++      if (k == -2) 
++	break; 
++      else if (k == -1 || k == 0) 
++	k = 1;
++    }
++    b_read -= n;
++    buf[b_read] = 0;
++    
+     /* copy "buf" to "fmt", but without bold and underline controls */
+     p = buf;
+     while (*p)
+--- mutt.orig/PATCHES   1970-01-01 01:00:00.000000000 +0100
++++ mutt/PATCHES        2003-08-09 15:51:11.000000000 +0200
+@@ -1,0 +1 @@
++patch.helmersson.incomplete-mbyte.2

@@ -1,0 +1,877 @@
+mutt (1.5.8-1) unstable; urgency=low
+
+  * New upstream release, with a CVS pull to get all the translation updates
+    that happen right after a release. New features worth mentioning:
+    + the PGP auto decode patch by Derek Martin has been accepted upstream,
+      so inline PGP messages are automatically verified/decrypted now if
+      $pgp_auto_decode is set. (Closes: #269699)
+    + IDN decoding can be disabled by unseting $use_idn (set by default).
+    + new hook 'send2-hook', which gets executed each time there is a change
+      in a message being composed. This permits, for example, to match against
+      recipients added manually after writing the mail, which wasn't possible
+      with 'send-hook' alone.
+
+  * This version also includes the following fixes:
+    + message flags are not lost after editing a message. (Closes: #275060)
+    + IMAP folder paths ending with the delimiter are trimmed so that they
+      don't fail to open with some servers, e.g. Courier. (Closes: #277665)
+    + the correct charset is used when signing a forwarded message.
+      (Closes: #295528)
+    + correctly forget the S/MIME passphrase. (Closes: #300516)
+
+  * Explicitly pass --enable-inodesort to ./configure, since upstream has
+    disabled it by default in this version.
+
+  * Updated the compressed folders patch to version 1.5.8.
+
+  * Dropped the adjust_line patch from extra-patches/mutt-ja-compat,
+    incorporated upstream. Renamed mutt-ja-compat to assumed-charset, since
+    that's the only patch that remains.
+
+  * Lots of patches in the Debian package have been applied upstream, drop
+    them (16 in total). Worth mentioning is the gnutls patch. The
+    maildir_inode_sort patch has been adopted too, with the static functions
+    no longer being nested, which closes: #287744 (FTBFS with gcc-4.0).
+
+  * Implemented a conf.d style directory for mutt: other packages or local
+    admins may now drop configuration snippets in /etc/Muttrc.d/*.rc and have
+    them sourced at the end of the default Muttrc. (Closes: #285574)
+
+  * Updated the header cache patch to version 28. The size of this patch has
+    been drastically reduced, since the generic code and the IMAP support has
+    been incorporated upstream.
+
+  * Updated the compressed folders patch to version 1.5.7.
+
+  * Dropped the adjust_edited_file patch from extra-patches/mutt-ja-compat,
+    incorporated upstream.
+
+  * Use mixmaster-filter by default. (Closes: #299060)
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Fri, 25 Mar 2005 21:55:52 +0100
+
+mutt (1.5.6-20040907+3) unstable; urgency=high
+
+  * Upload targeted at sarge to include some must-have fixes.
+
+  * Include small patch to fix imap-related segfaults in ia64, due to a buffer
+    length being declared as int instead of size_t in the gnutls patch. Thanks
+    to David Mosberger for spotting the problem. (Closes: #234783, #285001)
+    [New file: upstream/extra-patches/gnutls.59.size_t-fix]
+
+  * Include (finally!) a patch that really prevents decrypt-save from deleting
+    the message if the supplied password was wrong. (Closes: #275188)
+    [New file: upstream/patches/decrypt-save_non-empty-output]
+
+  * Updated the header-cache patch to version 25, which includes a fix to make
+    it possible for hcache to talk to broken Lotus IMAP servers. (Closes: #282451)
+    [Modified file: upstream/extra-patches/header-cache]
+
+  * The mutt BTS has been closed due to excessive spam in their debbugs
+    installation. Included the patch that substitutes flea and flea.1 by a
+    note that states so.
+    [New file: upstream/patches/empty-muttbug,
+     removed file: debian/patches/080_Md.muttbug]
+
+  * Removed /usr/share/bug/mutt/presubj, now useless.
+
+  * Added Domainkey-Signature to the list of ignored headers.
+    [Modified file: debian/patches/080_Md.Muttrc]
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Fri, 28 Jan 2005 19:02:58 +0100
+
+mutt (1.5.6-20040907+2) unstable; urgency=medium
+
+  * A "Let's procrastinate some important stuff and fix a bunch of mutt bugs
+    instead" release.
+
+  * Include small patch to fix the Swedish translation, which was making
+    impossible to turn off pgp signing and/or encrypting. (Closes: #281265)
+    [New file: upstream/patches/i18n-sv-fix.diff]
+
+  * Make the default Muttrc work out the box for people using gnupg-agent.
+    Wrote and applied a one-line patch to make the %?p? conditional escape
+    work correctly, patch forwarded upstream. (Closes: #277646)
+    [New file: debian/patches/patch.asp.%p-escape-agent-compatible.1]
+
+  * Relocate the definition of the USE_GNUTLS macro, so that it gets passed to
+    the documentation build process too. Otherwise, options that end up in the
+    manual wouldn't match those that are really compiled in. (Closes: #278124)
+    [Modified files: debian/rules, upstream/extra-patches/gnutls.debian]
+
+  * Honour /etc/alternatives/pager in the muttbug script. (Closes: #275448)
+    [Modified file: debian/patches/080_Md.muttbug]
+
+  * Include patch by Nicolas François <nicolas.francois@centraliens.net> to
+    fix typo in muttrc.5. (Closes: #272579)
+    [New file: debian/patches/patch.nf.fix-bug-272579.1]
+
+  * Updated the (formerly unmaintained) current-shortcut patch with a new
+    version by Christoph Berg <cb@df7cb.de>. Now the actual used Fcc will be
+    shown instead of '^' when you folder-hook . 'set record="^"'.
+    [Modified file: upstream/extra-patches/current-shortcut]
+
+  * Updated the header-cache patch to version 24.
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Wed, 17 Nov 2004 15:17:14 +0100
+
+mutt (1.5.6-20040907+1) unstable; urgency=low
+
+  * Updated to CVS snapshot 20040907 (includes updated ja translation).
+
+  * The maildir-mtime patch is now NOT enabled by default, you need to set the
+    maildir_mtime variable in your ~/.muttrc. This variable has been necessary
+    since people with large maildirs over NFS experienced a large performance
+    impact with the mtime patch enabled. (Closes: #253261)
+
+  * Updated the header cache patch to version 21. This fixes a file descriptor
+    leak which could cause problems for people who keep their mutt open for a
+    long time. Also includes support for per-folder cache: setting $header_cache
+    to a directory will enable it, and you should experience some performance
+    gains.
+
+  * Included the current shortcut patch. It's completely unintrusive and
+    allows you to specify ^ as a shortcut for the current folder (e.g., in a
+    Fcc). (Closes: #253104)
+
+  * Updated the autotools stuff. Include in it also stuff from patches, so
+    that --enable-foo options can be used in debian/rules. Put files directly
+    in extra/autotools and cp from there in debian/rules instead of using a
+    patch file (which was too big due to automake1.4/autoconf2.13 => 1.8/2.50
+    migration).
+
+  * debian/rules:
+    + use --enable-compresed --enable-hcache --without-gdbm in configure.
+    + copy autotools files from extra/autotools when unpacking, and emulate
+      the 000_Md.config.h.in patch.
+
+  * debian/patches/:
+    + removed 000_Md.config.h.in, no longer needed since config.h.in is now
+      overwritten from extra/autotools.
+    + added patch.asp.fix-bug-266493.1, which makes mutt not wait for a
+      keypress to handle SIGWINCH in certain situations. (Closes: #123943,
+      #266493)
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Tue, 21 Sep 2004 01:39:22 +0200
+
+mutt (1.5.6-20040818+1) unstable; urgency=low
+
+  * The post-Sarge era officially begins for mutt. This mostly means
+    that patch inclusion policy will untighten a bit.
+
+  * Added the maildir/imap header caching patch by Thomas Glanzmann, see:
+    <http://wwwcip.informatik.uni-erlangen.de/~sithglan/mutt>. For a quick
+    start, read documentation for the $header_cache variable.
+    (Closes: #242762, #255475)
+
+  * Added the maildir-mtime patch by Dale Woolridge, see
+    <http://www.mutt.ca/maildir-mtime.html>. This patch should make happy
+    users that use maildir and have $sort_browser=reverse-date.
+    (Closes: #253261)
+
+  * Reorganized patches location:
+    + patches not written by the mutt maintainers are now in the
+      upstream/extra-patches directory.
+    + each patch in that directory now contains a preamble listing:
+      - the patch author
+      - the patch home page
+      - last time patch was updated
+      - exact URL to the patch file
+      - applied changes, if any
+    + all preambles are available in the doc/README.Patches file, and
+      debian/copyright now points to this file too.
+
+  * Other changes in upstream/extra-patches/:
+    + updated the edit-threads patch.
+    + updated the compressed-folders patch.
+
+  * Updated to CVS snapshot 20040818:
+    + various memory leaks spotted and fixed.
+    + several translations updated: pl, sv, fr, id, nl, de, ca, cs.
+      The Czech translation addresses a bad chosen shorcut in the crypt menu,
+      and thus closes: #140639. Updated German translation closes: #265120.
+    + fix some UI flaws in the new PGP and S/MIME menus which could easily
+      make the user send in clear mail which was meant to be signed and/or
+      encrypted (the (e)ncrypt, (s)ign and (b)oth commands were toggles).
+      Also renamed the (f)orget action to (c)lear for newbie's benefit; accept
+      the (f) key for long time users' benefit.
+    + make mutt not hang if STARTTLS fails to complete the SSL handshake.
+    + try all methods in $imap_authenticators when one of them fails;
+      previously mutt would give up upon the first of them failing.
+
+  * debian/:
+    + scripts/vars: add upstream/extra-patches to SRC_PATCH_DIR.
+    + control: Build-Depend on libdb4.2-dev for the header-cache patch.
+    + rules: call scripts/patch-preamble to create the README.Patches file.
+    + copyright: add pointer to README.Patches, where patch authors are listed.
+
+  * debian/patches/:
+    + updated 000_VERSION to reflect new snapshot date.
+    + removed obsolete #defines from 000_Md.config.h.in. Added #include
+      "debian-config.h" there, which is used by upstream/extra-patches/*.debian.
+    + removed patch.asp.fix-bug-260578.1, included upstream.
+
+  * debian/rules: sort the PATCHES file, which is printed by `mutt -v`.
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Sat, 21 Aug 2004 20:53:39 +0200
+
+mutt (1.5.6-20040803+1) unstable; urgency=low
+
+  * Updated to CVS snapshot 20040803:
+    + fixes the code that closed #213412.
+  * debian/control:
+    + Rebuilt against gnutls11. (Closes: #263067, #263625)
+    + List myself in Uploaders field.
+  * debian/patches/:
+    + updated 000_VERSION to reflect new snapshot date.
+    + removed patch-1.5.6.tt.compat.1.asp.fix.1, which was not meant to be
+      included in the last upload. (Closes: #261951)
+    + update the gnutls patch to include TLS support for POP3 as well. Patch
+      provided by Alexander Neumann <alexander@debian.org>. (Closes: #260638)
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Thu,  5 Aug 2004 18:13:33 +0200
+
+mutt (1.5.6-20040722+1) unstable; urgency=high
+
+  * Updated to CVS snapshot 20040722:
+    + bugfixes:
+      - does not segfault when chdir'ing to a directory without read
+        permission. (Closes: #237426)
+      - does not segfault when applying check-traditional-pgp to multiple
+        messages. (Closes: #257277)
+      - uses the right From address when composing a new message from the
+        pager and $reverse_name is set. (Closes: #249870)
+      - initial IMAP header download does not take quadratic time on the
+        number of messages. (Closes: #213412)
+    + new functionality:
+      - support for spam-scoring filters (see §3.24 of the fine manual).
+      - $include_onlyfirst: controls whether or not Mutt includes only the
+        first attachment of the message you are replying.
+      - $hide_thread_subject: when unset, mutt will show the subject for all
+        messages in a thread.
+      - uses List-Post header when doing list-reply. (Initial RFC 2369 support,
+        closes: #49048)
+  * debian/patches/:
+    + updated 000_VERSION to reflect new snapshot date.
+    + updated the following patches to apply cleanly:
+      - 001_patch-1.5.4.rr.compressed.1 [Makefile.in]
+      - 002_patch-1.5.5.1.admcd.gnutls.59 [globals.h]
+      - patch-1.5.3.cd.edit_threads.9.2-1arc [mutt.h]
+    + updated patch-1.5.6.tt.compat.1 (does not close #259145).
+    + removed patch-1.5.3.Md.gpg-agent, issue fixed upstream.
+    + added patch-1.5.6.helmersson.incomplete-mbyte.2 by Anders Helmersson
+      to avoid passing incomplete multibyte sequences to regexec(), which can
+      cause segfaults due to libc6 Bug#261135. (Closes: #254314, #260623)
+      [Yes, this is a sequel, not a dejà-vu.]
+    + added patch.asp.fix-bug-{210679,254294,258621,260578}.1, which fix
+      several minor issues unaddressed by upstream for some time. All patches
+      submitted upstream. (Closes: #210679, #254294, #258621, #260578). 
+  * debian/rules:
+    + be robust to any locale by exporting LC_ALL=C. (Closes: #253048)
+    + touch some autotools files to prevent having them to be built again.
+  * Using "urgency=high" at maintainer's discretion
+  
+ -- Adeodato Simó <asp16@alu.ua.es>  Wed, 21 Jul 2004 19:31:55 +0200
+
+mutt (1.5.6-20040523+2) unstable; urgency=low
+
+  * Renamed patch-1.5.5.1.tt.compat-fix to patch-1.5.5.1.tt.compat.2-fix.
+    (Closes: #253048)
+
+ -- Marco d'Itri <md@linux.it>  Mon,  7 Jun 2004 00:45:40 +0200
+
+mutt (1.5.6-20040523+1) unstable; urgency=low
+
+  * This release is based on the work of Adeodato Simó <asp16@alu.ua.es>.
+  * Updated to CVS snapshot 20040523:
+    + now mutt includes better support for inline/traditional signing and
+      encrypting. See http://www.woolridge.ca/mutt/pgp-menu-traditional.html
+      for details. (Closes: #190204)
+    + sourcing output of a command works again. (Closes: #247007)
+    + corrected .PP usage in flea.1 and mbox.5. (Closes: #237827)
+    + do not eat chars on rfc822-valid From:address lines (i.e., when there
+      is no space between the colon and address; fixes the already archived
+      #226759).
+  * debian/patches/:
+    + added 000_VERSION: reflect CVS snapshot date.
+    + removed 081_nbrown.auth_imap_plain: included upstream.
+    + added patch-1.5.5.1.tt.compat-fix: introduces a fix for the compat
+      patch which prevents mutt from segfaulting when there is binary junk
+      in headers. (Closes: #233315, #247366, #249588)
+    + removed patch-1.5.4.Md.gpg_by_keyid-1arc: no longer needed.
+      (Closes: #250108, #248994)
+    + added 004_ranty.fix-compressed: written some time ago by Manuel Estrada
+      to prevent mutt from deleting a message if saving to a compressed folder
+      fails. In memoriam. (Closes: #210429)
+    + added patch-1.5.6.asp.pgp_getkeys: set pgp_getkeys_command in Muttrc.
+      Currently commented out because of #172960. (Closes: #237691)
+    + 080_Md.Muttrc: make colors respect terminal scheme. (Closes: #86393)
+  * debian/rules: pass --enable-debug to configure. (Closes: #198073)
+
+ -- Marco d'Itri <md@linux.it>  Sun,  6 Jun 2004 01:17:14 +0200
+
+mutt (1.5.6-1) unstable; urgency=low
+
+  * New upstream release. Old configuration files may become incompatible,
+    see NEWS.Debian.gz for details.
+  * Added debian/NEWS.
+  * debian/patches/:
+    - updated patch-1.5.4.Md.gpg_by_keyid-1arc - pgp_export_command uses %r
+      instead %k. (Closes: #223960)
+    - updated 002_patch-1.5.5.1.admcd.gnutls.59 - mutt can save server's
+      certificate. (Closes: #228607, #234623, #236886)
+    - removed 000_VERSION (not needed in this release).
+    - removed 004_patch-1.5.5.1.Md.libgnutls10 - included in
+      002_patch-1.5.5.1.admcd.gnutls.59.
+    - added 081_nbrown.auth_imap_plain - mutt can authenthicate itself to imap
+      server via sasl2 using PLAIN method, thanks to Neil Brown.
+      (Closes: #206078, #214758)
+    - removed patch-1.5.4.helmersson.incomplete_multibyte because it's broken.
+      (Closes: #244549)
+    - removed 003_patch-1.4.admcd.gnutlsdlopen.53, now the mutt binary will
+      be linked with libgnutls. (Closes: #228279, #228323, #230287)
+    - updated patch-1.3.27.bse.xtitles.1 with patch-1.5.5.1.nt.xtitles.3.ab.1.
+  * Update the default MTA: Depend on exim4 | mail-transport-agent.
+    (Closes: #228560)
+  * This release is the work of Artur R. Czechowski.
+
+ -- Marco d'Itri <md@linux.it>  Sun,  2 May 2004 18:02:10 +0200
+
+mutt (1.5.5.1-20040112+1) unstable; urgency=medium
+
+  * Build-Depend on libidn11-dev instead of libidn9-dev
+    and libgnutls10-dev instead of libgnutls7-dev. (Closes: #226910, #227426)
+  * Updated to CVS snapshot 20040112:
+    + fixed manual (Closes: #226936)
+    + fixed pgp_retainable_sigs (Closes: #226424)
+  * New patch patch-1.4.1.tt.compat.1-ter, a part of mutt-ja which allows
+    configuring a default character set to be used for non-MIME messages.
+    (Closes: #222191)
+  * Added a note about temporary files to README.Debian.
+    (Closes: #141143, #222125)
+  * New patch 100_arc.smime_descripitive_messages which adds some
+    error messages to smime_keys.pl. (Closes: #226696)
+  * Conflicts/Replaces mutt-utf8.
+  * New patch 004_patch-1.5.5.1.Md.libgnutls10.
+  * This release is the work of Artur R. Czechowski.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 17 Jan 2004 17:50:16 +0100
+
+mutt (1.5.5.1-20040105+1) unstable; urgency=low
+
+  * New upstream release:
+    + fixed infinite loop during attachment saving. (Closes: #219314, #224654)
+  * Updated to CVS snapshot 20040105:
+    + fixed a lot of crashes/coredumps.
+      (Closes: #141214, #141468, #192341, #197322, #219499, #223663)
+    + honor Reply-To while generating Mail-Followup-To headers.
+      (Closes: #182526)
+    + improved colouring of thread tree. (Closes: #219594)
+    + fixed retrieving mail via preauth imap over ssh. (Closes: #209025)
+  * debian/rules: added extra-clean target to delete *.orig and *.rej files
+    when debian/sys-build.mk make-diff is called.
+  * Modified patches to apply without conflicts:
+    + 001_patch-1.5.4.rr.compressed.1
+    + 003_patch-1.4.admcd.gnutlsbuild.53
+  * Suggests libgnutls7 instead libgnutls5 (Closes: #217716), updated
+    README.Debian.
+  * Added README.SMIME. (Closes: #222903)
+  * smime_keys moved to /usr/bin. (Closes: #222905)
+  * Suggests ca-certificates and openssl.
+  * Killed mutt-utf8.
+  * This release is the work of Artur R. Czechowski.
+
+ -- Marco d'Itri <md@linux.it>  Tue,  6 Jan 2004 15:38:58 +0100
+
+mutt (1.5.4+20031024-1) unstable; urgency=medium
+
+  * New CVS snapshot. (Closes: #133021, #207242, #208430, #213007, #213917)
+  * Fix FTBFS bug in debian/control. (Closes: #216508)
+  * Compiled with libgnutls7. (Closes: #209722)
+  * New patch patch-1.5.4.fw.maildir_inode_sort. (Closes: #212664)
+  * New patch patch-1.5.4.helmersson.incomplete_multibyte.
+    (Closes: #187991, #188605)
+  * New patch patch-1.5.4.Md.gpg_by_keyid. (Closes: #210668)
+  * Removed README.NFS, as it talks about 2.0 and 2.2 kernels.
+  * Removed reference to $AGENT_SOCKET from README.Debian. (Closes: #215412)
+
+ -- Marco d'Itri <md@linux.it>  Fri, 24 Oct 2003 15:06:01 +0200
+
+mutt (1.5.4+20030913-1) unstable; urgency=medium
+
+  * New CVS snapshot. (Closes: #210354, #210423)
+  * Added patch-1.5.3.vk.pgp_verbose_mime. (Closes: #201306)
+
+ -- Marco d'Itri <md@linux.it>  Sat, 13 Sep 2003 15:59:49 +0200
+
+mutt (1.5.4+20030817-1) unstable; urgency=medium
+
+  * New CVS snapshot, packaged with the great help of arturcz@hell.pl
+    (co-maintainer). (Closes: #138966)
+  * Switched to libsasl2. (Closes: #201210)
+  * Removed hcache patch.
+    (Closes: #189999, #194843, #196832, #196978, #197182, #199052)
+  * Updated gnutls patch to 002_patch-1.5.4.admcd.gnutls.56. (Closes: #196117)
+  * Removed libdb4.0-dev from Build-Depends (Closes: #204015)
+  * /etc/Muttrc: call gpg without a path. (Closes: #193756)
+  * locales upgraded to Recommended status.
+  * Added an icon. (Closes: #188726)
+  * Make pgp_import_command nonverbose. (Closes: #195310)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 17 Aug 2003 15:56:55 +0200
+
+mutt (1.5.4-1) unstable; urgency=high
+
+  * New upstream release. (Closes: #142266, #148858, #169740, #178563)
+  * Fixes remotely exploitable buffer overflow in the IMAP code.
+    (Core Security Technologies Advisory CORE-2003-03-04-02.)
+  * Removed again BUFFY_SIZE support, too many people complained.
+    Added a note to README.Debian.
+  * Provides: imap-client. (Closes: #183351)
+  * Always include the whole certificates chain in S/MIME mail to comply
+    with RFC 2315 spirit. (Closes: #182477)
+  * Applied ME's headers caching patch (provided by Nicolas Bougues).
+  * Fixed pgpewrap core dump. (Closes: #170666)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 20 Mar 2003 15:06:13 +0100
+
+mutt (1.5.3-3) unstable; urgency=medium
+
+  * Recompiled to fix missing dependencies information. (Closes: #181167)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 16 Feb 2003 11:46:46 +0100
+
+mutt (1.5.3-2) unstable; urgency=medium
+
+  * Compiled with BUFFY_SIZE. (Closes: #179970)
+  * Stop generating escape codes in the manual. (Closes: #167006)
+  * Set the default editor as specified by policy. (Closes: #177245)
+
+ -- Marco d'Itri <md@linux.it>  Fri, 14 Feb 2003 19:13:15 +0100
+
+mutt (1.5.3-1) unstable; urgency=low
+
+  * New upstream release (Closes: #112865, #165397, #168907, #169018).
+  * Suggests ispell | aspell (Closes: #175324).
+  * Add & and = to the URL coloring regex (Closes: #169646).
+  * Removed message-hook for clearsigned PGP messages (Closes: #168275).
+  * Removed obsolete patch-1.4.0.dw.pgp-traditional.2.
+  * By popular (?) demand, use /etc/mailname and only if it fails fall
+    back to gethostbyname(3) and then to uname(2) (Closes: #167549).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 14 Jan 2003 18:31:01 +0100
+
+mutt (1.4.0-5) unstable; urgency=medium
+
+  * Try a different strategy to find the FQDN. Stop using /etc/mailname.
+    (Closes: #166060).
+  * Suggests: mixmaster (Closes: #166360).
+  * Updated copyright file (Closes: #163783).
+  * *Really* enable --enable-imap-edit-threads (Closes: #162352).
+  * Ignore Microsoft Thread-* header (Closes: #161473).
+  * Do not ask the password if gpg-agent or quintuple-agent are active
+    (Closes: #161508).
+  * Applied patch-1.5-me_editor.1 (Closes: #72318).
+  * Applied patch-1.5.1.tlr.mailboxes-overflow.1 (Closes: #153751).
+  * Applied patch-1.4-me.regex_doc.1 (Closes: #162550).
+  * Removed patch-1.3.15.sw.pgp-outlook.1 in favour of
+    patch-1.4.0.dw.pgp-traditional.2. All "traditional" PGP messages now
+    use text/plain.
+
+ -- Marco d'Itri <md@linux.it>  Tue, 29 Oct 2002 14:38:52 +0100
+
+mutt (1.4.0-4) unstable; urgency=medium
+
+  * Recompile with newer libgnutls5 (Closes: #160114).
+  * Updated contrib/colors.angdraug.
+  * Updated 010_patch-1.4.admcd.gnutls.55.
+
+ -- Marco d'Itri <md@linux.it>  Tue, 17 Sep 2002 16:07:50 +0200
+
+mutt (1.4.0-3) unstable; urgency=medium
+
+  * *Really* compile mutt with --enable-imap-edit-threads (Closes: #154864).
+  * *Really* merge the Maildirs new messages patch (Closes: #151582).
+  * Recompile with libgnutls5 (Closes: #152787, #157120).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 18 Aug 2002 16:59:06 +0200
+
+mutt (1.4.0-2) unstable; urgency=low
+
+  * Update GNUTLS patch and link against gnutls4. (Closes: #152141).
+  * Link mutt-utf8 against libncursesw5 instead of slang1a-utf8.
+  * set pipe_decode=yes in /etc/Muttrc (Closes: #151460).
+  * Compile mutt with --enable-imap-edit-threads (Closes: #150274).
+  * Make debian/scripts/lib work even if $CDPATH is set (Closes: #152678).
+  * Merged patch to fix spurious new message notifications with Maildirs
+    (Closes: #151582).
+
+ -- Marco d'Itri <md@linux.it>  Fri, 12 Jul 2002 03:34:48 +0200
+
+mutt (1.4.0-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #146889, #149348, #148558).
+  * Updated patch edit_threads.9.2 (Closes: #146451).
+  * Priority of mutt-utf8 changed from optional to extra.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 10 Jun 2002 21:26:08 +0200
+
+mutt (1.3.28-2) unstable; urgency=medium
+
+  * Moved into main.
+  * Suggests: libgcrypt1, gnutls3 (Closes: #140970).
+  * Added patch from CVS to fix crash with UTF-8 locales (Closes: #126336).
+
+ -- Marco d'Itri <md@linux.it>  Sat,  6 Apr 2002 18:35:01 +0200
+
+mutt (1.3.28-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #138200).
+  * Updated GNUTLS patch.
+  * Make flea(1) work even if bug(1) is not installed (Closes: #138273).
+  * Added /usr/share/bug/mutt/presubj file (Closes: #138274).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 19 Mar 2002 14:42:39 +0100
+
+mutt (1.3.27-5) unstable; urgency=medium
+
+  * Added build dependancy on linuxdoc-tools-text (Closes: #137890).
+  * Use sensible-pager instead of zless to read the manual (Closes: #136206).
+  * Added example colors scheme contributed by Dmitry Borodaenko.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 11 Mar 2002 19:40:20 +0100
+
+mutt (1.3.27-4) unstable; urgency=high
+
+  * Recompiled against new slang packages (Closes: #133255, #134115).
+  * Added patch-1.3.27.me.aliasdups.1 (Closes: #133559).
+  * Updated GNUTLS patch.
+  * Added missing flea(1) symlink (Closes: #133646).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 17 Feb 2002 03:27:50 +0100
+
+mutt (1.3.27-3) unstable; urgency=high
+
+  * Recompiled against new slang and packages (Closes: #132644).
+  * Title bar is changed on more xterm variants (Closes: #131178).
+  * Removed obsolete advice about shred from README.Debian (Closes: #132786).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 10 Feb 2002 13:26:20 +0100
+
+mutt (1.3.27-2) unstable; urgency=high
+
+  * Updated GNUTLS patch (Closes: #131386, #131424).
+  * Added patch-1.3.27.me.listfrom_doc.1 (Closes: #45706).
+  * Added missing -fPIC (Closes: #131209).
+  * Added missing commas in charset.c (Closes: #130481).
+
+ -- Marco d'Itri <md@linux.it>  Thu, 31 Jan 2002 15:23:34 +0100
+
+mutt (1.3.27-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Small fix to pt_BR translation (Closes: #130416).
+  * Hide gpg status messages (Closes: #127519).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 22 Jan 2002 20:18:21 +0100
+
+mutt (1.3.26-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Removed patch-1.3.25.chip.fast-limited-threads because the patched
+    code has changed.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 19 Jan 2002 19:30:13 +0100
+
+mutt (1.3.25-5) unstable; urgency=high
+
+  * Added build dependancy on groff (Closes: #129605, #129698).
+
+ -- Marco d'Itri <md@linux.it>  Thu, 17 Jan 2002 19:03:29 +0100
+
+mutt (1.3.25-4) unstable; urgency=high
+
+  * Forced build dependancy on newer gnutls-dev (Closes: #129283).
+  * Updated GNUTLS patch (Closes: #129291).
+
+ -- Marco d'Itri <md@linux.it>  Wed, 16 Jan 2002 19:47:45 +0100
+
+mutt (1.3.25-3) unstable; urgency=medium
+
+  * Force documentation rebuilding (Closes: #128758, #129045).
+  * TLS patch update from Andrew McDonald (Closes: #125924, #128718, #129039).
+  * Suggests gnutls0.
+  * Fixed typo in manual (Closes: #128836).
+  * Added patch-1.3.25.chip.fast-limited-threads, which is supposed to
+    speed up limited threaded display (Closes: #128174).
+  * Added patch-1.3.25.tlr.attach_overwrite.1 (Closes: #126122).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 13 Jan 2002 17:18:21 +0100
+
+mutt (1.3.25-2) unstable; urgency=low
+
+  * Force dependancy on slang1-utf8 (Closes: #127938).
+  * Enable again optimization (Closes: #127653, #127682).
+  * Enable {open,close,append}-hook by default again (Closes: #127894).
+
+ -- Marco d'Itri <md@linux.it>  Sun,  6 Jan 2002 19:35:57 +0100
+
+mutt (1.3.25-1) unstable; urgency=high
+
+  * New upstream release, fixes remotely exploitable buffer overflow.
+  * Fixed mutt_dotlock permissions
+    (Closes: #127264, #127265, #127278, #127308, #127312, #127357).
+
+ -- Marco d'Itri <md@linux.it>  Wed,  2 Jan 2002 18:49:54 +0100
+
+mutt (1.3.24-3) unstable; urgency=medium
+
+  * A new mutt-utf8 package is generated (Closes: #99898).
+  * Added patch-1.3.24.de.new_threads.3 to fix segfaults while sorting
+    thread (Closes: #123658).
+  * Added --status-fd option to gpg command line and working $pgp_good_sign
+    variable to default /etc/Muttrc (see #110414 and #123273 for details).
+  * Updated thread editing patch to patch-1.3.24.cd.edit_threads.8.
+  * Added patch-1.3.24.appoct.2 to lookup application/octet-stream files
+    extensions in mime.types.
+  * Fixed coredump processing in flea(1) (Closes: #123081).
+  * Removed obsolete contrib/pgp-macros.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 27 Dec 2001 03:32:16 +0100
+
+mutt (1.3.24-2) unstable; urgency=medium
+
+  * Added better GNUTLS code from Andrew McDonald.
+  * Added again threads editing patch.
+  * Enable {open,close,append}-hook by default again (Closes: #115473).
+  * Removed default $pgp_good_sign from Muttrc (related to #110414).
+
+ -- Marco d'Itri <md@linux.it>  Wed,  5 Dec 2001 02:26:13 +0100
+
+mutt (1.3.24-1) unstable; urgency=high
+
+  * New upstream release (Closes: #74484, #98630, #114938).
+  * Added conflict with gnutls < 0.2.9 (Closes: #121645).
+  * Fixed mailspell script (Closes: #120446).
+  * Removed 000_patch-1.3.22.1.cd.edit_threads-5.1.
+  * Added 000_patch-1.3.23.1.ametzler.pgp_good_sign (Closes: #110414).
+
+ -- Marco d'Itri <md@linux.it>  Fri, 30 Nov 2001 22:52:42 +0100
+
+mutt (1.3.23-4) unstable; urgency=high
+
+  * Added Build Dependandcies on libgcrypt-dev and zlib1g-dev
+    (Closes: #119309).
+  * Added a comment to README.Debian about stunnel (Closes: #115421).
+  * Removed safefilter script (Closes: #118630).
+  * Added the broken-outlook-pgp-clearsigning patch (Closes: #120090).
+
+ -- Marco d'Itri <md@linux.it>  Fri, 30 Nov 2001 20:49:02 +0100
+
+mutt (1.3.23-3) unstable; urgency=high
+
+  * Moved to non-US (Closes: #118294).
+
+ -- Marco d'Itri <md@linux.it>  Mon,  5 Nov 2001 12:06:43 +0100
+
+mutt (1.3.23-2) unstable; urgency=medium
+
+  * Added SSL support using GNUTLS. WARNING: requires the CVS library!
+  * Added unpack target to debian/rules (Closes: #115765).
+  * Fixed account-hook (Closes: #117125).
+  * Added default compression hooks to /etc/Muttrc (Closes: #115473).
+
+ -- Marco d'Itri <md@linux.it>  Sun,  4 Nov 2001 13:59:25 +0100
+
+mutt (1.3.23-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #106864, #106229, #110414)
+    (Closes: #69135, #89195, #92651, #97319, #98627).
+  * Added README.NFS note from the liblockfile maintainer (Closes: #96788).
+  * Fixed gpg operations (Closes: #113458, #114163, #114938).
+  * Fixed compressed folder patch (Closes: #114199).
+  * Highlight https URLs too (Closes: #113791).
+
+ -- Marco d'Itri <md@linux.it>  Wed, 10 Oct 2001 02:30:15 +0200
+
+mutt (1.3.22-2) unstable; urgency=medium
+
+  * Renamed dotlock.1 (Closes: #112545).
+  * Fixed the threads editing patch (Closes: #112554).
+
+ -- Marco d'Itri <md@linux.it>  Wed, 19 Sep 2001 12:18:47 +0200
+
+mutt (1.3.22-1) unstable; urgency=low
+
+  * New upstream release (Closes: ).
+  * Old bugs fixed in the last NMU (Closes: #29884, #101075, #101484)
+    (Closes: #101890, #101890, #102439, #106863, #104469, #105391)
+    (Closes: #110262).
+  * Fixed bashism in vars.build (Closes: #104137).
+  * Updated libssl package name in README.Debian (Closes: #96564).
+  * Added a note about temporary files in README.Debian (Closes: #89277).
+  * Added a note about locales in README.Debian (Closes: #105545).
+  * Included threads editing patch (Closes: #111291).
+  * Fixed paths in mutt.man (Closes: #110462).
+
+ -- Marco d'Itri <md@linux.it>  Sat, 15 Sep 2001 17:33:51 +0200
+
+mutt (1.3.19-1) unstable; urgency=low
+
+  * New upstream release (Closes: #81155, #93830, #95426, #100298, #101075).
+    (Closes: #101451).
+  * Suggests locales instead of i18ndata (Closes: #98814).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 22 May 2001 13:42:34 +0200
+
+mutt (1.3.18-1) unstable; urgency=low
+
+  * New upstream release (Closes: #81155, #92234, #90400, #92860, #95426)
+    (Closes: #88358, #92846, #92847, #91979, #97658, #98014).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 22 May 2001 13:42:34 +0200
+
+mutt (1.3.17-1) unstable; urgency=high
+
+  * New upstream release (Closes: #89011, #82372, #86228, #83187).
+
+ -- Marco d'Itri <md@linux.it>  Sun,  1 Apr 2001 22:09:27 +0200
+
+mutt (1.3.15-2) unstable; urgency=high
+
+  * Built again without linking libiconv.
+
+ -- Marco d'Itri <md@linux.it>  Wed, 14 Feb 2001 23:02:23 +0100
+
+mutt (1.3.15-1) unstable; urgency=low
+
+  * New upstream release (Closes: #81873, #81155, #81640, #76922).
+  * Added more headers to the ignore list.
+  * Removed dh_suidregister (Closes: #84826).
+  * Removed US-ASCII charset-hook (Closes: #81240).
+  * Commented all "color header" lines in the default /etc/Muttrc.
+  * Fixed default colors on white background xterm.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 12 Feb 2001 23:34:41 +0100
+
+mutt (1.3.12-2) unstable; urgency=low
+
+  * Fixed typo in muttbug (Closes: #79230).
+  * Added menu hints (Closes: #80067).
+  * Compiled with libsasl (Closes: #78746).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 24 Dec 2000 12:18:23 +0100
+
+mutt (1.3.12-1) experimental; urgency=low
+
+  * Packaged the development tree (Closes: #60459, #73050, #75885, #77856).
+  * Documented the fact that pgp_encryptself is gone and will not be back
+    (Closes: #47833, #69221).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 28 Nov 2000 02:25:50 +0100
+
+mutt (1.2.5-5) unstable; urgency=low
+
+  * Added support for libc6 2.2 compressed charmaps
+    (Closes: #74975).
+  * Updated README.Debian about SSL support (Closes: #75895).
+  * Added the compressed folder patch (Closes: #76224).
+  * Removed some colorization (Closes: #77976).
+
+ -- Marco d'Itri <md@linux.it>  Mon, 27 Nov 2000 18:46:25 +0100
+
+mutt (1.2.5-4) stable unstable; urgency=high
+
+  * Typo in debian-ldap-query prevented it from running (#74575).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 29 Oct 2000 13:09:42 +0100
+
+mutt (1.2.5-3) stable unstable; urgency=high
+
+  * ====> Removed non GPL-compatible SHA code (patch-1.3.9.tlr.sha.1). <====
+  * ====> Disabled linking with the GPL-incompatible openssl library. <====
+  * Update debian-ldap-query for new libnet-ldap-perl package (Closes: #74575).
+
+ -- Marco d'Itri <md@linux.it>  Thu, 12 Oct 2000 10:28:10 +0200
+
+mutt (1.2.5-2) unstable; urgency=low
+
+  * Disallow suspend by default if mutt is the session leader (Closes: #64169).
+  * Fixed the check for optional crypto libraries (Closes: #68518).
+  * Added build dependency to debhelper (Closes: #68401).
+  * Added some info to README.NFS (Closes: #71163).
+  * Added ispell wrapper.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 21 Sep 2000 19:43:57 +0200
+
+mutt (1.2.5-1) unstable; urgency=low
+
+  * New upstream release (Closes: #67885, #65999, #67420, #65638, #62580).
+    (Closes: #67420).
+  * Fixed charmaps handling for autobuilders (Closes: #67609).\
+  * Added debian-ldap-query script.
+  * mutt_imap_*_.so and pgp* moved to /usr/lib/mutt/.
+  * Added safefilter contributed script.
+
+ -- Marco d'Itri <md@linux.it>  Tue,  1 Aug 2000 18:22:58 +0200
+
+mutt (1.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fixed manual.txt.gz path in F1 macro (Closes: #63384).
+
+ -- Marco d'Itri <md@linux.it>  Sun,  7 May 2000 19:51:09 +0200
+
+mutt (1.1.12-1) unstable; urgency=low
+
+  * New upstream release.
+  * Removed duplicated install-docs commands (Closes: #60788).
+
+ -- Marco d'Itri <md@linux.it>  Mon, 20 Mar 2000 22:14:53 +0100
+
+mutt (1.1.9-1) unstable; urgency=low
+
+  * New upstream release (Closes: #60139, #57965, #60139).
+  * pgp_sign_micalg=pgp-sha1 added to the default Muttrc (Closes: #59765).
+
+ -- Marco d'Itri <md@linux.it>  Wed, 15 Mar 2000 10:57:49 +0100
+
+mutt (1.1.5-1) unstable; urgency=low
+
+  * New upstream release (Closes: #56011, #58703).
+
+ -- Marco d'Itri <md@linux.it>  Sat, 26 Feb 2000 15:13:09 +0100
+
+mutt (1.1.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Marco d'Itri <md@linux.it>  Wed, 16 Feb 2000 01:14:31 +0100
+
+mutt (1.1.3-1) unstable; urgency=low
+
+  * New upstream release (Closes: #57373, #57155, #57533, #56970).
+  * Fixed Pine.rc (Closes: #57647).
+
+ -- Marco d'Itri <md@linux.it>  Wed, 16 Feb 2000 01:14:20 +0100
+
+mutt (1.1.2-2) unstable; urgency=low
+
+  * README.UPDATE installed in the documentation directory (Closes: 56970).
+  * Patched for run time loading of SSL and Kerberos libraries.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 10 Feb 2000 23:56:21 +0100
+
+mutt (1.1.2-1) unstable; urgency=low
+
+  * New upstream release (Closes: #30639, #28727).
+  * Fixed color problems in xterms.
+
+ -- Marco d'Itri <md@linux.it>  Tue,  1 Feb 2000 12:31:26 +0100
+
+mutt (1.1.1-1) experimental; urgency=low
+
+  * My christmas present: packaged the development tree.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 19 Dec 1999 12:08:53 +0100
+

@@ -1,0 +1,152 @@
+diff -ur ../MUTT/mutt/PATCHES mutt/PATCHES
+--- ../MUTT/mutt/PATCHES	2002-12-09 18:44:54.000000000 +0100
++++ mutt/PATCHES	2004-01-19 13:50:52.000000000 +0100
+@@ -1,0 +1 @@
++patch-1.5.5.1.nt.xtitles.3.ab.1
+diff -ur ../MUTT/mutt/curs_main.c mutt/curs_main.c
+--- ../MUTT/mutt/curs_main.c	2003-09-03 19:09:09.000000000 +0200
++++ mutt/curs_main.c	2004-01-19 13:45:37.000000000 +0100
+@@ -103,6 +103,19 @@
+ extern const char *ReleaseDate;
+ extern size_t UngetCount;
+ 
++#define ASCII_CTRL_G                  0x07
++#define ASCII_CTRL_OPEN_SQUARE_BRAKET 0x1b
++ 
++void set_xterm_title_bar(char *title)
++{
++  fprintf(stderr ,"%c]2;%s%c", ASCII_CTRL_OPEN_SQUARE_BRAKET, title, ASCII_CTRL_G);
++}
++
++void set_xterm_icon_name(char *name)
++{
++  fprintf(stderr, "%c]1;%s%c", ASCII_CTRL_OPEN_SQUARE_BRAKET, name, ASCII_CTRL_G);
++}
++
+ void index_make_entry (char *s, size_t l, MUTTMENU *menu, int num)
+ {
+   format_flag flag = M_FORMAT_MAKEPRINT | M_FORMAT_ARROWCURSOR | M_FORMAT_INDEX;
+@@ -562,6 +575,13 @@
+ 	mutt_paddstr (COLS, buf);
+ 	SETCOLOR (MT_COLOR_NORMAL);
+ 	menu->redraw &= ~REDRAW_STATUS;
++	if (option(OPTXTERMSETTITLES))
++	{
++	  menu_status_line (buf, sizeof (buf), menu, NONULL (XtermTitle));
++	  set_xterm_title_bar(buf);
++	  menu_status_line (buf, sizeof (buf), menu, NONULL (XtermIcon));
++	  set_xterm_icon_name(buf);
++	}
+       }
+ 
+       menu->redraw = 0;
+diff -ur ../MUTT/mutt/globals.h mutt/globals.h
+--- ../MUTT/mutt/globals.h	2003-07-15 13:41:32.000000000 +0200
++++ mutt/globals.h	2004-01-19 13:45:37.000000000 +0100
+@@ -112,6 +112,8 @@
+ WHERE char *Tochars;
+ WHERE char *Username;
+ WHERE char *Visual;
++WHERE char *XtermTitle;
++WHERE char *XtermIcon;
+ 
+ WHERE char *LastFolder;
+ 
+diff -ur ../MUTT/mutt/init.c mutt/init.c
+--- ../MUTT/mutt/init.c	2004-01-05 19:49:00.000000000 +0100
++++ mutt/init.c	2004-01-19 13:48:45.000000000 +0100
+@@ -891,6 +891,26 @@
+ 	toggle_option (MuttVars[idx].data);
+       else
+ 	set_option (MuttVars[idx].data);
++
++      /* sanity check for xterm */
++      if ((mutt_strcmp (MuttVars[idx].option, "xterm_set_titles") == 0)
++		&& option (OPTXTERMSETTITLES))
++      {
++	char *ep = getenv ("TERM");
++	/* Make sure that the terminal can take the control codes */
++	if (ep == NULL) unset_option (MuttVars[idx].data);
++	else if (mutt_strncasecmp (ep, "xterm", 5) &&
++		 mutt_strncasecmp (ep, "color-xterm", 11) &&
++		 mutt_strncasecmp (ep, "eterm", 5) &&
++		 mutt_strncasecmp (ep, "kterm", 5) &&
++		 mutt_strncasecmp (ep, "nxterm", 6) &&
++		 mutt_strncasecmp (ep, "putty", 5) &&
++		 mutt_strncasecmp (ep, "screen", 6) &&
++		 mutt_strncasecmp (ep, "cygwin", 6) &&
++		 mutt_strncasecmp (ep, "rxvt", 4) )
++	  unset_option (MuttVars[idx].  data);
++
++      }
+     }
+     else if (DTYPE (MuttVars[idx].type) == DT_STR ||
+ 	     DTYPE (MuttVars[idx].type) == DT_PATH ||
+diff -ur ../MUTT/mutt/init.h mutt/init.h
+--- ../MUTT/mutt/init.h	2004-01-05 19:49:00.000000000 +0100
++++ mutt/init.h	2004-01-19 13:45:37.000000000 +0100
+@@ -2670,6 +2670,27 @@
+   ** Controls whether mutt writes out the Bcc header when preparing
+   ** messages to be sent.  Exim users may wish to use this.
+   */
++  {"xterm_icon",       DT_STR,   R_BOTH, UL &XtermIcon,  UL "M%?n?AIL&ail?"},
++  /*
++  ** .pp
++  ** Controls the format of the icon title, as long as xterm_set_titles
++  ** is enabled. This string is identical in formatting to the one used by
++  ** ``$$status_format''.
++  */
++  {"xterm_set_titles", DT_BOOL,  R_BOTH, OPTXTERMSETTITLES, 0},
++  /*
++  ** .pp
++  ** Controls whether mutt sets the xterm title bar and icon name
++  ** (as long as you're in an appropriate terminal). The default must
++  ** be off to force in the validity checking.
++  */
++  {"xterm_title",      DT_STR,   R_BOTH, UL &XtermTitle, UL "Mutt with %?m?%m messages&no messages?%?n? [%n NEW]?"},
++  /*
++  ** .pp
++  ** Controls the format of the title bar of the xterm provided that
++  ** xterm_set_titles has been set. This string is identical in formatting
++  ** to the one used by ``$$status_format''.
++  */
+   /*--*/
+   { NULL }
+ };
+diff -ur ../MUTT/mutt/mutt.h mutt/mutt.h
+--- ../MUTT/mutt/mutt.h	2004-01-05 19:49:00.000000000 +0100
++++ mutt/mutt.h	2004-01-19 13:45:37.000000000 +0100
+@@ -424,6 +424,7 @@
+   OPTWRAPSEARCH,
+   OPTWRITEBCC,		/* write out a bcc header? */
+   OPTXMAILER,
++  OPTXTERMSETTITLES,
+ 
+   /* PGP options */
+   
+diff -ur ../MUTT/mutt/pager.c mutt/pager.c
+--- ../MUTT/mutt/pager.c	2004-01-05 19:49:00.000000000 +0100
++++ mutt/pager.c	2004-01-19 13:45:37.000000000 +0100
+@@ -26,6 +26,8 @@
+ #include "pager.h"
+ #include "attach.h"
+ #include "mbyte.h"
++void set_xterm_title_bar(char *title);
++void set_xterm_icon_name(char *name);
+ 
+ #include "mx.h"
+ 
+@@ -1740,6 +1742,13 @@
+       SETCOLOR (MT_COLOR_STATUS);
+       mutt_paddstr (COLS, buffer);
+       SETCOLOR (MT_COLOR_NORMAL);
++      if (option(OPTXTERMSETTITLES))
++      {
++	menu_status_line (buffer, sizeof (buffer), index, NONULL (XtermTitle));
++	set_xterm_title_bar(buffer);
++	menu_status_line (buffer, sizeof (buffer), index, NONULL (XtermIcon));
++	set_xterm_icon_name(buffer);
++      }
+     }
+ 
+     redraw = 0;

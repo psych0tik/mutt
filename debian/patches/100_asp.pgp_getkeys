@@ -1,0 +1,12 @@
+diff -u -r mutt-1.5.6.orig/contrib/gpg.rc mutt-1.5.6/contrib/gpg.rc
+--- mutt-1.5.6.orig/contrib/gpg.rc	2002-03-26 23:23:58.000000000 +0100
++++ mutt-1.5.6/contrib/gpg.rc	2004-05-23 15:01:52.000000000 +0200
+@@ -72,6 +72,8 @@
+ 
+ # fetch keys
+ # set pgp_getkeys_command="pkspxycwrap %r"
++# This will work when #172960 will be fixed upstream
++# set pgp_getkeys_command="/usr/bin/gpg --recv-keys %r"
+ 
+ # pattern for good signature - may need to be adapted to locale!
+ 

@@ -1,0 +1,138 @@
+#!/usr/bin/make -f
+SHELL+= -e
+
+export LC_ALL=C
+include debian/scripts/vars
+
+BUILD_DIR := $(SOURCE_DIR)/$(TAR_DIR)
+B := $(BUILD_DIR)
+D := $(CURDIR)/debian/mutt
+
+# Comment this line if you want the header cache with gdbm
+HCACHE_WITH_DB := --without-gdbm
+
+clean:
+	$(MAKE) -f debian/sys-build.mk source.clean
+	dh_clean
+
+# target used by the maintainer
+unpack.nopatch: 
+	$(MAKE) -f debian/sys-build.mk source.build
+	rm -f $B/Muttrc $B/doc/muttrc.man \
+		$B/doc/manual.sgml $B/doc/manual.txt $B/doc/*.html 
+
+diff:
+	$(MAKE) -f debian/sys-build.mk make-diff
+
+unpack: $(STAMP_DIR)/source.make
+$(STAMP_DIR)/source.make:
+	$(MAKE) -f debian/sys-build.mk source.make
+	
+	# sort the patches list
+	sort $B/PATCHES > $B/PATCHES.temp
+	mv $B/PATCHES.temp $B/PATCHES
+
+	# rebuild these files	
+	rm -f $B/Muttrc $B/doc/muttrc.man \
+		$B/doc/manual.sgml $B/doc/manual.txt $B/doc/*.html 
+
+	# we include some #defines in debian-config.h
+	echo '#include "debian-config.h"' >> $B/config.h.in
+
+	# do not rebuild these files
+	touch $B/configure.in $B/aclocal.m4 $B/Makefile.in $B/configure \
+		$B/stamp-h.in $B/config.h.in
+	touch $@
+
+configure: $(STAMP_DIR)/configure
+$(STAMP_DIR)/configure: $(STAMP_DIR)/source.make
+	CC=cc ac_cv_path_ISPELL=ispell \
+	SENDMAIL=/usr/sbin/sendmail PERL=/usr/bin/perl \
+	$(MAKE) -f debian/sys-build.mk source.command SOURCE_CMD=" \
+	./configure --prefix=/usr --sysconfdir=/etc --mandir=/usr/share/man \
+		--with-sharedir=/usr/share/mutt --with-docdir=/usr/share/doc \
+		--with-mailpath=/var/mail \
+		--enable-fcntl --enable-pop --enable-imap \
+		--with-mixmaster --with-sasl2 --with-idn \
+		--with-curses \
+		--with-gnutls \
+		--enable-debug \
+		--enable-inodesort \
+		--enable-compressed \
+		--enable-hcache $(HCACHE_WITH_DB) \
+	"
+	touch $@
+
+build: $(STAMP_DIR)/build
+$(STAMP_DIR)/build: $(STAMP_DIR)/configure $(STAMP_DIR)/source.make
+	GROFF_NO_SGR=1 \
+	$(MAKE) -f debian/sys-build.mk source.command SOURCE_CMD=" \
+		make keymap_defs.h all CFLAGS=\"-O2 -g\" \
+	"
+	touch $@
+
+binary-arch: $(STAMP_DIR)/build checkroot
+	dh_testdir
+	dh_clean -k
+	$(MAKE) -f debian/sys-build.mk source.command SOURCE_CMD=" \
+		$(MAKE) install DESTDIR=$D SUBDIRS=\"intl po\" \
+	"
+
+	dh_installdirs -p mutt usr/share/pixmaps usr/lib/mutt/ \
+		usr/bin/ usr/share/doc/mutt/html/
+	dh_installmenu
+	dh_installdocs $B/README $B/README.SECURITY $B/README.SSL $B/NEWS \
+		$B/doc/manual.txt $B/doc/PGP-Notes.txt extra/README.SMIME
+	cp $B/doc/*.html $D/usr/share/doc/mutt/html/
+	for file in README BUGS TODO; do \
+		cp $B/imap/$$file $D/usr/share/doc/mutt/$$file.IMAP; \
+	done
+	# generate README.Patches
+	for file in $(EXTRA_PATCHES)/*; do \
+		mawk -f debian/gen-README.Patches $$file >> \
+			$D/usr/share/doc/mutt/README.Patches; \
+	done
+	dh_installexamples \
+		$B/contrib/*rc $B/contrib/sample.muttrc-tlr \
+		extra/ray.muttrc extra/colors.angdraug
+	dh_installman \
+		$B/doc/mutt.man $B/doc/dotlock.man \
+		$B/doc/muttrc.man $B/doc/mbox.man
+
+	install --mode=755 extra/debian-ldap-query extra/mailspell \
+		extra/source-muttrc.d $D/usr/lib/mutt/
+	cp extra/mutt.xpm $D/usr/share/pixmaps/
+
+#	some fixes to the package structure
+	mv $D/usr/bin/pgp* $D/usr/lib/mutt/
+	mv $D/usr/share/man/man1/dotlock.1 $D/usr/share/man/man1/mutt_dotlock.1
+	rm $D/etc/mime.types $D/usr/bin/muttbug $D/usr/bin/flea
+
+#	I think the default config file with the embedded manual is too big
+	mv $D/etc/Muttrc $D/usr/share/doc/mutt/examples/
+	cp $B/Muttrc.head $D/etc/Muttrc
+	echo "# GnuPG configuration" >> $D/etc/Muttrc
+	grep ^set $B/contrib/gpg.rc \
+		| sed -e 's#pgpewrap#/usr/lib/mutt/pgpewrap#' \
+		| sed -e 's#/usr/bin/gpg#gpg#' \
+		>> $D/etc/Muttrc
+	cat extra/smime-paths.rc extra/source-Muttrc.d.rc >> $D/etc/Muttrc
+
+	dh_installchangelogs $B/ChangeLog
+	dh_strip
+	dh_compress
+	dh_fixperms --exclude=usr/bin/mutt_dotlock
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_builddeb
+
+binary:	binary-arch
+
+extra-clean:
+	find -type f \( -name "*.orig" -o -name "*.rej" \) -exec rm -v {} \;
+
+checkroot:
+	test root = "`whoami`"
+
+.PHONY: binary binary-arch build clean configure checkroot extra-clean

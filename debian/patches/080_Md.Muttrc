@@ -1,0 +1,92 @@
+diff -urN mutt-1.5.3.orig/Muttrc.head.in mutt-1.5.3/Muttrc.head.in
+--- mutt-1.5.3.orig/Muttrc.head.in	2000-03-20 11:25:49.000000000 +0100
++++ mutt-1.5.3/Muttrc.head.in	2003-01-12 17:16:41.000000000 +0100
+@@ -6,6 +6,38 @@
+ #
+ ignore "from " received content- mime-version status x-status message-id
+ ignore sender references return-path lines
++ignore date delivered-to precedence errors-to in-reply-to user-agent
++ignore x-loop x-sender x-mailer x-msmail-priority x-mimeole x-priority
++ignore x-accept-language x-authentication-warning thread- priority
++ignore domainkey-signature
++
++# emacs-like bindings
++bind editor    "\e<delete>"    kill-word
++bind editor    "\e<backspace>" kill-word
++
++# map delete-char to a sane value
++bind editor     <delete>  delete-char
++
++# some people actually like these settings
++#set pager_stop
++#bind pager <up> previous-line
++#bind pager <down> next-line
++
++# don't add the hostname to the From header
++unset use_domain
++# don't generate a From header
++unset use_from
++
++# Specifies how to sort messages in the index menu.
++set sort=threads
++
++# Exim does not remove Bcc headers
++unset write_bcc
++# Postfix and qmail use Delivered-To for detecting loops
++unset bounce_delivered
++
++# weed out binary-only announcements to -devel-changes
++#macro index \CW T!~s\(.*source.*\)\nWn^T~A\n "Weed out binary-only announcements"
+ 
+ # imitate the old search-body function
+ macro index \eb '/~b ' 'search in message bodies'
+@@ -13,11 +44,20 @@
+ # simulate the old url menu
+ macro index \cb |urlview\n 'call urlview to extract URLs out of a message'
+ macro pager \cb |urlview\n 'call urlview to extract URLs out of a message'
++set pipe_decode
+ 
+ # Show documentation when pressing F1
+-macro generic <f1> "!less @docdir@/manual.txt\n" "Show Mutt documentation"
+-macro index   <f1> "!less @docdir@/manual.txt\n" "Show Mutt documentation"
+-macro pager   <f1> "!less @docdir@/manual.txt\n" "Show Mutt documentation"
++macro generic <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
++macro index   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
++macro pager   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
++
++# Use folders which match on \\.gz$ or \\.bz2$ as [gb]zipped folders:
++open-hook	\\.gz$ "gzip -cd %f > %t"
++close-hook	\\.gz$ "gzip -c %t > %f"
++append-hook	\\.gz$ "gzip -c %t >> %f"
++open-hook	\\.bz2$ "bzip2 -cd %f > %t"
++close-hook	\\.bz2$ "bzip2 -c %t > %f"
++append-hook	\\.bz2$ "bzip2 -c %t >> %f"
+ 
+ # If Mutt is unable to determine your site's domain name correctly, you can
+ # set the default here.
+@@ -28,7 +68,22 @@
+ #
+ # set use_8bitmime
+ 
+-##
+-## More settings
+-##
++# colors
++color normal	white black
++color attachment brightyellow black
++color hdrdefault cyan black
++color indicator black cyan
++color markers	brightred black
++color quoted	green black
++color signature cyan black
++color status	brightgreen blue
++color tilde	blue black
++color tree	red black
++#color header	brightgreen black ^From:
++#color header	brightcyan black ^To:
++#color header	brightcyan black ^Reply-To:
++#color header	brightcyan black ^Cc:
++#color header	brightblue black ^Subject:
++#color body	brightred black [\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+
++#color body	brightblue black (https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+
+ 

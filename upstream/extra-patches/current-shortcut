@@ -1,0 +1,82 @@
+# vi: ft=diff
+This is the current shortcut patch patch by Byrial Ole Jensen
+<byrial@image.dk>, updated by Christoph Berg <cb@df7cb.de>.
+
+The home page for this patch is:
+
+  http://home.worldonline.dk/byrial/mutt/patches/ (original version)
+  http://www.df7cb.de/projects/mutt/current_shortcut/ (.2 and above)
+
+* Patch last synced with upstream:
+  - Date: 2004-10-02
+  - File: http://www.df7cb.de/projects/mutt/current_shortcut/current-shortcut.2
+
+* Changes made: NONE.
+
+== END PATCH
+diff -urp ../MUTT/mutt/PATCHES mutt/PATCHES
+--- ../MUTT/mutt/PATCHES	2002-12-09 18:44:54.000000000 +0100
++++ mutt/PATCHES	2004-10-02 16:30:07.000000000 +0200
+@@ -0,0 +1 @@
++patch-1.5.6.cb.current_shortcut.2
+diff -urp ../MUTT/mutt/curs_main.c mutt/curs_main.c
+--- ../MUTT/mutt/curs_main.c	2004-04-12 23:51:07.000000000 +0200
++++ mutt/curs_main.c	2004-10-02 16:12:33.000000000 +0200
+@@ -1064,6 +1064,7 @@ CHECK_IMAP_ACL(IMAP_ACL_DELETE);
+ 	  mutt_error (_("%s is not a mailbox."), buf);
+ 	  break;
+ 	}
++	mutt_str_replace (&CurrentFolder, buf);
+ 
+         if (Context)
+         {
+diff -urp ../MUTT/mutt/doc/manual.sgml.head mutt/doc/manual.sgml.head
+--- ../MUTT/mutt/doc/manual.sgml.head	2004-07-21 13:33:04.000000000 +0200
++++ mutt/doc/manual.sgml.head	2004-10-02 16:29:24.000000000 +0200
+@@ -2216,6 +2216,7 @@ path.
+ <item>! -- refers to your <ref id="spoolfile" name="&dollar;spoolfile"> (incoming) mailbox
+ <item>&gt; -- refers to your <ref id="mbox" name="&dollar;mbox"> file
+ <item>&lt; -- refers to your <ref id="record" name="&dollar;record"> file
++<item>^ -- refers to the current mailbox
+ <item>- or !! -- refers to the file you've last visited
+ <item>&tilde; -- refers to your home directory
+ <item>= or + -- refers to your <ref id="folder" name="&dollar;folder"> directory
+diff -urp ../MUTT/mutt/globals.h mutt/globals.h
+--- ../MUTT/mutt/globals.h	2004-09-04 13:31:21.000000000 +0200
++++ mutt/globals.h	2004-10-02 16:03:23.000000000 +0200
+@@ -117,6 +117,7 @@ WHERE char *Tochars;
+ WHERE char *Username;
+ WHERE char *Visual;
+ 
++WHERE char *CurrentFolder;
+ WHERE char *LastFolder;
+ 
+ WHERE LIST *AutoViewList INITVAL(0);
+diff -urp ../MUTT/mutt/main.c mutt/main.c
+--- ../MUTT/mutt/main.c	2004-06-18 17:24:22.000000000 +0200
++++ mutt/main.c	2004-10-02 16:12:33.000000000 +0200
+@@ -887,6 +887,7 @@ int main (int argc, char **argv)
+       strfcpy (folder, NONULL(Spoolfile), sizeof (folder));
+     mutt_expand_path (folder, sizeof (folder));
+ 
++    mutt_str_replace (&CurrentFolder, folder);
+     mutt_str_replace (&LastFolder, folder);
+ 
+     if (flags & M_IGNORE)
+diff -urp ../MUTT/mutt/muttlib.c mutt/muttlib.c
+--- ../MUTT/mutt/muttlib.c	2004-09-04 13:31:22.000000000 +0200
++++ mutt/muttlib.c	2004-10-02 16:16:12.000000000 +0200
+@@ -452,6 +452,13 @@ char *_mutt_expand_path (char *s, size_t
+       }
+       break;
+       
++      case '^':        
++      {
++	strfcpy (p, NONULL(CurrentFolder), sizeof (p));
++	tail = s + 1;
++      }
++      break;
++
+       default:
+       {
+ 	*p = '\0';

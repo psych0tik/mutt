@@ -1,0 +1,32 @@
+Source: mutt
+Section: mail
+Priority: standard
+Maintainer: Marco d'Itri <md@linux.it>
+Uploaders: Marco d'Itri <md@linux.it>, Adeodato Simó <asp16@alu.ua.es>
+Build-Depends: debhelper (>= 4), linuxdoc-tools-text, gettext, groff, libncurses5-dev, libsasl2-dev, libgnutls11-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.3-dev
+Standards-Version: 3.6.1.1
+
+Package: mutt
+Architecture: any
+Priority: standard
+Depends: ${shlibs:Depends}, ${misc:Depends}, exim4 | mail-transport-agent
+Suggests: urlview, aspell | ispell, gnupg, mixmaster, openssl, ca-certificates
+Recommends: locales, mime-support
+Provides: mail-reader, imap-client
+Conflicts: suidmanager (<< 0.50), mutt-i, mutt-utf8
+Replaces: mutt-i, mutt-utf8
+Description: Text-based mailreader supporting MIME, GPG, PGP and threading
+ Mutt is a sophisticated text-based Mail User Agent. Some highlights:
+  o MIME support (including RFC1522 encoding/decoding of 8-bit message
+    headers and UTF-8 support).
+  o PGP/MIME support (RFC 2015).
+  o Advanced IMAP client supporting SSL encryption and SASL authentication.
+  o POP3 support.
+  o Mailbox threading (both strict and non-strict).
+  o Default keybindings are much like ELM.
+  o Keybindings are configurable; Mush and PINE-like ones are provided as
+    examples.
+  o Handles MMDF, MH and Maildir in addition to regular mbox format.
+  o Messages may be (indefinitely) postponed.
+  o Colour support.
+  o Highly configurable through easy but powerful rc file.

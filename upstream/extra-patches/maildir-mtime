@@ -1,0 +1,140 @@
+# vi: ft=diff
+This is the maildir mtime patch by Dale Woolridge.
+
+The home page for this patch is:
+
+  http://www.mutt.ca/maildir-mtime.html
+
+* Patch last synced with upstream:
+  - Date: 2004-08-10
+  - File: http://www.mutt.ca/patches/patch-1.5.6.dw.maildir-mtime.1
+
+* Changes made:
+  - removed a spurious const in add_folder() definition.
+  - added a $maildir_mtime option to allow this patch to be disabled at
+    runtime (see Bug#253261, comments from Zephaniah E. Hull).
+
+== END PATCH
+--- maildir-mtime/PATCHES Dec 2002 17:44:54 -0000	3.6
++++ maildir-mtime/PATCHES Feb 2004 13:19:42 -0000
+@@ -0,0 +1 @@
++patch-1.5.6.dw.maildir-mtime.1
+--- maildir-mtime/browser.c Sep 2003 13:03:25 -0000	3.9
++++ maildir-mtime/browser.c Feb 2004 13:19:42 -0000
+@@ -29,2 +29,3 @@
+ #endif
++#include "mx.h"
+ 
+@@ -304,4 +305,6 @@ folder_format_str (char *dest, size_t de
+ static void add_folder (MUTTMENU *m, struct browser_state *state,
+-			const char *name, const struct stat *s, int new)
++			const char *name, /*DEB const IAN*/ struct stat *s, BUFFY *mbuf)
+ {
++  int new = (mbuf) ? mbuf->new : 0;
++
+   if (state->entrylen == state->entrymax)
+@@ -317,2 +320,5 @@ static void add_folder (MUTTMENU *m, str
+ 
++  if (mbuf && mbuf->magic == M_MAILDIR && mbuf->mtime)
++    s->st_mtime = mbuf->mtime;
++
+   if (s != NULL)
+@@ -411,3 +417,3 @@ static int examine_directory (MUTTMENU *
+       tmp = tmp->next;
+-    add_folder (menu, state, de->d_name, &s, (tmp) ? tmp->new : 0);
++    add_folder (menu, state, de->d_name, &s, tmp);
+   }
+@@ -435,3 +441,3 @@ static int examine_mailboxes (MUTTMENU *
+     {
+-      add_folder (menu, state, tmp->path, NULL, tmp->new);
++      add_folder (menu, state, tmp->path, NULL, tmp);
+       continue;
+@@ -442,3 +448,3 @@ static int examine_mailboxes (MUTTMENU *
+     {
+-      add_folder (menu, state, tmp->path, NULL, tmp->new);
++      add_folder (menu, state, tmp->path, NULL, tmp);
+       continue;
+@@ -456,3 +462,3 @@ static int examine_mailboxes (MUTTMENU *
+ 
+-    add_folder (menu, state, buffer, &s, tmp->new);
++    add_folder (menu, state, buffer, &s, tmp);
+   }
+--- maildir-mtime/buffy.c Feb 2004 17:50:43 -0000	3.9
++++ maildir-mtime/buffy.c Feb 2004 13:19:42 -0000
+@@ -229,2 +229,3 @@ int mutt_parse_mailboxes (BUFFER *path, 
+     (*tmp)->newly_created = 0;
++    (*tmp)->mtime = 0;
+ 
+@@ -260,2 +261,3 @@ int mutt_buffy_check (int force)
+   struct stat sb;
++  struct stat smd;
+   struct dirent *de;
+@@ -299,2 +301,3 @@ int mutt_buffy_check (int force)
+     tmp->new = 0;
++    tmp->mtime = 0;
+ 
+@@ -383,6 +386,13 @@ int mutt_buffy_check (int force)
+ 	  {
+-	    /* one new and undeleted message is enough */
+-	    BuffyCount++;
+-	    tmp->new = 1;
+-	    break;
++	    if (!tmp->new)
++	    {
++	      /* one new and undeleted message is enough */
++	      BuffyCount++;
++	      tmp->new = 1;
++	    }
++	    snprintf (path, sizeof (path), "%s/new/%s", tmp->path, de->d_name);
++	    if (!stat (path, &smd) && smd.st_mtime > tmp->mtime)
++	    {
++	      tmp->mtime = smd.st_mtime;
++	    }
+ 	  }
+--- maildir-mtime/buffy.h Dec 2002 11:19:39 -0000	3.2
++++ maildir-mtime/buffy.h Feb 2004 13:19:42 -0000
+@@ -29,2 +29,3 @@ typedef struct buffy_t
+   struct buffy_t *next;
++  time_t mtime;			/* for maildirs...time of newest entry */
+   short new;			/* mailbox has new mail */
+--- DEBIAN/buffy.c
++++ DEBIAN/buffy.c.new
+@@ -389,6 +389,9 @@
+ 	      /* one new and undeleted message is enough */
+ 	      BuffyCount++;
+ 	      tmp->new = 1;
++
++	      if (! option (OPTMAILDIRMTIME)) /* prevent stat calls */
++		break;
+ 	    }
+ 	    snprintf (path, sizeof (path), "%s/new/%s", tmp->path, de->d_name);
+ 	    if (!stat (path, &smd) && smd.st_mtime > tmp->mtime)
+--- DEBIAN/init.h
++++ DEBIAN/init.h.new
+@@ -1022,6 +1022,16 @@
+   ** \fBDON'T CHANGE THIS SETTING UNLESS YOU ARE REALLY SURE WHAT YOU ARE
+   ** DOING!\fP
+   */
++  { "maildir_mtime", DT_BOOL, R_NONE, OPTMAILDIRMTIME, 0 },
++  /*
++  ** .pp
++  ** If set, the sort-by-date option in the browser will sort maildirs
++  ** smartly, not using the mtime of the maildir itself but that of the
++  ** newest message in the new subdirectory, making the sorting by
++  ** reverse date much more useful. People with maildirs over NFS may
++  ** wish to leave this option unset.
++  **
++  */
+ #if USE_HCACHE
+ 
+   { "header_cache", DT_PATH, R_NONE, UL &HeaderCache, 0 },
+--- DEBIAN/mutt.h
++++ DEBIAN/mutt.h.new
+@@ -396,6 +396,7 @@
+   OPTINCLUDEONLYFIRST,
+   OPTKEEPFLAGGED,
+   OPTMAILCAPSANITIZE,
++  OPTMAILDIRMTIME,
+   OPTMAILDIRTRASH,
+   OPTMARKERS,
+   OPTMARKOLD,

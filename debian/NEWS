@@ -1,0 +1,16 @@
+mutt (1.5.6-1) unstable; urgency=low
+
+ In this release the alternates, lists, and subscribe configuration
+ variables have been turned into regular expression lists.
+ Additionaly, alternates is now an option, not a  variable.
+ This means that you should change:
+
+ set alternates="foo|bar"
+
+ into
+
+ alternates "foo|bar"
+
+ in your .muttrc file. See muttrc(5) for details.
+
+ -- Artur R. Czechowski <arturcz@hell.pl>  Sun,  4 Apr 2004 14:04:03 +0200

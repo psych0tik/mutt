@@ -1,0 +1,36 @@
+This package was originally debianized by Stephen Pitts 
+<pitts2@memphisonline.com> on Thu, 14 Nov 1996 19:04:20 -0600.
+
+The next debian maintainer was J.H.M. Dassen <jdassen@wi.LeidenUniv.nl>.
+
+Current debian maintainer is Marco d'Itri <md@linux.it> (since sept. 1998).
+
+Original source has been downloaded from ftp://ftp.mutt.org/mutt/ .
+
+
+The following copyright notices apply to most of the program.  Some
+modules are under different licenses, or in the public domain.
+
+Please note that this is by no means an exhaustive list of all the
+persons who have been contributing to this program.  Please see the
+manual for a (probably still non complete) list of the persons who
+have been helpful with the development of this program.
+
+Copyright (C) 1996-2001 Michael R. Elkins <me@cs.hmc.edu>
+Copyright (C) 1996-2001 Brandon Long <blong@fiction.net>
+Copyright (C) 1997-2001 Thomas Roessler <roessler@guug.de>
+Copyright (C) 1998-2001 Werner Koch <wk@isil.d.shuttle.de>
+Copyright (C) 1999-2001 Brendan Cully <brendan@kublai.com>
+Copyright (C) 1999-2001 Tommi Komulainen <Tommi.Komulainen@iki.fi>
+Copyright (C) 2000-2001 Edmund Grimley Evans <edmundo@rano.org>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+On Debian systems, the complete text of the GNU General Public License
+can be found in `/usr/share/common-licenses/GPL'.
+
+The list of authors of the applied patches to this version of mutt can
+be found in `/usr/share/doc/mutt/README.Patches.gz'.
