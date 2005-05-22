@@ -1,3 +1,10 @@
+mutt (1.5.9-2) unstable; urgency=high
+
+  * Added a missing Build-Depend on mawk. (Closes: #310039)
+  * Updated the Swedish translation.
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Sun, 22 May 2005 17:29:25 +0200
+
 mutt (1.5.9-1) unstable; urgency=medium
 
   * New upstream release, though the previous upload already included most of
