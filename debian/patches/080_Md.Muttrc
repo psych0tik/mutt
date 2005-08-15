@@ -1,7 +1,7 @@
 diff -ruN mutt-1.5.9.orig/Muttrc.head.in mutt-1.5.9/Muttrc.head.in
 --- mutt-1.5.9.orig/Muttrc.head.in	2002-01-24 13:10:47.000000000 +0100
 +++ mutt-1.5.9/Muttrc.head.in	2005-04-10 13:54:02.000000000 +0200
-@@ -6,6 +6,41 @@
+@@ -6,6 +6,38 @@
  #
  ignore "from " received content- mime-version status x-status message-id
  ignore sender references return-path lines
@@ -21,9 +21,6 @@ diff -ruN mutt-1.5.9.orig/Muttrc.head.in mutt-1.5.9/Muttrc.head.in
 +#set pager_stop
 +#bind pager <up> previous-line
 +#bind pager <down> next-line
-+
-+# restore the behaviour of mutt versions up to 1.5.7
-+set menu_move_off
 +
 +# don't add the hostname to the From header
 +unset use_domain

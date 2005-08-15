@@ -125,7 +125,7 @@ The home page for this patch is:
 +  ** wish to leave this option unset.
 +  **
 +  */
- #if USE_HCACHE
+ #ifdef USE_HCACHE
  
    { "header_cache", DT_PATH, R_NONE, UL &HeaderCache, 0 },
 --- DEBIAN/mutt.h

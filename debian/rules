@@ -44,6 +44,12 @@ $(STAMP_DIR)/source.make:
 		$B/stamp-h.in $B/config.h.in
 	touch $@
 
+	# update config.guess and config.sub
+	-test -r /usr/share/misc/config.sub && \
+	cp -f /usr/share/misc/config.sub $B/config.sub
+	-test -r /usr/share/misc/config.guess && \
+	cp -f /usr/share/misc/config.guess $B/config.guess
+
 configure: $(STAMP_DIR)/configure
 $(STAMP_DIR)/configure: $(STAMP_DIR)/source.make
 	CC=cc ac_cv_path_ISPELL=ispell \
@@ -96,7 +102,7 @@ binary-arch: $(STAMP_DIR)/build checkroot
 		$B/contrib/*rc $B/contrib/sample.muttrc-tlr \
 		extra/ray.muttrc extra/colors.angdraug
 	dh_installman \
-		$B/doc/mutt.man $B/doc/dotlock.man \
+		$B/doc/mutt.1 $B/doc/dotlock.man \
 		$B/doc/muttrc.man $B/doc/mbox.man
 
 	install --mode=755 extra/debian-ldap-query extra/mailspell \

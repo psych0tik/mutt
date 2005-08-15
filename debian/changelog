@@ -1,3 +1,47 @@
+mutt (1.5.10-1) unstable; urgency=low
+
+  * New upstream release, fixing the following bugs:
+    + does not store gpg passphrase when signing or decrypting has failed,
+      since that probably means it was wrong. (Closes: #132548)
+    + does not fail to delete attachments in unencrypted mails. (Closes:
+      #302500)
+
+  * New functionality overview or otherwise noticeable news:
+    + $imap_check_subscribed variable to add the list of subscribed folders to
+      the buffy list.
+    + $braille_friendly variable to make Mutt more usable for blind users.
+    + $imap_login variable in case the login name on the IMAP server is
+      different to the name of the account ($imap_user).
+    + -D command line option to dump current configuration, after all
+      initialization files have been read.
+    + $imap_force_ssl gone.
+    + an empty limit is now interpreted as a request to cancel the current
+      limit.
+
+  * Patches:
+    + 080_Md.paths_mutt.man: adjusted; upstream build system puts now the
+      right paths in mutt.1 using @bindir@. Install mutt.1 instead of mutt.man
+      in debian/rules.
+    + 080_Md.Muttrc: don't set menu_move_off in /etc/Muttrc since the
+      compile-time default is now what we want (pre-1.5.7 compatible).
+    + edit-threads, current-shortcut, incomplete-mbyte: removed, integrated
+      upstream.
+    + maildir-mtime: s/if/ifdef/ to get it to apply.
+    + compressed-folders: updated to 1.5.10.
+
+  * Upstream now builds "complete" documentation, i.e., for all features
+    whether enabled or not. Disable that for Debian. [patch.docs-match-config.h]
+
+  * Build-Depend on autotools-dev and use updated config.{guess,sub} at build
+    time to fix FTBFS on GNU/kFreeBSD. (Closes: #302735)
+
+  * Update Standards-Version to 3.6.2 (no changes required).
+
+  * Set myself as the maintainer, and remove Marco from Uploaders as agreed
+    with him.
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Mon, 15 Aug 2005 15:51:55 +0200
+
 mutt (1.5.9-2) unstable; urgency=high
 
   * Added a missing Build-Depend on mawk. (Closes: #310039)

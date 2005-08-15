@@ -1,4 +1,0 @@
---- a/debian-config.h
-+++ b/debian-config.h
-@@ -0,0 +1 @@
-+#define IMAP_EDIT_THREADS 1

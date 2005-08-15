@@ -5,10 +5,9 @@ diff -urN mutt-1.3.22.orig/doc/mutt.man mutt-1.3.22/doc/mutt.man
  User's personal mapping between MIME types and file extensions.
  .IP "/etc/mime.types"
  System mapping between MIME types and file extensions.
--.IP "/usr/local/bin/mutt_dotlock"
-+.IP "/usr/bin/mutt_dotlock"
+ .IP "@bindir@/mutt_dotlock"
  The privileged dotlocking program.
--.IP "/usr/local/doc/mutt/manual.txt"
+-.IP "@docdir@/manual.txt"
 +.IP "/usr/share/doc/mutt/manual.txt.gz"
  The Mutt manual.
  .SH BUGS

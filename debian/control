@@ -1,10 +1,9 @@
 Source: mutt
 Section: mail
 Priority: standard
-Maintainer: Marco d'Itri <md@linux.it>
-Uploaders: Marco d'Itri <md@linux.it>, Adeodato Simó <asp16@alu.ua.es>
-Build-Depends: debhelper (>= 4), mawk, linuxdoc-tools-text, gettext, groff, libncurses5-dev, libsasl2-dev, libgnutls11-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.3-dev
-Standards-Version: 3.6.1.1
+Maintainer: Adeodato Simó <asp16@alu.ua.es>
+Build-Depends: debhelper (>= 4), autotools-dev, mawk, linuxdoc-tools-text, gettext, groff, libncurses5-dev, libsasl2-dev, libgnutls11-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.3-dev
+Standards-Version: 3.6.2
 
 Package: mutt
 Architecture: any
