@@ -8,7 +8,7 @@ set smime_get_cert_command="openssl pkcs7 -print_certs -in %f"
 set smime_get_signer_cert_command="openssl smime -verify -in %f -noverify -signer %c -out /dev/null"
 set smime_get_cert_email_command="openssl x509 -in %f -noout -email"
 set smime_import_cert_command="smime_keys add_cert %f"
-set smime_encrypt_command="openssl smime -encrypt -%a -outform DER -in %f %c"
+set smime_encrypt_command="openssl smime -encrypt %a -outform DER -in %f %c"
 set smime_sign_command="openssl smime -sign -signer %c -inkey %k -passin stdin -in %f -certfile %i -outform DER"
 # This alternative command does not include the full certificates chain.
 # Be sure to understand RFC 2315 section 9.1 before using it.

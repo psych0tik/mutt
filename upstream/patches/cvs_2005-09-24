@@ -1,0 +1,1407 @@
+Index: mutt/ChangeLog
+===================================================================
+RCS file: /home/roessler/cvs/mutt/ChangeLog,v
+retrieving revision 3.607
+retrieving revision 3.610
+diff -u -p -u -a -r3.607 -r3.610
+--- mutt/ChangeLog	22 Sep 2005 16:39:10 -0000	3.607
++++ mutt/ChangeLog	24 Sep 2005 20:04:38 -0000	3.610
+@@ -1,3 +1,24 @@
++2005-09-24 20:03:04  Brendan Cully  <brendan@kublai.com>  (brendan)
++
++	* edit.c: Inflict more needless pain on translators by splitting
++	EditorHelp to satisfy -pedantic.
++
++	* mbox.c, mutt.h, configure.in: Use fseeko/ftello when available
++	while opening mbox/mmdf. Closes: #2084.
++
++2005-09-24 19:36:35  Alain Bench  <veronatif@free.fr>  (brendan)
++
++	* copy.c, mutt.h, parse.c, sendlib.c, thread.c: Cosmetic fixes to
++	MIME headers. Closes: #2086.
++
++2005-09-24 17:51:17  TAKAHASHI Tamotsu  <ttakah@lapis.plala.or.jp>  (brendan)
++
++	* po/ja.po: Update to HEAD.
++
++2005-09-23 18:38:36  TAKAHASHI Tamotsu  <ttakah@lapis.plala.or.jp>  (brendan)
++
++	* configure.in: Quote an error message.
++
+ 2005-09-22 16:38:08  Takahashi Tamotsu  <ttakah@lapis.plala.or.jp>  (brendan)
+ 
+ 	* configure.in, globals.h, hcache.c, init.h: Update QDBM patch to
+Index: mutt/configure.in
+===================================================================
+RCS file: /home/roessler/cvs/mutt/configure.in,v
+retrieving revision 3.37
+retrieving revision 3.39
+diff -u -p -u -a -r3.37 -r3.39
+--- mutt/configure.in	22 Sep 2005 16:38:08 -0000	3.37
++++ mutt/configure.in	24 Sep 2005 19:45:22 -0000	3.39
+@@ -41,6 +41,7 @@ AC_C_INLINE
+ AC_C_CONST
+ 
+ AC_SYS_LARGEFILE
++AC_FUNC_FSEEKO
+ 
+ AC_PATH_PROG(DBX, dbx, no)
+ AC_PATH_PROG(GDB, gdb, no)
+@@ -82,6 +83,15 @@ AH_TEMPLATE([ICONV_NONTRANS],
+             [Define as 1 if iconv() only converts exactly and we should treat
+              all return values other than (size_t)(-1) as equivalent.])
+ 
++AH_BOTTOM([/* fseeko portability defines */
++#ifdef HAVE_FSEEKO
++# define LOFF_T off_t
++#else
++# define LOFF_T long
++# define fseeko fseek
++# define ftello ftell
++#endif
++])
+ MUTT_C99_INTTYPES
+ 
+ ac_aux_path_sendmail=/usr/sbin:/usr/lib
+@@ -825,7 +835,7 @@ AC_ARG_ENABLE(hcache, AC_HELP_STRING([--
+         LIBS="$OLDLIBS -L$BDB_LIB_DIR -l$BDB_LIB"
+         AC_DEFINE(HAVE_DB4, 1, [Sleepycat DB4 Support])
+     else
+-        AC_MSG_ERROR(You need QDBM, Sleepycat DB4 or GDBM for --enable-hcache)
++        AC_MSG_ERROR([You need QDBM, GDBM or Sleepycat DB4 for hcache])
+     fi
+ fi])
+ dnl -- end cache --
+Index: mutt/copy.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/copy.c,v
+retrieving revision 3.24
+retrieving revision 3.25
+diff -u -p -u -a -r3.24 -r3.25
+--- mutt/copy.c	17 Sep 2005 20:46:10 -0000	3.24
++++ mutt/copy.c	24 Sep 2005 19:36:35 -0000	3.25
+@@ -364,7 +364,7 @@ mutt_copy_header (FILE *in, HEADER *h, F
+   if (flags & CH_TXTPLAIN)
+   {
+     char chsbuf[SHORT_STRING];
+-    fputs ("Mime-Version: 1.0\n", out);
++    fputs ("MIME-Version: 1.0\n", out);
+     fputs ("Content-Transfer-Encoding: 8bit\n", out);
+     fputs ("Content-Type: text/plain; charset=", out);
+     mutt_canonical_charset (chsbuf, sizeof (chsbuf), Charset ? Charset : "us-ascii");
+@@ -672,7 +672,7 @@ _mutt_copy_message (FILE *fpout, FILE *f
+     {
+       if (crypt_pgp_decrypt_mime (fpin, &fp, hdr->content, &cur))
+ 	return (-1);
+-      fputs ("Mime-Version: 1.0\n", fpout);
++      fputs ("MIME-Version: 1.0\n", fpout);
+     }
+ 
+     if ((WithCrypto & APPLICATION_SMIME)
+Index: mutt/edit.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/edit.c,v
+retrieving revision 3.7
+retrieving revision 3.8
+diff -u -p -u -a -r3.7 -r3.8
+--- mutt/edit.c	17 Sep 2005 20:46:10 -0000	3.7
++++ mutt/edit.c	24 Sep 2005 20:03:04 -0000	3.8
+@@ -38,7 +38,7 @@
+  * SLcurses_waddnstr() can't take a "const char *", so this is only
+  * declared "static" (sigh)
+  */
+-static char* EditorHelp = N_("\
++static char* EditorHelp1 = N_("\
+ ~~		insert a line begining with a single ~\n\
+ ~b users	add users to the Bcc: field\n\
+ ~c users	add users to the Cc: field\n\
+@@ -47,7 +47,9 @@ static char* EditorHelp = N_("\
+ ~h		edit the message header\n\
+ ~m messages	include and quote messages\n\
+ ~M messages	same as ~m, except include headers\n\
+-~p		print the message\n\
++~p		print the message\n");
++
++static char* EditorHelp2 = N_("\
+ ~q		write file and quit editor\n\
+ ~r file		read a file into the editor\n\
+ ~t users	add users to the To: field\n\
+@@ -352,7 +354,8 @@ int mutt_builtin_editor (const char *pat
+       switch (tmp[1])
+       {
+ 	case '?':
+-	  addstr (_(EditorHelp));
++	  addstr (_(EditorHelp1));
++          addstr (_(EditorHelp2));
+ 	  break;
+ 	case 'b':
+ 	  msg->env->bcc = mutt_parse_adrlist (msg->env->bcc, p);
+Index: mutt/mbox.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/mbox.c,v
+retrieving revision 3.9
+retrieving revision 3.10
+diff -u -p -u -a -r3.9 -r3.10
+--- mutt/mbox.c	17 Sep 2005 20:46:10 -0000	3.9
++++ mutt/mbox.c	24 Sep 2005 19:45:23 -0000	3.10
+@@ -85,7 +85,7 @@ int mmdf_parse_mailbox (CONTEXT *ctx)
+   int count = 0, oldmsgcount = ctx->msgcount;
+   int lines;
+   time_t t, tz;
+-  long loc, tmploc;
++  LOFF_T loc, tmploc;
+   HEADER *hdr;
+   struct stat sb;
+ #ifdef NFS_ATTRIBUTE_HACK
+@@ -122,7 +122,7 @@ int mmdf_parse_mailbox (CONTEXT *ctx)
+ 
+     if (mutt_strcmp (buf, MMDF_SEP) == 0)
+     {
+-      loc = ftell (ctx->fp);
++      loc = ftello (ctx->fp);
+       
+       count++;
+       if (!ctx->quiet && ReadInc && ((count % ReadInc == 0) || count == 1))
+@@ -159,7 +159,7 @@ int mmdf_parse_mailbox (CONTEXT *ctx)
+ 
+       hdr->env = mutt_read_rfc822_header (ctx->fp, hdr, 0, 0);
+ 
+-      loc = ftell (ctx->fp);
++      loc = ftello (ctx->fp);
+ 
+       if (hdr->content->length > 0 && hdr->lines > 0)
+       {
+@@ -186,7 +186,7 @@ int mmdf_parse_mailbox (CONTEXT *ctx)
+       {
+ 	lines = -1;
+ 	do {
+-	  loc = ftell (ctx->fp);
++	  loc = ftello (ctx->fp);
+ 	  if (fgets (buf, sizeof (buf) - 1, ctx->fp) == NULL)
+ 	    break;
+ 	  lines++;
+@@ -231,7 +231,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+   HEADER *curhdr;
+   time_t t, tz;
+   int count = 0, lines = 0;
+-  long loc;
++  LOFF_T loc;
+ #ifdef NFS_ATTRIBUTE_HACK
+   struct utimbuf newtime;
+ #endif
+@@ -262,7 +262,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+      date received */
+   tz = mutt_local_tz (0);
+ 
+-  loc = ftell (ctx->fp);
++  loc = ftello (ctx->fp);
+   while (fgets (buf, sizeof (buf), ctx->fp) != NULL)
+   {
+     if (is_from (buf, return_path, sizeof (return_path), &t))
+@@ -304,9 +304,9 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+        */
+       if (curhdr->content->length > 0)
+       {
+-	long tmploc;
++	LOFF_T tmploc;
+ 
+-	loc = ftell (ctx->fp);
++	loc = ftello (ctx->fp);
+ 	tmploc = loc + curhdr->content->length + 1;
+ 
+ 	if (0 < tmploc && tmploc < ctx->size)
+@@ -315,13 +315,13 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+ 	   * check to see if the content-length looks valid.  we expect to
+ 	   * to see a valid message separator at this point in the stream
+ 	   */
+-	  if (fseek (ctx->fp, tmploc, SEEK_SET) != 0 ||
++	  if (fseeko (ctx->fp, tmploc, SEEK_SET) != 0 ||
+ 	      fgets (buf, sizeof (buf), ctx->fp) == NULL ||
+ 	      mutt_strncmp ("From ", buf, 5) != 0)
+ 	  {
+ 	    dprint (1, (debugfile, "mbox_parse_mailbox: bad content-length in message %d (cl=%ld)\n", curhdr->index, curhdr->content->length));
+ 	    dprint (1, (debugfile, "\tLINE: %s", buf));
+-	    if (fseek (ctx->fp, loc, SEEK_SET) != 0) /* nope, return the previous position */
++	    if (fseeko (ctx->fp, loc, SEEK_SET) != 0) /* nope, return the previous position */
+ 	    {
+ 	      dprint (1, (debugfile, "mbox_parse_mailbox: fseek() failed\n"));
+ 	    }
+@@ -346,7 +346,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+ 	    int cl = curhdr->content->length;
+ 
+ 	    /* count the number of lines in this message */
+-	    if (fseek (ctx->fp, loc, SEEK_SET) != 0)
++	    if (fseeko (ctx->fp, loc, SEEK_SET) != 0)
+ 	      dprint (1, (debugfile, "mbox_parse_mailbox: fseek() failed\n"));
+ 	    while (cl-- > 0)
+ 	    {
+@@ -356,7 +356,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+ 	  }
+ 
+ 	  /* return to the offset of the next message separator */
+-	  if (fseek (ctx->fp, tmploc, SEEK_SET) != 0)
++	  if (fseeko (ctx->fp, tmploc, SEEK_SET) != 0)
+ 	    dprint (1, (debugfile, "mbox_parse_mailbox: fseek() failed\n"));
+ 	}
+       }
+@@ -374,7 +374,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+     else
+       lines++;
+     
+-    loc = ftell (ctx->fp);
++    loc = ftello (ctx->fp);
+   }
+   
+   /*
+@@ -387,7 +387,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
+   {
+     if (PREV->content->length < 0)
+     {
+-      PREV->content->length = ftell (ctx->fp) - PREV->content->offset - 1;
++      PREV->content->length = ftello (ctx->fp) - PREV->content->offset - 1;
+       if (PREV->content->length < 0)
+ 	PREV->content->length = 0;
+     }
+Index: mutt/mutt.h
+===================================================================
+RCS file: /home/roessler/cvs/mutt/mutt.h,v
+retrieving revision 3.57
+retrieving revision 3.59
+diff -u -p -u -a -r3.57 -r3.59
+--- mutt/mutt.h	21 Sep 2005 06:04:37 -0000	3.57
++++ mutt/mutt.h	24 Sep 2005 19:45:23 -0000	3.59
+@@ -627,7 +627,7 @@ typedef struct body
+ 				 * attachment
+ 				 */
+   long offset;                  /* offset where the actual data begins */
+-  long length;                  /* length (in bytes) of attachment */
++  LOFF_T length;                  /* length (in bytes) of attachment */
+   char *filename;               /* when sending a message, this is the file
+ 				 * to which this structure refers
+ 				 */
+@@ -692,7 +692,7 @@ typedef struct header
+   unsigned int security : 11;  /* bit 0-6: flags, bit 7,8: application.
+ 				 see: crypt.h pgplib.h, smime.h */
+ 
+-  unsigned int mime : 1;    		/* has a Mime-Version header? */
++  unsigned int mime : 1;    		/* has a MIME-Version header? */
+   unsigned int flagged : 1; 		/* marked important? */
+   unsigned int tagged : 1;
+   unsigned int deleted : 1;
+Index: mutt/parse.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/parse.c,v
+retrieving revision 3.18
+retrieving revision 3.19
+diff -u -p -u -a -r3.18 -r3.19
+--- mutt/parse.c	17 Sep 2005 20:46:10 -0000	3.18
++++ mutt/parse.c	24 Sep 2005 19:36:35 -0000	3.19
+@@ -1105,7 +1105,7 @@ int mutt_parse_rfc822_line (ENVELOPE *e,
+     }
+     else if (!ascii_strcasecmp (line + 1, "essage-id"))
+     {
+-      /* We add a new "Message-Id:" when building a message */
++      /* We add a new "Message-ID:" when building a message */
+       FREE (&e->message_id);
+       e->message_id = extract_message_id (p);
+       matched = 1;
+Index: mutt/sendlib.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/sendlib.c,v
+retrieving revision 3.34
+retrieving revision 3.35
+diff -u -p -u -a -r3.34 -r3.35
+--- mutt/sendlib.c	17 Sep 2005 20:46:11 -0000	3.34
++++ mutt/sendlib.c	24 Sep 2005 19:36:35 -0000	3.35
+@@ -1057,7 +1057,7 @@ void mutt_message_to_7bit (BODY *a, FILE
+   mutt_copy_hdr (fpin, fpout, a->offset, a->offset + a->length, 
+ 		 CH_MIME | CH_NONEWLINE | CH_XMIT, NULL);
+ 
+-  fputs ("Mime-Version: 1.0\n", fpout);
++  fputs ("MIME-Version: 1.0\n", fpout);
+   mutt_write_mime_header (a->parts, fpout);
+   fputc ('\n', fpout);
+   mutt_write_mime_body (a->parts, fpout);
+@@ -1614,7 +1614,7 @@ int mutt_write_rfc822_header (FILE *fp, 
+     }
+ 
+     /* Add the MIME headers */
+-    fputs ("Mime-Version: 1.0\n", fp);
++    fputs ("MIME-Version: 1.0\n", fp);
+     mutt_write_mime_header (attach, fp);
+   }
+ 
+Index: mutt/thread.c
+===================================================================
+RCS file: /home/roessler/cvs/mutt/thread.c,v
+retrieving revision 3.15
+retrieving revision 3.16
+diff -u -p -u -a -r3.15 -r3.16
+--- mutt/thread.c	17 Sep 2005 20:46:11 -0000	3.15
++++ mutt/thread.c	24 Sep 2005 19:36:35 -0000	3.16
+@@ -1374,7 +1374,7 @@ static void clean_references (THREAD *br
+     {
+       HEADER *h = cur->message;
+ 
+-      /* clearing the References: header from obsolete Message-Id(s) */
++      /* clearing the References: header from obsolete Message-ID(s) */
+       mutt_free_list (&ref->next);
+ 
+       h->env->refs_changed = h->changed = 1;
+Index: mutt/po/ja.po
+===================================================================
+RCS file: /home/roessler/cvs/mutt/po/ja.po,v
+retrieving revision 3.34
+retrieving revision 3.35
+diff -u -p -u -a -r3.34 -r3.35
+--- mutt/po/ja.po	17 Sep 2005 20:46:13 -0000	3.34
++++ mutt/po/ja.po	24 Sep 2005 17:51:17 -0000	3.35
+@@ -6,15 +6,15 @@
+ #
+ msgid ""
+ msgstr ""
+-"Project-Id-Version: 1.5.9\n"
+-"Report-Msgid-Bugs-To: \n"
+-"POT-Creation-Date: 2005-09-15 16:23+0200\n"
+-"PO-Revision-Date: 2005-08-12 19:00+0900\n"
++"Project-Id-Version: 1.5.11\n"
++"POT-Creation-Date: 2005-09-24 22:08+0900\n"
++"PO-Revision-Date: 2005-09-24 22:10+0900\n"
+ "Last-Translator: Tamotsu TAKAHASHI <tamo@momonga-linux.org>\n"
+ "Language-Team: mutt-j <mutt-j-users@lists.sourceforge.jp>\n"
+ "MIME-Version: 1.0\n"
+ "Content-Type: text/plain; charset=euc-jp\n"
+ "Content-Transfer-Encoding: 8bit\n"
++"Report-Msgid-Bugs-To: Tamo <tamo@momonga-linux.org>\n"
+ 
+ #: account.c:154
+ #, c-format
+@@ -610,7 +610,7 @@ msgstr "·Ù¹ð: '%s' ¤ÏÉÔÀµ¤Ê IDN."
+ msgid "You may not delete the only attachment."
+ msgstr "Í£°ì¤ÎÅºÉÕ¥Õ¥¡¥¤¥ë¤òºï½ü¤·¤Æ¤Ï¤¤¤±¤Ê¤¤¡£"
+ 
+-#: compose.c:601 send.c:1492
++#: compose.c:601 send.c:1499
+ #, c-format
+ msgid "Bad IDN in \"%s\": '%s'"
+ msgstr "\"%s\" Ãæ¤ËÉÔÀµ¤Ê IDN: '%s'"
+@@ -908,7 +908,7 @@ msgstr "¥¨¥é¡¼: Éü¹æ²½/¸¡¾Ú¤¬¼ºÇÔ¤·¤¿: %
+ msgid "Error: copy data failed\n"
+ msgstr "¥¨¥é¡¼: ¥Ç¡¼¥¿¤Î¥³¥Ô¡¼¤Ë¼ºÇÔ¤·¤¿\n"
+ 
+-#: crypt-gpgme.c:2074 pgp.c:410
++#: crypt-gpgme.c:2074 pgp.c:418
+ msgid ""
+ "[-- BEGIN PGP MESSAGE --]\n"
+ "\n"
+@@ -916,11 +916,11 @@ msgstr ""
+ "[-- PGP ¥á¥Ã¥»¡¼¥¸³«»Ï --]\n"
+ "\n"
+ 
+-#: crypt-gpgme.c:2076 pgp.c:412
++#: crypt-gpgme.c:2076 pgp.c:420
+ msgid "[-- BEGIN PGP PUBLIC KEY BLOCK --]\n"
+ msgstr "[-- PGP ¸ø³«¸°¥Ö¥í¥Ã¥¯³«»Ï --]\n"
+ 
+-#: crypt-gpgme.c:2079 pgp.c:414
++#: crypt-gpgme.c:2079 pgp.c:422
+ msgid ""
+ "[-- BEGIN PGP SIGNED MESSAGE --]\n"
+ "\n"
+@@ -928,19 +928,19 @@ msgstr ""
+ "[-- PGP ½ðÌ¾¥á¥Ã¥»¡¼¥¸³«»Ï --]\n"
+ "\n"
+ 
+-#: crypt-gpgme.c:2106 pgp.c:440
++#: crypt-gpgme.c:2106 pgp.c:448
+ msgid "[-- END PGP MESSAGE --]\n"
+ msgstr "[-- PGP¥á¥Ã¥»¡¼¥¸½ªÎ» --]\n"
+ 
+-#: crypt-gpgme.c:2108 pgp.c:444
++#: crypt-gpgme.c:2108 pgp.c:452
+ msgid "[-- END PGP PUBLIC KEY BLOCK --]\n"
+ msgstr "[-- PGP ¸ø³«¸°¥Ö¥í¥Ã¥¯½ªÎ» --]\n"
+ 
+-#: crypt-gpgme.c:2110 pgp.c:446
++#: crypt-gpgme.c:2110 pgp.c:454
+ msgid "[-- END PGP SIGNED MESSAGE --]\n"
+ msgstr "[-- PGP ½ðÌ¾¥á¥Ã¥»¡¼¥¸½ªÎ» --]\n"
+ 
+-#: crypt-gpgme.c:2131 pgp.c:476
++#: crypt-gpgme.c:2131 pgp.c:484
+ msgid ""
+ "[-- Error: could not find beginning of PGP message! --]\n"
+ "\n"
+@@ -948,7 +948,7 @@ msgstr ""
+ "[-- ¥¨¥é¡¼: PGP ¥á¥Ã¥»¡¼¥¸¤Î³«»ÏÅÀ¤òÈ¯¸«¤Ç¤­¤Ê¤«¤Ã¤¿! --]\n"
+ "\n"
+ 
+-#: crypt-gpgme.c:2162 pgp.c:905
++#: crypt-gpgme.c:2162 pgp.c:913
+ msgid ""
+ "[-- Error: malformed PGP/MIME message! --]\n"
+ "\n"
+@@ -956,7 +956,7 @@ msgstr ""
+ "[-- ¥¨¥é¡¼: ÉÔÀµ¤Ê·Á¼°¤Î PGP/MIME ¥á¥Ã¥»¡¼¥¸! --]\n"
+ "\n"
+ 
+-#: crypt-gpgme.c:2174 crypt-gpgme.c:2240 pgp.c:918
++#: crypt-gpgme.c:2174 crypt-gpgme.c:2240 pgp.c:926
+ msgid "[-- Error: could not create temporary file! --]\n"
+ msgstr "[-- ¥¨¥é¡¼: °ì»þ¥Õ¥¡¥¤¥ë¤òºîÀ®¤Ç¤­¤Ê¤«¤Ã¤¿! --]\n"
+ 
+@@ -968,7 +968,7 @@ msgstr ""
+ "[-- °Ê²¼¤Î¥Ç¡¼¥¿¤Ï PGP/MIME ¤Ç½ðÌ¾¤ª¤è¤Ó°Å¹æ²½¤µ¤ì¤Æ¤¤¤ë --]\n"
+ "\n"
+ 
+-#: crypt-gpgme.c:2187 pgp.c:927
++#: crypt-gpgme.c:2187 pgp.c:935
+ msgid ""
+ "[-- The following data is PGP/MIME encrypted --]\n"
+ "\n"
+@@ -980,7 +980,7 @@ msgstr ""
+ msgid "[-- End of PGP/MIME signed and encrypted data --]\n"
+ msgstr "[-- PGP/MIME ½ðÌ¾¤ª¤è¤Ó°Å¹æ²½¥Ç¡¼¥¿½ªÎ» --]\n"
+ 
+-#: crypt-gpgme.c:2210 pgp.c:947
++#: crypt-gpgme.c:2210 pgp.c:955
+ msgid "[-- End of PGP/MIME encrypted data --]\n"
+ msgstr "[-- PGP/MIME °Å¹æ²½¥Ç¡¼¥¿½ªÎ» --]\n"
+ 
+@@ -1050,7 +1050,6 @@ msgid "Key Type ..: %s, %lu bit %s\n"
+ msgstr "¸°¼ïÊÌ ...........: %s, %lu ¥Ó¥Ã¥È %s\n"
+ 
+ #: crypt-gpgme.c:3013 crypt-gpgme.c:3156
+-#, c-format
+ msgid "Key Usage .: "
+ msgstr "¸°Ç½ÎÏ ...........: "
+ 
+@@ -1077,7 +1076,6 @@ msgid "Serial-No .: 0x%s\n"
+ msgstr "¥·¥ê¥¢¥ëÈÖ¹æ .....: 0x%s\n"
+ 
+ #: crypt-gpgme.c:3076
+-#, c-format
+ msgid "Issued By .: "
+ msgstr "È¯¹Ô¼Ô ...........: "
+ 
+@@ -1212,12 +1210,12 @@ msgstr "%s ËÜÅö¤Ë¤³¤Î¸°¤ò»ÈÍÑ?"
+ msgid "Looking for keys matching \"%s\"..."
+ msgstr "\"%s\" ¤Ë°ìÃ×¤¹¤ë¸°¤ò¸¡º÷Ãæ..."
+ 
+-#: crypt-gpgme.c:4002 pgp.c:1154
++#: crypt-gpgme.c:4002 pgp.c:1162
+ #, c-format
+ msgid "Use keyID = \"%s\" for %s?"
+ msgstr "¸° ID = \"%s\" ¤ò %s ¤Ë»È¤¦?"
+ 
+-#: crypt-gpgme.c:4038 pgp.c:1188 smime.c:665 smime.c:790
++#: crypt-gpgme.c:4038 pgp.c:1196 smime.c:665 smime.c:790
+ #, c-format
+ msgid "Enter keyID for %s: "
+ msgstr "%s ¤Î¸° ID ÆþÎÏ: "
+@@ -1248,8 +1246,7 @@ msgstr "esabmfc"
+ 
+ #. sign (a)s
+ #. unset_option(OPTCRYPTCHECKTRUST);
+-#. sign (a)s
+-#: crypt-gpgme.c:4152 pgp.c:1563 smime.c:1990
++#: crypt-gpgme.c:4152 pgp.c:1571 smime.c:1990
+ msgid "Sign as: "
+ msgstr "½ðÌ¾¤Ë»È¤¦¸°: "
+ 
+@@ -1286,7 +1283,7 @@ msgid "Message can't be sent inline.  Re
+ msgstr "¥á¥Ã¥»¡¼¥¸¤ò¥¤¥ó¥é¥¤¥ó¤ÇÁ÷¿®¤Ç¤­¤Ê¤¤¡£PGP/MIME ¤ò»È¤¦?"
+ 
+ #. abort
+-#: crypt.c:158 send.c:1444
++#: crypt.c:158 send.c:1451
+ msgid "Mail not sent."
+ msgstr "¥á¡¼¥ë¤ÏÁ÷¿®¤µ¤ì¤Ê¤«¤Ã¤¿¡£"
+ 
+@@ -1518,90 +1515,90 @@ msgstr "ÆÉ¤ß½Ð¤·ÀìÍÑ¥â¡¼¥É¤Ç¥á¡¼¥ë¥Ü¥Ã¥¯
+ msgid "Open mailbox"
+ msgstr "¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤ò¥ª¡¼¥×¥ó"
+ 
+-#: curs_main.c:1085 mx.c:512 mx.c:658
++#: curs_main.c:1093 mx.c:512 mx.c:658
+ #, c-format
+ msgid "%s is not a mailbox."
+ msgstr "%s ¤Ï¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤Ç¤Ï¤Ê¤¤¡£"
+ 
+-#: curs_main.c:1180
++#: curs_main.c:1188
+ msgid "Exit Mutt without saving?"
+ msgstr "ÊÝÂ¸¤·¤Ê¤¤¤Ç Mutt ¤òÈ´¤±¤ë?"
+ 
+-#: curs_main.c:1198 curs_main.c:1230 curs_main.c:1692 curs_main.c:1724
++#: curs_main.c:1206 curs_main.c:1238 curs_main.c:1700 curs_main.c:1732
+ #: flags.c:293 thread.c:1022 thread.c:1077 thread.c:1132
+ msgid "Threading is not enabled."
+ msgstr "¥¹¥ì¥Ã¥ÉÉ½¼¨¤¬Í­¸ú¤Ë¤Ê¤Ã¤Æ¤¤¤Ê¤¤¡£"
+ 
+-#: curs_main.c:1210
++#: curs_main.c:1218
+ msgid "Thread broken"
+ msgstr "¥¹¥ì¥Ã¥É¤¬³°¤µ¤ì¤¿"
+ 
+-#: curs_main.c:1232
++#: curs_main.c:1240
+ msgid "No Message-ID: header available to link thread"
+ msgstr "Message-ID ¥Ø¥Ã¥À¤¬ÍøÍÑ¤Ç¤­¤Ê¤¤¤Î¤Ç¥¹¥ì¥Ã¥É¤ò¤Ä¤Ê¤²¤é¤ì¤Ê¤¤"
+ 
+-#: curs_main.c:1234
++#: curs_main.c:1242
+ msgid "First, please tag a message to be linked here"
+ msgstr "¤½¤ÎÁ°¤Ë¡¢¤³¤³¤Ø¤Ä¤Ê¤²¤¿¤¤¥á¥Ã¥»¡¼¥¸¤Ë¥¿¥°¤òÉÕ¤±¤Æ¤ª¤¯¤³¤È"
+ 
+-#: curs_main.c:1246
++#: curs_main.c:1254
+ msgid "Threads linked"
+ msgstr "¥¹¥ì¥Ã¥É¤¬¤Ä¤Ê¤¬¤Ã¤¿"
+ 
+-#: curs_main.c:1249
++#: curs_main.c:1257
+ msgid "No thread linked"
+ msgstr "¥¹¥ì¥Ã¥É¤Ï¤Ä¤Ê¤¬¤é¤Ê¤«¤Ã¤¿"
+ 
+-#: curs_main.c:1285 curs_main.c:1310
++#: curs_main.c:1293 curs_main.c:1318
+ msgid "You are on the last message."
+ msgstr "¤¹¤Ç¤ËºÇ¸å¤Î¥á¥Ã¥»¡¼¥¸¡£"
+ 
+-#: curs_main.c:1292 curs_main.c:1336
++#: curs_main.c:1300 curs_main.c:1344
+ msgid "No undeleted messages."
+ msgstr "Ì¤ºï½ü¥á¥Ã¥»¡¼¥¸¤¬¤Ê¤¤¡£"
+ 
+-#: curs_main.c:1329 curs_main.c:1353
++#: curs_main.c:1337 curs_main.c:1361
+ msgid "You are on the first message."
+ msgstr "¤¹¤Ç¤ËºÇ½é¤Î¥á¥Ã¥»¡¼¥¸¡£"
+ 
+-#: curs_main.c:1428 pattern.c:1361
++#: curs_main.c:1436 pattern.c:1366
+ msgid "Search wrapped to top."
+ msgstr "¸¡º÷¤Ï°ìÈÖ¾å¤ËÌá¤Ã¤¿¡£"
+ 
+-#: curs_main.c:1437 pattern.c:1372
++#: curs_main.c:1445 pattern.c:1377
+ msgid "Search wrapped to bottom."
+ msgstr "¸¡º÷¤Ï°ìÈÖ²¼¤ËÌá¤Ã¤¿¡£"
+ 
+-#: curs_main.c:1478
++#: curs_main.c:1486
+ msgid "No new messages"
+ msgstr "¿·Ãå¥á¥Ã¥»¡¼¥¸¤¬¤Ê¤¤"
+ 
+-#: curs_main.c:1478
++#: curs_main.c:1486
+ msgid "No unread messages"
+ msgstr "Ì¤ÆÉ¥á¥Ã¥»¡¼¥¸¤¬¤Ê¤¤"
+ 
+ # ÆüËÜ¸ì¤Ç¤Ï¸ì½ç¤¬°ã¤¦¤Î¤Ç¤¹ (T_T
+-#: curs_main.c:1479
++#: curs_main.c:1487
+ msgid " in this limited view"
+ msgstr " (¤³¤ÎÀ©¸ÂÉ½¼¨¾õÂÖ¤Ç¤Ï)"
+ 
+-#: curs_main.c:1500 pager.c:2403
++#: curs_main.c:1508 pager.c:2403
+ msgid "Can't change 'important' flag on POP server."
+ msgstr "POP ¥µ¡¼¥Ð¾å¤Ç¤Ï¡Ö½ÅÍ×¡×¥Õ¥é¥°¤òÊÑ¹¹¤Ç¤­¤Ê¤¤¡£"
+ 
+-#: curs_main.c:1624
++#: curs_main.c:1632
+ msgid "No more threads."
+ msgstr "¤â¤¦¥¹¥ì¥Ã¥É¤¬¤Ê¤¤¡£"
+ 
+-#: curs_main.c:1626
++#: curs_main.c:1634
+ msgid "You are on the first thread."
+ msgstr "¤¹¤Ç¤ËºÇ½é¤Î¥¹¥ì¥Ã¥É¡£"
+ 
+-#: curs_main.c:1710
++#: curs_main.c:1718
+ msgid "Thread contains unread messages."
+ msgstr "¥¹¥ì¥Ã¥ÉÃæ¤ËÌ¤ÆÉ¥á¥Ã¥»¡¼¥¸¤¬¤¢¤ë¡£"
+ 
+-#: curs_main.c:1897
++#: curs_main.c:1905
+ msgid "Can't edit message on POP server."
+ msgstr "POP ¥µ¡¼¥Ð¾å¤Ç¤Ï¥á¥Ã¥»¡¼¥¸¤òÊÔ½¸¤Ç¤­¤Ê¤¤¡£"
+ 
+@@ -1886,7 +1883,6 @@ msgid "Help for %s"
+ msgstr "%s ¤Î¥Ø¥ë¥×"
+ 
+ #: hook.c:246
+-#, c-format
+ msgid "unhook: Can't do unhook * from within a hook."
+ msgstr "unhook: ¥Õ¥Ã¥¯Æâ¤«¤é¤Ï unhook * ¤Ç¤­¤Ê¤¤"
+ 
+@@ -2070,21 +2066,21 @@ msgstr "imap_sync_mailbox: ºï½ü¤Ë¼ºÇÔ¤·¤
+ msgid "CLOSE failed"
+ msgstr "¥¯¥í¡¼¥º¤Ë¼ºÇÔ¤·¤¿"
+ 
+-#: imap/imap.c:1388
++#: imap/imap.c:1387
+ #, c-format
+ msgid "Header search without header name: %s"
+ msgstr "¸¡º÷¤¹¤ë¥Ø¥Ã¥ÀÌ¾¤Î»ØÄê¤¬¤Ê¤¤: %s"
+ 
+-#: imap/imap.c:1536
++#: imap/imap.c:1535
+ msgid "Bad mailbox name"
+ msgstr "ÉÔÀµ¤Ê¥á¡¼¥ë¥Ü¥Ã¥¯¥¹Ì¾"
+ 
+-#: imap/imap.c:1559
++#: imap/imap.c:1558
+ #, c-format
+ msgid "Subscribing to %s..."
+ msgstr "%s ¤Î¹ØÆÉ¤ò³«»ÏÃæ..."
+ 
+-#: imap/imap.c:1561
++#: imap/imap.c:1560
+ #, c-format
+ msgid "Unsubscribing to %s..."
+ msgstr "%s ¤Î¹ØÆÉ¤ò¼è¤ê¾Ã¤·Ãæ..."
+@@ -2136,127 +2132,129 @@ msgstr "¥á¥Ã¥»¡¼¥¸ %d ¤ò %s ¤Ë¥³¥Ô¡¼Ãæ..
+ msgid "Continue?"
+ msgstr "·ÑÂ³?"
+ 
+-#: init.c:427
++#: init.c:57 init.c:1277 pager.c:57
++msgid "Not available in this menu."
++msgstr "¤³¤Î¥á¥Ë¥å¡¼¤Ç¤ÏÍøÍÑ¤Ç¤­¤Ê¤¤¡£"
++
++#: init.c:438
+ #, c-format
+ msgid "Bad regexp: %s"
+ msgstr "ÉÔÀµ¤ÊÀµµ¬É½¸½: %s"
+ 
+-#: init.c:686
++#: init.c:697
+ msgid "spam: no matching pattern"
+ msgstr "spam: °ìÃ×¤¹¤ë¥Ñ¥¿¡¼¥ó¤¬¤Ê¤¤"
+ 
+-#: init.c:688
++#: init.c:699
+ msgid "nospam: no matching pattern"
+ msgstr "nospam: °ìÃ×¤¹¤ë¥Ñ¥¿¡¼¥ó¤¬¤Ê¤¤"
+ 
+-#: init.c:891
++#: init.c:902
+ msgid "alias: no address"
+ msgstr "alias (ÊÌÌ¾): ¥¢¥É¥ì¥¹¤¬¤Ê¤¤"
+ 
+-#: init.c:936
++#: init.c:947
+ #, c-format
+ msgid "Warning: Bad IDN '%s' in alias '%s'.\n"
+ msgstr "·Ù¹ð: ÉÔÀµ¤Ê IDN '%s' ¤¬¥¨¥¤¥ê¥¢¥¹ '%s' Ãæ¤Ë¤¢¤ë¡£\n"
+ 
+-#: init.c:1014
++#: init.c:1026
+ msgid "invalid header field"
+ msgstr "ÉÔÀµ¤Ê¤Ø¥Ã¥À¥Õ¥£¡¼¥ë¥É"
+ 
+-#: init.c:1067
++#: init.c:1079
+ #, c-format
+ msgid "%s: unknown sorting method"
+ msgstr "%s ¤ÏÉÔÌÀ¤ÊÀ°ÎóÊýË¡"
+ 
+-#: init.c:1177
++#: init.c:1189
+ #, c-format
+ msgid "mutt_restore_default(%s): error in regexp: %s\n"
+ msgstr "mutt_restore_default(%s): Àµµ¬É½¸½¤Ç¥¨¥é¡¼: %s\n"
+ 
+-#: init.c:1242
++#: init.c:1254
+ #, c-format
+ msgid "%s: unknown variable"
+ msgstr "%s ¤ÏÉÔÌÀ¤ÊÊÑ¿ô"
+ 
+-#: init.c:1251
+-#, c-format
++#: init.c:1263
+ msgid "prefix is illegal with reset"
+ msgstr "reset ¤È¶¦¤Ë»È¤¦ÀÜÆ¬¼­¤¬ÉÔÀµ"
+ 
+-#: init.c:1257
+-#, c-format
++#: init.c:1269
+ msgid "value is illegal with reset"
+ msgstr "reset ¤È¶¦¤Ë»È¤¦ÃÍ¤¬ÉÔÀµ"
+ 
+-#: init.c:1296
++#: init.c:1322
+ #, c-format
+ msgid "%s is set"
+ msgstr "%s ¤ÏÀßÄê¤µ¤ì¤Æ¤¤¤ë"
+ 
+-#: init.c:1296
++#: init.c:1322
+ #, c-format
+ msgid "%s is unset"
+ msgstr "%s ¤Ï²ò½ü¤µ¤ì¤Æ¤¤¤ë"
+ 
+-#: init.c:1486
++#: init.c:1517
+ #, c-format
+ msgid "%s: invalid mailbox type"
+ msgstr "%s ¤ÏÉÔÀµ¤Ê¥á¡¼¥ë¥Ü¥Ã¥¯¥¹·Á¼°"
+ 
+-#: init.c:1511 init.c:1556
++#: init.c:1543 init.c:1589
+ #, c-format
+ msgid "%s: invalid value"
+ msgstr "%s ¤ÏÉÔÀµ¤ÊÃÍ"
+ 
+-#: init.c:1597
++#: init.c:1630
+ #, c-format
+ msgid "%s: Unknown type."
+ msgstr "%s ¤ÏÉÔÌÀ¤Ê¥¿¥¤¥×"
+ 
+-#: init.c:1623
++#: init.c:1657
+ #, c-format
+ msgid "%s: unknown type"
+ msgstr "%s ¤ÏÉÔÌÀ¤Ê¥¿¥¤¥×"
+ 
+-#: init.c:1682
++#: init.c:1716
+ #, c-format
+ msgid "Error in %s, line %d: %s"
+ msgstr "%s Ãæ¤Î %d ¹ÔÌÜ¤Ç¥¨¥é¡¼: %s"
+ 
+ #. the muttrc source keyword
+-#: init.c:1705
++#: init.c:1739
+ #, c-format
+ msgid "source: errors in %s"
+ msgstr "source: %s Ãæ¤Ç¥¨¥é¡¼"
+ 
+-#: init.c:1706
++#: init.c:1740
+ #, c-format
+ msgid "source: reading aborted due too many errors in %s"
+ msgstr "source: %s Ãæ¤Ë¥¨¥é¡¼¤¬Â¿¤¹¤®¤ë¤Î¤ÇÆÉ¤ß½Ð¤·Ãæ»ß"
+ 
+-#: init.c:1720
++#: init.c:1754
+ #, c-format
+ msgid "source: error at %s"
+ msgstr "source: %s ¤Ç¥¨¥é¡¼"
+ 
+-#: init.c:1725
++#: init.c:1759
+ msgid "source: too many arguments"
+ msgstr "source: °ú¿ô¤¬Â¿¤¹¤®¤ë"
+ 
+-#: init.c:1776
++#: init.c:1810
+ #, c-format
+ msgid "%s: unknown command"
+ msgstr "%s: ÉÔÌÀ¤Ê¥³¥Þ¥ó¥É"
+ 
+-#: init.c:2220
++#: init.c:2258
+ #, c-format
+ msgid "Error in command line: %s\n"
+ msgstr "¥³¥Þ¥ó¥É¥é¥¤¥ó¤Ç¥¨¥é¡¼: %s\n"
+ 
+-#: init.c:2270
++#: init.c:2308
+ msgid "unable to determine home directory"
+ msgstr "¥Û¡¼¥à¥Ç¥£¥ì¥¯¥È¥ê¤ò¼±ÊÌ¤Ç¤­¤Ê¤¤"
+ 
+-#: init.c:2278
++#: init.c:2316
+ msgid "unable to determine username"
+ msgstr "¥æ¡¼¥¶Ì¾¤ò¼±ÊÌ¤Ç¤­¤Ê¤¤"
+ 
+@@ -3122,15 +3120,15 @@ msgstr "¥á¥â¥êÉÔÂ­!"
+ #: main.c:59
+ msgid ""
+ "To contact the developers, please mail to <mutt-dev@mutt.org>.\n"
+-"To report a bug, please use the flea(1) utility.\n"
++"To report a bug, please visit http://bugs.mutt.org/.\n"
+ msgstr ""
+ "³«È¯¼Ô(ËÜ²È)¤ËÏ¢Íí¤ò¤È¤ë¤Ë¤Ï <mutt-dev@mutt.org> ¤Ø¥á¡¼¥ë¤»¤è¡£\n"
+-"¥Ð¥°¤ò¥ì¥Ý¡¼¥È¤¹¤ë¤Ë¤Ï flea (1) ¥æ¡¼¥Æ¥£¥ê¥Æ¥£¤ò»ÈÍÑ¤»¤è¡£\n"
++"¥Ð¥°¤ò¥ì¥Ý¡¼¥È¤¹¤ë¤Ë¤Ï http://bugs.mutt.org/ ¤ò»²¾È¤Î¤³¤È¡£\n"
+ "ÆüËÜ¸ìÈÇ¤Î¥Ð¥°¥ì¥Ý¡¼¥È¤ª¤è¤ÓÏ¢Íí¤Ï mutt-j-users ML ¤Ø¡£\n"
+ 
+ #: main.c:63
+ msgid ""
+-"Copyright (C) 1996-2002 Michael R. Elkins and others.\n"
++"Copyright (C) 1996-2005 Michael R. Elkins and others.\n"
+ "Mutt comes with ABSOLUTELY NO WARRANTY; for details type `mutt -vv'.\n"
+ "Mutt is free software, and you are welcome to redistribute it\n"
+ "under certain conditions; type `mutt -vv' for details.\n"
+@@ -3146,9 +3144,12 @@ msgid ""
+ "Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\n"
+ "Copyright (C) 2000-2002 Edmund Grimley Evans <edmundo@rano.org>\n"
+ "\n"
+-"Lots of others not mentioned here contributed lots of code,\n"
+-"fixes, and suggestions.\n"
+-"\n"
++"Many others not mentioned here contributed code, fixes,\n"
++"and suggestions.\n"
++msgstr ""
++
++#: main.c:81
++msgid ""
+ "    This program is free software; you can redistribute it and/or modify\n"
+ "    it under the terms of the GNU General Public License as published by\n"
+ "    the Free Software Foundation; either version 2 of the License, or\n"
+@@ -3158,13 +3159,17 @@ msgid ""
+ "    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+ "    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+ "    GNU General Public License for more details.\n"
+-"\n"
++msgstr ""
++
++#: main.c:91
++msgid ""
+ "    You should have received a copy of the GNU General Public License\n"
+ "    along with this program; if not, write to the Free Software\n"
+-"    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.\n"
++"    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-"
++"1301, USA.\n"
+ msgstr ""
+ 
+-#: main.c:107
++#: main.c:108
+ msgid ""
+ "usage: mutt [ -nRyzZ ] [ -e <cmd> ] [ -F <file> ] [ -m <type> ] [ -f "
+ "<file> ]\n"
+@@ -3177,13 +3182,6 @@ msgid ""
+ "[ -i <file> ] [ -s <subj> ] [ -b <addr> ] [ -c <addr> ] <addr> [ ... ]\n"
+ "       mutt [ -n ] [ -e <cmd> ] [ -F <file> ] -p\n"
+ "       mutt -v[v]\n"
+-"\n"
+-"options:\n"
+-"  -A <alias>\texpand the given alias\n"
+-"  -a <file>\tattach a file to the message\n"
+-"  -b <address>\tspecify a blind carbon-copy (BCC) address\n"
+-"  -c <address>\tspecify a carbon-copy (CC) address\n"
+-"  -D\t\tprint the value of all variables to stdout"
+ msgstr ""
+ "»ÈÍÑË¡: mutt [-nRyzZ] [-e <¥³¥Þ¥ó¥É>] [-F <¥Õ¥¡¥¤¥ë>] [-m <¥¿¥¤¥×>] \n"
+ "             [-f <¥Õ¥¡¥¤¥ë>]\n"
+@@ -3197,7 +3195,16 @@ msgstr ""
+ "             [-c <¥¢¥É¥ì¥¹>] <¥¢¥É¥ì¥¹> [ ... ]\n"
+ "        mutt [-n] [-e <¥³¥Þ¥ó¥É>] [-F <¥Õ¥¡¥¤¥ë>] -p\n"
+ "        mutt -v[v]\n"
+-"\n"
++
++#: main.c:116
++msgid ""
++"options:\n"
++"  -A <alias>\texpand the given alias\n"
++"  -a <file>\tattach a file to the message\n"
++"  -b <address>\tspecify a blind carbon-copy (BCC) address\n"
++"  -c <address>\tspecify a carbon-copy (CC) address\n"
++"  -D\t\tprint the value of all variables to stdout"
++msgstr ""
+ "¥ª¥×¥·¥ç¥ó:\n"
+ "  -A <ÊÌÌ¾>\t»ØÄê¤·¤¿ÊÌÌ¾¤ÎÅ¸³«\n"
+ "  -a <¥Õ¥¡¥¤¥ë>\t¥á¥Ã¥»¡¼¥¸¤Ë¥Õ¥¡¥¤¥ë¤òÅºÉÕ\n"
+@@ -3205,11 +3212,11 @@ msgstr ""
+ "  -c <¥¢¥É¥ì¥¹>\tcarbon-copy (CC) ¥¢¥É¥ì¥¹¤Î»ØÄê\n"
+ "  -D\t\tÊÑ¿ô¤ò¤¹¤Ù¤ÆÉ¸½à½ÐÎÏ¤ØÉ½¼¨"
+ 
+-#: main.c:122
++#: main.c:124
+ msgid "  -d <level>\tlog debugging output to ~/.muttdebug0"
+ msgstr "  -d <¥ì¥Ù¥ë>\t¥Ç¥Ð¥°½ÐÎÏ¤ò ~/.muttdebug0 ¤Ëµ­Ï¿"
+ 
+-#: main.c:125
++#: main.c:127
+ msgid ""
+ "  -e <command>\tspecify a command to be executed after initialization\n"
+ "  -f <file>\tspecify which mailbox to read\n"
+@@ -3218,7 +3225,19 @@ msgid ""
+ "  -i <file>\tspecify a file which Mutt should include in the body\n"
+ "  -m <type>\tspecify a default mailbox type\n"
+ "  -n\t\tcauses Mutt not to read the system Muttrc\n"
+-"  -p\t\trecall a postponed message\n"
++"  -p\t\trecall a postponed message"
++msgstr ""
++"  -e <¥³¥Þ¥ó¥É>\t½é´ü²½¸å¤Ë¼Â¹Ô¤¹¤ë¥³¥Þ¥ó¥É¤Î»ØÄê\n"
++"  -f <¥Õ¥¡¥¤¥ë>\tÆÉ¤ß½Ð¤·¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤Î»ØÄê\n"
++"  -F <¥Õ¥¡¥¤¥ë>\tÂåÂØ muttrc ¥Õ¥¡¥¤¥ë¤Î»ØÄê\n"
++"  -H <¥Õ¥¡¥¤¥ë>\t¤Ø¥Ã¥À¤òÆÉ¤à¤¿¤á¤Ë²¼½ñ¥Õ¥¡¥¤¥ë¤ò»ØÄê\n"
++"  -i <¥Õ¥¡¥¤¥ë>\tÊÖ¿®»þ¤Ë Mutt ¤¬ÁÞÆþ¤¹¤ë¥Õ¥¡¥¤¥ë¤Î»ØÄê\n"
++"  -m <¥¿¥¤¥×>\t¥á¡¼¥ë¥Ü¥Ã¥¯¥¹·Á¼°¤Î»ØÄê\n"
++"  -n\t\t¥·¥¹¥Æ¥à´ûÄê¤Î Muttrc ¤òÆÉ¤Þ¤Ê¤¤¤³¤È¤Î»ØÄê\n"
++"  -p\t\tÊÝÂ¸¤µ¤ì¤Æ¤¤¤ë (½ñ¤­¤«¤±) ¥á¥Ã¥»¡¼¥¸¤ÎºÆÆÉ¤ß½Ð¤·¤Î»ØÄê"
++
++#: main.c:136
++msgid ""
+ "  -Q <variable>\tquery a configuration variable\n"
+ "  -R\t\topen mailbox in read-only mode\n"
+ "  -s <subj>\tspecify a subject (must be in quotes if it has spaces)\n"
+@@ -3229,15 +3248,7 @@ msgid ""
+ "  -Z\t\topen the first folder with new message, exit immediately if none\n"
+ "  -h\t\tthis help message"
+ msgstr ""
+-"  -e <¥³¥Þ¥ó¥É>\t½é´ü²½¸å¤Ë¼Â¹Ô¤¹¤ë¥³¥Þ¥ó¥É¤Î»ØÄê\n"
+-"  -f <¥Õ¥¡¥¤¥ë>\tÆÉ¤ß½Ð¤·¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤Î»ØÄê\n"
+-"  -F <¥Õ¥¡¥¤¥ë>\tÂåÂØ muttrc ¥Õ¥¡¥¤¥ë¤Î»ØÄê\n"
+-"  -H <¥Õ¥¡¥¤¥ë>\t¤Ø¥Ã¥À¤òÆÉ¤à¤¿¤á¤Ë²¼½ñ¥Õ¥¡¥¤¥ë¤ò»ØÄê\n"
+-"  -i <¥Õ¥¡¥¤¥ë>\tÊÖ¿®»þ¤Ë Mutt ¤¬ÁÞÆþ¤¹¤ë¥Õ¥¡¥¤¥ë¤Î»ØÄê\n"
+-"  -m <¥¿¥¤¥×>\t¥á¡¼¥ë¥Ü¥Ã¥¯¥¹·Á¼°¤Î»ØÄê\n"
+-"  -n\t\t¥·¥¹¥Æ¥à´ûÄê¤Î Muttrc ¤òÆÉ¤Þ¤Ê¤¤¤³¤È¤Î»ØÄê\n"
+-"  -p\t\tÊÝÂ¸¤µ¤ì¤Æ¤¤¤ë (½ñ¤­¤«¤±) ¥á¥Ã¥»¡¼¥¸¤ÎºÆÆÉ¤ß½Ð¤·¤Î»ØÄê\n"
+-"  -Q <variable>\tÀßÄêÊÑ¿ô¤ÎÌä¤¤¹ç¤ï¤»\n"
++"  -Q <ÊÑ¿ô>\tÀßÄêÊÑ¿ô¤ÎÌä¤¤¹ç¤ï¤»\n"
+ "  -R\t\t¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤òÆÉ¤ß½Ð¤·ÀìÍÑ¥â¡¼¥É¤Ç¥ª¡¼¥×¥ó¤¹¤ë¤³¤È¤Î»ØÄê\n"
+ "  -s <ÂêÌ¾>\tÂêÌ¾¤Î»ØÄê (¶õÇò¤¬¤¢¤ë¾ì¹ç¤Ë¤Ï°úÍÑÉä¤Ç¤¯¤¯¤ë¤³¤È)\n"
+ "  -v\t\t¥Ð¡¼¥¸¥ç¥ó¤È¥³¥ó¥Ñ¥¤¥ë»þ»ØÄê¤ÎÉ½¼¨\n"
+@@ -3247,7 +3258,7 @@ msgstr ""
+ "  -Z\t\t¿·Ãå¥á¥Ã¥»¡¼¥¸¤¬Ìµ¤±¤ì¤Ð¤¹¤°¤Ë½ªÎ»\n"
+ "  -h\t\t¤³¤Î¥Ø¥ë¥×¥á¥Ã¥»¡¼¥¸"
+ 
+-#: main.c:181
++#: main.c:185
+ msgid ""
+ "\n"
+ "Compile options:"
+@@ -3255,47 +3266,47 @@ msgstr ""
+ "\n"
+ "¥³¥ó¥Ñ¥¤¥ë»þ¥ª¥×¥·¥ç¥ó:"
+ 
+-#: main.c:487
++#: main.c:494
+ msgid "Error initializing terminal."
+ msgstr "Ã¼Ëö½é´ü²½¥¨¥é¡¼"
+ 
+-#: main.c:597
++#: main.c:604
+ #, c-format
+ msgid "Debugging at level %d.\n"
+ msgstr "¥ì¥Ù¥ë %d ¤Ç¥Ç¥Ð¥Ã¥°Ãæ¡£\n"
+ 
+-#: main.c:599
++#: main.c:606
+ msgid "DEBUG was not defined during compilation.  Ignored.\n"
+ msgstr "DEBUG ¤¬¥³¥ó¥Ñ¥¤¥ë»þ¤ËÄêµÁ¤µ¤ì¤Æ¤¤¤Ê¤«¤Ã¤¿¡£Ìµ»ë¤¹¤ë¡£\n"
+ 
+-#: main.c:749
++#: main.c:758
+ #, c-format
+ msgid "%s does not exist. Create it?"
+ msgstr "%s ¤¬Â¸ºß¤·¤Ê¤¤¡£ºîÀ®?"
+ 
+-#: main.c:753
++#: main.c:762
+ #, c-format
+ msgid "Can't create %s: %s."
+ msgstr "%s ¤¬ %s ¤Î¤¿¤á¤ËºîÀ®¤Ç¤­¤Ê¤¤¡£"
+ 
+-#: main.c:798
++#: main.c:807
+ msgid "No recipients specified.\n"
+ msgstr "¼õ¿®¼Ô¤¬»ØÄê¤µ¤ì¤Æ¤¤¤Ê¤¤¡£\n"
+ 
+-#: main.c:884
++#: main.c:893
+ #, c-format
+ msgid "%s: unable to attach file.\n"
+ msgstr "%s: ¥Õ¥¡¥¤¥ë¤òÅºÉÕ¤Ç¤­¤Ê¤¤¡£\n"
+ 
+-#: main.c:904
++#: main.c:913
+ msgid "No mailbox with new mail."
+ msgstr "¿·Ãå¥á¡¼¥ë¤Î¤¢¤ë¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤Ï¤Ê¤¤¡£"
+ 
+-#: main.c:913
++#: main.c:922
+ msgid "No incoming mailboxes defined."
+ msgstr "ÅþÃåÍÑ¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤¬Ì¤ÄêµÁ¡£"
+ 
+-#: main.c:941
++#: main.c:950
+ msgid "Mailbox is empty."
+ msgstr "¥á¡¼¥ë¥Ü¥Ã¥¯¥¹¤¬¶õ¡£"
+ 
+@@ -3391,19 +3402,19 @@ msgstr "¤¹¤Ç¤ËºÇ¸å¤Î¥¨¥ó¥È¥ê¡£"
+ msgid "You are on the first entry."
+ msgstr "¤¹¤Ç¤ËºÇ½é¤Î¥¨¥ó¥È¥ê¡£"
+ 
+-#: menu.c:718 pattern.c:1303
++#: menu.c:718 pattern.c:1308
+ msgid "Search for: "
+ msgstr "¸¡º÷¥Ñ¥¿¡¼¥ó: "
+ 
+-#: menu.c:719 pattern.c:1304
++#: menu.c:719 pattern.c:1309
+ msgid "Reverse search for: "
+ msgstr "µÕ½ç¸¡º÷¥Ñ¥¿¡¼¥ó: "
+ 
+-#: menu.c:729 pattern.c:1336
++#: menu.c:729 pattern.c:1341
+ msgid "No search pattern."
+ msgstr "¸¡º÷¥Ñ¥¿¡¼¥ó¤¬¤Ê¤¤¡£"
+ 
+-#: menu.c:759 pager.c:1980 pager.c:1996 pager.c:2104 pattern.c:1405
++#: menu.c:759 pager.c:1980 pager.c:1996 pager.c:2104 pattern.c:1410
+ msgid "Not found."
+ msgstr "¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¡£"
+ 
+@@ -3517,7 +3528,6 @@ msgid "Unknown"
+ msgstr "ÉÔÌÀ"
+ 
+ #: mutt_ssl.c:417 mutt_ssl_gnutls.c:381
+-#, c-format
+ msgid "[unable to calculate]"
+ msgstr "[·×»»ÉÔÇ½]"
+ 
+@@ -3542,7 +3552,6 @@ msgid "This certificate was issued by:"
+ msgstr "¤³¤Î¾ÚÌÀ½ñ¤ÎÈ¯¹Ô¸µ:"
+ 
+ #: mutt_ssl.c:651 mutt_ssl_gnutls.c:712
+-#, c-format
+ msgid "This certificate is valid"
+ msgstr "¤³¤Î¾ÚÌÀ½ñ¤ÎÍ­¸ú´ü´Ö¤Ï"
+ 
+@@ -3816,10 +3825,6 @@ msgstr "¥á¥Ã¥»¡¼¥¸¤ò½ñ¤­¹þ¤á¤Ê¤¤"
+ msgid "Integer overflow -- can't allocate memory."
+ msgstr "·å¤¢¤Õ¤ì -- ¥á¥â¥ê¤ò³ä¤êÅö¤Æ¤é¤ì¤Ê¤¤¡£"
+ 
+-#: pager.c:57
+-msgid "Not available in this menu."
+-msgstr "¤³¤Î¥á¥Ë¥å¡¼¤Ç¤ÏÍøÍÑ¤Ç¤­¤Ê¤¤¡£"
+-
+ #: pager.c:1484
+ msgid "PrevPg"
+ msgstr "Á°ÊÇ"
+@@ -3874,81 +3879,84 @@ msgstr "¥Þ¥ë¥Á¥Ñ¡¼¥È¤Î¥á¥Ã¥»¡¼¥¸¤À¤¬ bou
+ msgid "Error in expression: %s"
+ msgstr "±¦µ­¤Î¼°Ãæ¤Ë¥¨¥é¡¼: %s"
+ 
+-#: pattern.c:389
++#: pattern.c:268
++msgid "Empty expression"
++msgstr "¶õ¤ÎÀµµ¬É½¸½"
++
++#: pattern.c:394
+ #, c-format
+ msgid "Invalid day of month: %s"
+ msgstr "%s ¤ÏÉÔÀµ¤ÊÆüÉÕ"
+ 
+-#: pattern.c:403
++#: pattern.c:408
+ #, c-format
+ msgid "Invalid month: %s"
+ msgstr "%s ¤ÏÉÔÀµ¤Ê·î"
+ 
+ #. getDate has its own error message, don't overwrite it here
+-#: pattern.c:555
++#: pattern.c:560
+ #, c-format
+ msgid "Invalid relative date: %s"
+ msgstr "%s ¤ÏÉÔÀµ¤ÊÁêÂÐ·îÆü"
+ 
+-#: pattern.c:569
++#: pattern.c:574
+ msgid "error in expression"
+ msgstr "¼°Ãæ¤Ë¥¨¥é¡¼"
+ 
+-#: pattern.c:784 pattern.c:894
++#: pattern.c:789 pattern.c:899
+ #, c-format
+ msgid "error in pattern at: %s"
+ msgstr "%s ¥Ñ¥¿¡¼¥óÃæ¤Ë¥¨¥é¡¼"
+ 
+-#: pattern.c:834
++#: pattern.c:839
+ #, c-format
+ msgid "%c: invalid command"
+ msgstr "%c ¤ÏÉÔÀµ¤Ê¥³¥Þ¥ó¥É"
+ 
+-#: pattern.c:840
++#: pattern.c:845
+ #, c-format
+ msgid "%c: not supported in this mode"
+ msgstr "%c ¤Ï¤³¤Î¥â¡¼¥É¤Ç¤Ï¥µ¥Ý¡¼¥È¤µ¤ì¤Æ¤¤¤Ê¤¤"
+ 
+-#: pattern.c:853
+-#, c-format
++#: pattern.c:858
+ msgid "missing parameter"
+ msgstr "¥Ñ¥é¥á¡¼¥¿¤¬¤Ê¤¤"
+ 
+-#: pattern.c:869
++#: pattern.c:874
+ #, c-format
+ msgid "mismatched parenthesis: %s"
+ msgstr "ÂÐ±þ¤¹¤ë³ç¸Ì¤¬¤Ê¤¤: %s"
+ 
+-#: pattern.c:901
++#: pattern.c:906
+ msgid "empty pattern"
+ msgstr "¥Ñ¥¿¡¼¥ó¤¬¶õ"
+ 
+-#: pattern.c:1117
++#: pattern.c:1122
+ #, c-format
+ msgid "error: unknown op %d (report this error)."
+ msgstr "¥¨¥é¡¼: ÉÔÌÀ¤Ê op %d (¤³¤Î¥¨¥é¡¼¤òÊó¹ð¤»¤è)¡£"
+ 
+-#: pattern.c:1193 pattern.c:1322
++#: pattern.c:1198 pattern.c:1327
+ msgid "Compiling search pattern..."
+ msgstr "¸¡º÷¥Ñ¥¿¡¼¥ó¤ò¥³¥ó¥Ñ¥¤¥ëÃæ..."
+ 
+-#: pattern.c:1212
++#: pattern.c:1217
+ msgid "Executing command on matching messages..."
+ msgstr "¥á¥Ã¥»¡¼¥¸¥Ñ¥¿¡¼¥ó¸¡º÷¤Î¤¿¤á¤Ë¥³¥Þ¥ó¥É¼Â¹ÔÃæ..."
+ 
+-#: pattern.c:1275
++#: pattern.c:1280
+ msgid "No messages matched criteria."
+ msgstr "¥Ñ¥¿¡¼¥ó¤Ë°ìÃ×¤¹¤ë¥á¥Ã¥»¡¼¥¸¤¬¤Ê¤«¤Ã¤¿¡£"
+ 
+-#: pattern.c:1364
++#: pattern.c:1369
+ msgid "Search hit bottom without finding match"
+ msgstr "°ìÈÖ²¼¤Þ¤Ç¡¢²¿¤â¸¡º÷¤Ë°ìÃ×¤·¤Ê¤«¤Ã¤¿¡£"
+ 
+-#: pattern.c:1375
++#: pattern.c:1380
+ msgid "Search hit top without finding match"
+ msgstr "°ìÈÖ¾å¤Þ¤Ç¡¢²¿¤â¸¡º÷¤Ë°ìÃ×¤·¤Ê¤«¤Ã¤¿¡£"
+ 
+-#: pattern.c:1397
++#: pattern.c:1402
+ msgid "Search interrupted."
+ msgstr "¸¡º÷¤¬ÃæÃÇ¤µ¤ì¤¿¡£"
+ 
+@@ -3960,11 +3968,11 @@ msgstr "PGP ¥Ñ¥¹¥Õ¥ì¡¼¥ºÆþÎÏ:"
+ msgid "PGP passphrase forgotten."
+ msgstr "PGP ¥Ñ¥¹¥Õ¥ì¡¼¥º¤¬¥á¥â¥ê¤«¤é¾Ãµî¤µ¤ì¤¿¡£"
+ 
+-#: pgp.c:345
++#: pgp.c:353
+ msgid "[-- Error: unable to create PGP subprocess! --]\n"
+ msgstr "[-- ¥¨¥é¡¼: PGP »Ò¥×¥í¥»¥¹¤òºîÀ®¤Ç¤­¤Ê¤«¤Ã¤¿! --]\n"
+ 
+-#: pgp.c:379 pgp.c:620 pgp.c:824
++#: pgp.c:387 pgp.c:628 pgp.c:832
+ msgid ""
+ "[-- End of PGP output --]\n"
+ "\n"
+@@ -3972,20 +3980,20 @@ msgstr ""
+ "[-- PGP ½ÐÎÏ½ªÎ» --]\n"
+ "\n"
+ 
+-#: pgp.c:392 pgp.c:956
++#: pgp.c:400 pgp.c:964
+ msgid "Could not decrypt PGP message"
+ msgstr "PGP ¥á¥Ã¥»¡¼¥¸¤òÉü¹æ²½¤Ç¤­¤Ê¤«¤Ã¤¿"
+ 
+ #. clear 'Invoking...' message, since there's no error
+-#: pgp.c:441 pgp.c:952
++#: pgp.c:449 pgp.c:960
+ msgid "PGP message successfully decrypted."
+ msgstr "PGP ¥á¥Ã¥»¡¼¥¸¤ÎÉü¹æ²½¤ËÀ®¸ù¤·¤¿¡£"
+ 
+-#: pgp.c:728
++#: pgp.c:736
+ msgid "Internal error. Inform <roessler@does-not-exist.org>."
+ msgstr "ÆâÉô¥¨¥é¡¼¡£<roessler@does-not-exist.org> ¤ËÊó¹ð¤»¤è¡£"
+ 
+-#: pgp.c:789
++#: pgp.c:797
+ msgid ""
+ "[-- Error: could not create a PGP subprocess! --]\n"
+ "\n"
+@@ -3993,32 +4001,32 @@ msgstr ""
+ "[-- ¥¨¥é¡¼: PGP »Ò¥×¥í¥»¥¹¤òºîÀ®¤Ç¤­¤Ê¤«¤Ã¤¿! --]\n"
+ "\n"
+ 
+-#: pgp.c:833
++#: pgp.c:841
+ msgid "Decryption failed"
+ msgstr "Éü¹æ²½¤Ë¼ºÇÔ¤·¤¿"
+ 
+-#: pgp.c:1008
++#: pgp.c:1016
+ msgid "Can't open PGP subprocess!"
+ msgstr "PGP »Ò¥×¥í¥»¥¹¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Ê¤¤!"
+ 
+-#: pgp.c:1444
++#: pgp.c:1452
+ msgid "Can't invoke PGP"
+ msgstr "PGP µ¯Æ°¤Ç¤­¤Ê¤¤"
+ 
+-#: pgp.c:1545
++#: pgp.c:1553
+ #, c-format
+ msgid "PGP (e)ncrypt, (s)ign, sign (a)s, (b)oth, %s, or (c)lear? "
+ msgstr "PGP e:°Å¹æ²½, s:½ðÌ¾, a:½ðÌ¾¸°ÁªÂò, b:°Å¹æ+½ðÌ¾, %s, c:¤Ê¤· "
+ 
+-#: pgp.c:1546
++#: pgp.c:1554
+ msgid "PGP/M(i)ME"
+ msgstr "i:PGP/MIME"
+ 
+-#: pgp.c:1546
++#: pgp.c:1554
+ msgid "(i)nline"
+ msgstr "i:¥¤¥ó¥é¥¤¥ó"
+ 
+-#: pgp.c:1548
++#: pgp.c:1556
+ msgid "esabifc"
+ msgstr "esabifc"
+ 
+@@ -4058,7 +4066,6 @@ msgid "PGP Key %s."
+ msgstr "PGP ¸° %s"
+ 
+ #: pop.c:91 pop_lib.c:201
+-#, c-format
+ msgid "Command TOP is not supported by server."
+ msgstr "¥³¥Þ¥ó¥É TOP ¤ò¥µ¡¼¥Ð¤¬¥µ¥Ý¡¼¥È¤·¤Æ¤¤¤Ê¤¤¡£"
+ 
+@@ -4067,7 +4074,6 @@ msgid "Can't write header to temporary f
+ msgstr "¥Ø¥Ã¥À¤ò°ì»þ¥Õ¥¡¥¤¥ë¤Ë½ñ¤­¹þ¤á¤Ê¤¤!"
+ 
+ #: pop.c:199 pop_lib.c:203
+-#, c-format
+ msgid "Command UIDL is not supported by server."
+ msgstr "¥³¥Þ¥ó¥É UIDL ¤ò¥µ¡¼¥Ð¤¬¥µ¥Ý¡¼¥È¤·¤Æ¤¤¤Ê¤¤¡£"
+ 
+@@ -4131,7 +4137,6 @@ msgid "APOP authentication failed."
+ msgstr "APOP Ç§¾Ú¤Ë¼ºÇÔ¤·¤¿¡£"
+ 
+ #: pop_auth.c:243
+-#, c-format
+ msgid "Command USER is not supported by server."
+ msgstr "¥³¥Þ¥ó¥É USER ¤Ï¥µ¡¼¥Ð¤¬¥µ¥Ý¡¼¥È¤·¤Æ¤¤¤Ê¤¤¡£"
+ 
+@@ -4201,7 +4206,6 @@ msgid "Query command not defined."
+ msgstr "Ìä¤¤¹ç¤ï¤»¥³¥Þ¥ó¥É¤ÏÄêµÁ¤µ¤ì¤Æ¤¤¤Ê¤¤¡£"
+ 
+ #: query.c:290
+-#, c-format
+ msgid "Query"
+ msgstr "Ìä¤¤¹ç¤ï¤»"
+ 
+@@ -4323,7 +4327,7 @@ msgstr "%s ¤òºîÀ®¤Ç¤­¤Ê¤¤¡£"
+ msgid "Can't find any tagged messages."
+ msgstr "¥¿¥°ÉÕ¤­¥á¥Ã¥»¡¼¥¸¤¬°ì¤Ä¤â¸«¤Ä¤«¤é¤Ê¤¤¡£"
+ 
+-#: recvcmd.c:749 send.c:715
++#: recvcmd.c:749 send.c:721
+ msgid "No mailing lists found!"
+ msgstr "¥á¡¼¥ê¥ó¥°¥ê¥¹¥È¤¬¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿!"
+ 
+@@ -4444,82 +4448,82 @@ msgstr "%s%s ¤Ø¤Î¥Õ¥©¥í¡¼¥¢¥Ã¥×?"
+ #. This could happen if the user tagged some messages and then did
+ #. * a limit such that none of the tagged message are visible.
+ #.
+-#: send.c:690
++#: send.c:696
+ msgid "No tagged messages are visible!"
+ msgstr "²Ä»ë¤Ê¥¿¥°ÉÕ¤­¥á¥Ã¥»¡¼¥¸¤¬¤Ê¤¤!"
+ 
+-#: send.c:741
++#: send.c:747
+ msgid "Include message in reply?"
+ msgstr "ÊÖ¿®¤Ë¥á¥Ã¥»¡¼¥¸¤ò´Þ¤á¤ë¤«?"
+ 
+-#: send.c:746
++#: send.c:752
+ msgid "Including quoted message..."
+ msgstr "°úÍÑ¥á¥Ã¥»¡¼¥¸¤ò¼è¤ê¹þ¤ßÃæ..."
+ 
+-#: send.c:756
++#: send.c:762
+ msgid "Could not include all requested messages!"
+ msgstr "¤¹¤Ù¤Æ¤ÎÍ×µá¤µ¤ì¤¿¥á¥Ã¥»¡¼¥¸¤ò¼è¤ê¹þ¤á¤Ê¤«¤Ã¤¿!"
+ 
+-#: send.c:770
++#: send.c:776
+ msgid "Forward as attachment?"
+ msgstr "ÅºÉÕ¥Õ¥¡¥¤¥ë¤È¤·¤ÆÅ¾Á÷?"
+ 
+-#: send.c:774
++#: send.c:780
+ msgid "Preparing forwarded message..."
+ msgstr "Å¾Á÷¥á¥Ã¥»¡¼¥¸¤ò½àÈ÷Ãæ..."
+ 
+ #. If the user is composing a new message, check to see if there
+ #. * are any postponed messages first.
+ #.
+-#: send.c:1071
++#: send.c:1077
+ msgid "Recall postponed message?"
+ msgstr "½ñ¤­¤«¤±¤Î¥á¥Ã¥»¡¼¥¸¤ò¸Æ¤Ó½Ð¤¹?"
+ 
+-#: send.c:1372
++#: send.c:1379
+ msgid "Edit forwarded message?"
+ msgstr "Å¾Á÷¥á¥Ã¥»¡¼¥¸¤òÊÔ½¸?"
+ 
+-#: send.c:1400
++#: send.c:1407
+ msgid "Abort unmodified message?"
+ msgstr "¥á¥Ã¥»¡¼¥¸¤ÏÌ¤ÊÑ¹¹¡£Ãæ»ß?"
+ 
+-#: send.c:1402
++#: send.c:1409
+ msgid "Aborted unmodified message."
+ msgstr "Ì¤ÊÑ¹¹¤Î¥á¥Ã¥»¡¼¥¸¤òÃæ»ß¤·¤¿¡£"
+ 
+-#: send.c:1471
++#: send.c:1478
+ msgid "Message postponed."
+ msgstr "¥á¥Ã¥»¡¼¥¸¤Ï½ñ¤­¤«¤±¤ÇÊÝÎ±¤µ¤ì¤¿¡£"
+ 
+-#: send.c:1480
++#: send.c:1487
+ msgid "No recipients are specified!"
+ msgstr "¼õ¿®¼Ô¤¬»ØÄê¤µ¤ì¤Æ¤¤¤Ê¤¤!"
+ 
+-#: send.c:1485
++#: send.c:1492
+ msgid "No recipients were specified."
+ msgstr "¼õ¿®¼Ô¤¬»ØÄê¤µ¤ì¤Æ¤¤¤Ê¤«¤Ã¤¿¡£"
+ 
+-#: send.c:1501
++#: send.c:1508
+ msgid "No subject, abort sending?"
+ msgstr "ÂêÌ¾¤¬¤Ê¤¤¡£Á÷¿®¤òÃæ»ß?"
+ 
+-#: send.c:1505
++#: send.c:1512
+ msgid "No subject specified."
+ msgstr "ÂêÌ¾¤¬»ØÄê¤µ¤ì¤Æ¤¤¤Ê¤¤¡£"
+ 
+-#: send.c:1567
++#: send.c:1574
+ msgid "Sending message..."
+ msgstr "Á÷¿®Ãæ..."
+ 
+-#: send.c:1708
++#: send.c:1715
+ msgid "Could not send the message."
+ msgstr "¥á¥Ã¥»¡¼¥¸¤òÁ÷¿®¤Ç¤­¤Ê¤«¤Ã¤¿¡£"
+ 
+-#: send.c:1713
++#: send.c:1720
+ msgid "Mail sent."
+ msgstr "¥á¡¼¥ë¤òÁ÷¿®¤·¤¿¡£"
+ 
+-#: send.c:1713
++#: send.c:1720
+ msgid "Sending in background."
+ msgstr "¥Ð¥Ã¥¯¥°¥é¥¦¥ó¥É¤ÇÁ÷¿®¡£"
+ 

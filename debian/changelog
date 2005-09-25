@@ -1,3 +1,47 @@
+mutt (1.5.11-1) unstable; urgency=low
+
+  * New upstream release, fixing the following bugs:
+
+    + ~h can match folded headers. (Closes: #319654)
+    + implements progress indication when uploading messages to an imap
+      folder. (Closes: #228713)
+    + limit pattern is properly displayed when zero messages matched.
+      (Closes: #242398)
+
+    A further CVS pull (2005-09-24) fixes the following bugs:
+
+    + can open mboxes bigger than 2 GB. (Closes: #296940)
+    + does not require GPG_TTY to be set in order to accept using the GnuPG
+      agent: it'll set the variable itself if not present. (Closes: #316388)
+    + does not segfault when replying to a message if content_type is unset.
+      (Closes: #329306)
+    + does not segfault with IMAP folder completion. (Closes: #329442)
+
+    Packaging changes needed:
+
+    + Upstream documentation now comes in XML, so changed Build-Dependency on
+      linuxdoc-tools-text and groff to xsltproc, docbook-xml, docbook-xsl and
+      links. Added patch debian/patches/doc_build_adjustments.diff to force
+      the use of links instead of lynx for generating the text version of the
+      manual, and to not ignore errors from links and xsltproc.
+
+    + Changed --with-sasl2 to its new name --with-sasl in debian/rules;
+      removed extra hunk on debian/patches/patch-1.5.4.Md.sasl2-1arc.
+
+    + Rediffed 080_Md.Muttrc, removed patch.asp.fix-bug-266493.1 (applied
+      upstream).
+
+    + Temporarily removed documentation from the compressed-folders patch,
+      until upstream reacts to the move to XML.
+
+  * Build against libgnutls12 (build-depend on libgnutls-dev instead of
+    libgnutls11-dev). (Closes: #323279)
+
+  * Remove spurious dash in argument to -encrypt in smime_encrypt_command.
+    (Closes: #315319)
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Sun, 25 Sep 2005 23:11:59 +0200
+
 mutt (1.5.10-1) unstable; urgency=low
 
   * New upstream release, fixing the following bugs:

@@ -8,8 +8,8 @@ BUILD_DIR := $(SOURCE_DIR)/$(TAR_DIR)
 B := $(BUILD_DIR)
 D := $(CURDIR)/debian/mutt
 
-# Comment this line if you want the header cache with gdbm
-HCACHE_WITH_DB := --without-gdbm
+# Comment this line if you want the header cache with qdbm or gdbm
+HCACHE_WITH_DB := --without-qdbm --without-gdbm
 
 clean:
 	$(MAKE) -f debian/sys-build.mk source.clean
@@ -52,6 +52,7 @@ $(STAMP_DIR)/source.make:
 
 configure: $(STAMP_DIR)/configure
 $(STAMP_DIR)/configure: $(STAMP_DIR)/source.make
+	CPPFLAGS=-I/usr/include/qdbm   \
 	CC=cc ac_cv_path_ISPELL=ispell \
 	SENDMAIL=/usr/sbin/sendmail PERL=/usr/bin/perl \
 	$(MAKE) -f debian/sys-build.mk source.command SOURCE_CMD=" \
@@ -59,7 +60,7 @@ $(STAMP_DIR)/configure: $(STAMP_DIR)/source.make
 		--with-sharedir=/usr/share/mutt --with-docdir=/usr/share/doc \
 		--with-mailpath=/var/mail \
 		--enable-fcntl --enable-pop --enable-imap \
-		--with-mixmaster --with-sasl2 --with-idn \
+		--with-mixmaster --with-sasl --with-idn \
 		--with-curses \
 		--with-gnutls \
 		--enable-debug \

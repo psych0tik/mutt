@@ -1,6 +1,5 @@
-diff -ruN mutt-1.5.9.orig/Muttrc.head.in mutt-1.5.9/Muttrc.head.in
---- mutt-1.5.9.orig/Muttrc.head.in	2002-01-24 13:10:47.000000000 +0100
-+++ mutt-1.5.9/Muttrc.head.in	2005-04-10 13:54:02.000000000 +0200
+--- a/Muttrc.head.in
++++ b/Muttrc.head.in
 @@ -6,6 +6,38 @@
  #
  ignore "from " received content- mime-version status x-status message-id
@@ -39,14 +38,12 @@ diff -ruN mutt-1.5.9.orig/Muttrc.head.in mutt-1.5.9/Muttrc.head.in
 +#macro index \CW T!~s\(.*source.*\)\nWn^T~A\n "Weed out binary-only announcements"
  
  # imitate the old search-body function
- macro index \eb '/~b ' 'search in message bodies'
-@@ -15,9 +50,17 @@
- macro pager \cb |urlview\n 'call urlview to extract URLs out of a message'
+ macro index \eb "<search>~b " "search in message bodies"
+@@ -14,7 +46,17 @@
+ macro index,pager \cb "<pipe-message>urlview<Enter>" "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
--macro generic <f1> "!less @docdir@/manual.txt\n" "Show Mutt documentation"
--macro index   <f1> "!less @docdir@/manual.txt\n" "Show Mutt documentation"
--macro pager   <f1> "!less @docdir@/manual.txt\n" "Show Mutt documentation"
+-macro generic,pager <F1> "<shell-escape>less @docdir@/manual.txt<Enter>" "show Mutt documentation"
 +macro generic <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
 +macro index   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
 +macro pager   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
@@ -59,9 +56,9 @@ diff -ruN mutt-1.5.9.orig/Muttrc.head.in mutt-1.5.9/Muttrc.head.in
 +close-hook	\\.bz2$ "bzip2 -c %t > %f"
 +append-hook	\\.bz2$ "bzip2 -c %t >> %f"
  
- # If Mutt is unable to determine your site's domain name correctly, you can
- # set the default here.
-@@ -28,7 +71,22 @@
+ # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
+ macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
+@@ -29,7 +71,22 @@
  #
  # set use_8bitmime
  
