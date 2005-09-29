@@ -1,3 +1,18 @@
+mutt (1.5.11-2) unstable; urgency=low (but fixes critical bug not in testing)
+
+  * The fix for coping with mboxes bigger than 2 GB introduced a bug affecting
+    at least powerpc (but not i386) which made mutt write Content-Length: 0 in
+    mboxes due to a un-updated %ld format specifier. This caused for mail to
+    be lost in the next mbox write.
+
+    Apply a patch quickly provided by upstream (thanks, Brendan Cully!) that
+    makes mutt use the right format specifier. (Closes: #330474)
+
+  * Update the compressed folders to the 1.5.11, which includes documentation
+    in XML format.
+
+ -- Adeodato Simó <asp16@alu.ua.es>  Fri, 30 Sep 2005 01:15:28 +0200
+
 mutt (1.5.11-1) unstable; urgency=low
 
   * New upstream release, fixing the following bugs:
