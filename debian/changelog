@@ -1,3 +1,22 @@
+mutt (1.5.11-3) unstable; urgency=low
+
+  * Update to CVS 2005-11-01, with the following worth-of-mentioning goodies
+    (among others):
+
+    + full read/write >2 GB mbox support.
+    + attachment counting patch merged upstream (%X in index_format); check
+      the "Attachment Searching and Counting" section in the manual for more
+      information.
+    
+    And the following bugs are fixed as well:
+
+    + S/MIME keys can be selected from the menu.  (Closes: #318470)
+    + clarified description of pop_checkinterval. (Closes: #320642)
+
+  * Update my e-mail address in debian/control.
+
+ -- Adeodato Simó <dato@the-barrel.org>  Fri, 11 Nov 2005 02:16:11 +0100
+
 mutt (1.5.11-2) unstable; urgency=low (but fixes critical bug not in testing)
 
   * The fix for coping with mboxes bigger than 2 GB introduced a bug affecting
