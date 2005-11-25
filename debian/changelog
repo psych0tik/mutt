@@ -1,3 +1,17 @@
+mutt (1.5.11-4) unstable; urgency=low
+
+  * Update to CVS 2005-11-24 to fix the following bug (yay):
+
+    + does not fail to open messages that contain base64-encoded inline PGP
+      bits (signature, encrypted hunk, or a key). (Closes: #340116)
+
+      Also, do not report success to decrypt an inline PGP message when
+      decryption actually failed.
+
+  * Again, update my e-mail address in debian/control, yada yada.
+
+ -- Adeodato Simó <dato@net.com.org.es>  Fri, 25 Nov 2005 02:50:20 +0100
+
 mutt (1.5.11-3) unstable; urgency=low
 
   * Update to CVS 2005-11-01, with the following worth-of-mentioning goodies

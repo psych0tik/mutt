@@ -1,7 +1,7 @@
 Source: mutt
 Section: mail
 Priority: standard
-Maintainer: Adeodato Simó <dato@the-barrel.org>
+Maintainer: Adeodato Simó <dato@net.com.org.es>
 Build-Depends: debhelper (>= 4), autotools-dev, mawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.3-dev
 Standards-Version: 3.6.2
 
