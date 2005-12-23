@@ -1,0 +1,16 @@
+Index: mutt/doc/muttrc.man.head
+===================================================================
+RCS file: /home/roessler/cvs/mutt/doc/muttrc.man.head,v
+retrieving revision 3.19
+diff -u -p -r3.19 muttrc.man.head
+--- mutt/doc/muttrc.man.head	4 Oct 2005 06:05:39 -0000	3.19
++++ mutt/doc/muttrc.man.head	23 Dec 2005 22:03:47 -0000
+@@ -437,7 +437,7 @@
+ ~v	message is part of a collapsed thread.
+ ~V	cryptographically verified messages
+ ~x \fIEXPR\fP	messages which contain \fIEXPR\fP in the \(lqReferences\(rq field
+-~X \fIMIN\fP-\fIMAX\fP  messages with MIN - MAX attachments
++~X \fIMIN\fP-\fIMAX\fP	messages with MIN - MAX attachments
+ ~y \fIEXPR\fP	messages which contain \fIEXPR\fP in the \(lqX-Label\(rq field
+ ~z \fIMIN\fP-\fIMAX\fP	messages with a size in the range \fIMIN\fP to \fIMAX\fP
+ ~=	duplicated messages (see $duplicate_threads)

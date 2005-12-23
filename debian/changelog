@@ -1,3 +1,14 @@
+mutt (1.5.11-5) unstable; urgency=medium
+
+  * Unbreak Mutt in Turkish locales (tr_TR): include patch from CVS to use the
+    proper strcmp function in several places. Upstream bug #2144, reported in
+    both BTS by Recai Oktas. (Closes: #343655)
+
+  * Apply patch from Nik A. Melchior to fix formatting problem in muttrc(5). 
+    (Closes: #343030)
+
+ -- Adeodato Simó <dato@net.com.org.es>  Fri, 23 Dec 2005 23:18:44 +0100
+
 mutt (1.5.11-4) unstable; urgency=low
 
   * Update to CVS 2005-11-24 to fix the following bug (yay):
