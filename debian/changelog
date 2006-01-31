@@ -1,3 +1,11 @@
+mutt (1.5.9-2sarge1) stable; urgency=low
+
+  * For attachments marked for deletion after the message is sent, don't
+    remove them if the message is finally cancelled, or if the attachments
+    are dropped from the message prior to sending. (Closes: #332972)
+
+ -- Adeodato Simó <dato@net.com.org.es>  Tue, 31 Jan 2006 01:23:28 +0100
+
 mutt (1.5.9-2) unstable; urgency=high
 
   * Added a missing Build-Depend on mawk. (Closes: #310039)
