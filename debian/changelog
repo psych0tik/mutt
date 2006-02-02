@@ -1,3 +1,42 @@
+mutt (1.5.11+cvs20060126-1) unstable; urgency=low
+
+  * Update to CVS 2006-01-26; since this includes a huge diff between
+    ChangeLog and ChangeLog.old (moved entries), prepare a new tarball.
+    Some worth-mentioning changes:
+
+    + Mutt can now expand its own variables as it does with envvars; for
+      example, it's now possible to put something like this into a hook:
+      set sendmail="mysmtp -f $from".
+
+    + Support for user-defined variables starting with my_; environment
+      variables take precedence, and expansion does not occur in shell-escape.
+
+    + Pattern group support, as explained (only!) in:
+        <http://does-not-exist.org/mail-archives/mutt-dev/msg05693.html>
+
+    + Loooots of improvments in the IMAP code, including sync speed-ups
+      (through pipelining), hcache stuff (eg. $imap_cachedir), and things
+      like $imap_idle and support for the "old" flag in IMAP folders.
+
+  * Rework the package build system to fit personal preference:
+    + debhelperize debian/rules a bit more.
+    + drop dbs in favor of quilt; reorganize patches a bit.
+
+      (NOTE: quilt means that dropping patches into debian/patches is
+      no longer enough to get them applied; they must be listed in the
+      debian/patches/series file.)
+
+  * Adjustments to debian/control:
+    + use '*' for the bulleted list, instead of 'o'.
+    + build-depend on gawk instead of mawk, to have "nextfile".
+    + drop conflicts and replaces on packages that are not in woody.
+
+  * Updated debian/copyright.
+
+  * Added debian/watch.
+
+ -- Adeodato Simó <dato@net.com.org.es>  Thu,  2 Feb 2006 05:12:18 +0100
+
 mutt (1.5.11-5) unstable; urgency=medium
 
   * Unbreak Mutt in Turkish locales (tr_TR): include patch from CVS to use the

@@ -1,0 +1,10 @@
+--- mutt-1.5.11+cvs20060126.orig/VERSION
++++ mutt-1.5.11+cvs20060126/VERSION
+@@ -1 +1 @@
+-1.5.11
++1.5.11+cvs20060126
+--- mutt-1.5.11+cvs20060126.orig/reldate.h
++++ mutt-1.5.11+cvs20060126/reldate.h
+@@ -1 +1 @@
+-const char *ReleaseDate = "2005-09-15";
++const char *ReleaseDate = "2006-01-26";

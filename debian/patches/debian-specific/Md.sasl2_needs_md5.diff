@@ -1,0 +1,10 @@
+--- mutt-1.5.11.orig/configure
++++ mutt-1.5.11/configure
+@@ -13275,6 +13275,7 @@
+ _ACEOF
+ 
+           need_sasl=yes
++	  need_md5=yes
+         fi
+ 
+ fi;

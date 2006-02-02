@@ -1,12 +1,17 @@
-This package was originally debianized by Stephen Pitts 
-<pitts2@memphisonline.com> on Thu, 14 Nov 1996 19:04:20 -0600.
+This is Debian's prepackaged version of Mutt, a powerful text-mode mail
+user agent.
 
-The next debian maintainer was J.H.M. Dassen <jdassen@wi.LeidenUniv.nl>.
+The current maintainer for this package is:
+    Adeodato Simó <dato@net.com.org.es>
 
-Current debian maintainer is Marco d'Itri <md@linux.it> (since sept. 1998).
+Previous maintainers were:
+    Stephen Pitts <pitts2@memphisonline.com>
+    J.H.M. Dassen <jdassen@wi.LeidenUniv.nl>
+    Marco d'Itri <md@linux.it>
 
-Original source has been downloaded from ftp://ftp.mutt.org/mutt/ .
+Original source has been downloaded from ftp://ftp.mutt.org/mutt/:
 
+    URL:<ftp://ftp.mutt.org/mutt/devel/mutt-1.5.11.tar.gz>
 
 The following copyright notices apply to most of the program.  Some
 modules are under different licenses, or in the public domain.
@@ -33,4 +38,4 @@ On Debian systems, the complete text of the GNU General Public License
 can be found in `/usr/share/common-licenses/GPL'.
 
 The list of authors of the applied patches to this version of mutt can
-be found in `/usr/share/doc/mutt/README.Patches.gz'.
+be found in `/usr/share/doc/mutt/README.Patches'.

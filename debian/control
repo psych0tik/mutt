@@ -2,30 +2,31 @@ Source: mutt
 Section: mail
 Priority: standard
 Maintainer: Adeodato Simó <dato@net.com.org.es>
-Build-Depends: debhelper (>= 4), autotools-dev, mawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.3-dev
+Build-Depends: debhelper, quilt, autotools-dev, gawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.3-dev
 Standards-Version: 3.6.2
 
 Package: mutt
 Architecture: any
 Priority: standard
 Depends: ${shlibs:Depends}, ${misc:Depends}, exim4 | mail-transport-agent
-Suggests: urlview, aspell | ispell, gnupg, mixmaster, openssl, ca-certificates
 Recommends: locales, mime-support
+Suggests: urlview, aspell | ispell, gnupg, mixmaster, openssl, ca-certificates
 Provides: mail-reader, imap-client
-Conflicts: suidmanager (<< 0.50), mutt-i, mutt-utf8
-Replaces: mutt-i, mutt-utf8
-Description: Text-based mailreader supporting MIME, GPG, PGP and threading
+Conflicts: mutt-utf8
+Replaces: mutt-utf8
+Description: text-based mailreader supporting MIME, GPG, PGP and threading
  Mutt is a sophisticated text-based Mail User Agent. Some highlights:
-  o MIME support (including RFC1522 encoding/decoding of 8-bit message
+ .
+  * MIME support (including RFC1522 encoding/decoding of 8-bit message
     headers and UTF-8 support).
-  o PGP/MIME support (RFC 2015).
-  o Advanced IMAP client supporting SSL encryption and SASL authentication.
-  o POP3 support.
-  o Mailbox threading (both strict and non-strict).
-  o Default keybindings are much like ELM.
-  o Keybindings are configurable; Mush and PINE-like ones are provided as
+  * PGP/MIME support (RFC 2015).
+  * Advanced IMAP client supporting SSL encryption and SASL authentication.
+  * POP3 support.
+  * Mailbox threading (both strict and non-strict).
+  * Default keybindings are much like ELM.
+  * Keybindings are configurable; Mush and PINE-like ones are provided as
     examples.
-  o Handles MMDF, MH and Maildir in addition to regular mbox format.
-  o Messages may be (indefinitely) postponed.
-  o Colour support.
-  o Highly configurable through easy but powerful rc file.
+  * Handles MMDF, MH and Maildir in addition to regular mbox format.
+  * Messages may be (indefinitely) postponed.
+  * Colour support.
+  * Highly configurable through easy but powerful rc file.

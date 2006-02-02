@@ -1,0 +1,11 @@
+--- mutt-1.5.11.orig/contrib/gpg.rc
++++ mutt-1.5.11/contrib/gpg.rc
+@@ -72,6 +72,8 @@
+ 
+ # fetch keys
+ # set pgp_getkeys_command="pkspxycwrap %r"
++# This will work when #172960 will be fixed upstream
++# set pgp_getkeys_command="/usr/bin/gpg --recv-keys %r"
+ 
+ # pattern for good signature - may need to be adapted to locale!
+ 

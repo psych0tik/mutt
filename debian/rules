@@ -1,145 +1,195 @@
 #!/usr/bin/make -f
-SHELL+= -e
 
-export LC_ALL=C
-include debian/scripts/vars
+###
 
-BUILD_DIR := $(SOURCE_DIR)/$(TAR_DIR)
-B := $(BUILD_DIR)
-D := $(CURDIR)/debian/mutt
+# Uncomment one of these if you're rebuilding using them instead of libdb4.X
+# HCACHE_DB := gdbm
+# HCACHE_DB := qdbm
 
-# Comment this line if you want the header cache with qdbm or gdbm
-HCACHE_WITH_DB := --without-qdbm --without-gdbm
+###
+
+# Configure arguments
+
+confflags  = 	--prefix=/usr			\
+		--sysconfdir=/etc		\
+		--mandir=/usr/share/man		\
+		--with-sharedir=/usr/share/mutt	\
+		--with-docdir=/usr/share/doc	\
+		--with-mailpath=/var/mail	\
+						\
+		--disable-dependency-tracking	\
+						\
+		--enable-compressed		\
+		--enable-debug			\
+		--enable-fcntl			\
+		--enable-hcache			\
+		--enable-imap			\
+		--enable-inodesort		\
+		--enable-pop			\
+						\
+		--with-curses			\
+		--with-gnutls			\
+		--with-idn			\
+		--with-mixmaster		\
+		--with-sasl			\
+						\
+		$(hcache_db)
+
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+confflags += --build $(DEB_BUILD_GNU_TYPE)
+
+# Only specify --host when cross-compiling
+ifneq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+    confflags += --host $(DEB_HOST_GNU_TYPE)
+endif
+
+#
+
+hcache_db := --without-gdbm --without-qdbm
+
+ifeq ($(HCACHE_DB),gdbm)
+    hcache_db := --without-qdbm --without-bdb
+endif
+
+ifeq ($(HCACHE_DB),qdbm)
+    hcache_db := --without-gdbm --without-bdb
+endif
+
+###
+
+# Directory to make the build on
+
+objdir = $(CURDIR)/obj-$(DEB_HOST_GNU_TYPE)
+
+###
+
+# CFLAGS
+
+CFLAGS   = -Wall -g
+CPPFLAGS = -I/usr/include/qdbm
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+###
+
+configure: $(objdir)/configure-stamp
+$(objdir)/configure-stamp:
+	dh_testdir
+	
+	ln -sf /usr/share/misc/config.sub .
+	ln -sf /usr/share/misc/config.guess .
+	
+	ln -sf debian/patches
+	quilt push -a || test $$? = 2
+	
+	# sort the patches as printed by mutt -v
+	[ -e PATCHES.unsorted ] || mv PATCHES PATCHES.unsorted && \
+	env LC_COLLATE=C sort PATCHES.unsorted >PATCHES
+	
+	# do not rebuild these files
+	touch configure.in aclocal.m4 Makefile.in configure stamp-h.in config.h.in
+	
+	-mkdir $(objdir)
+	cd $(objdir) && \
+	env CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" \
+	../configure $(confflags)
+	
+	echo '#include "config-debian.h"' >>$(objdir)/config.h
+	
+	touch $@
+
+#
+
+build: $(objdir)/build-stamp
+$(objdir)/build-stamp: $(objdir)/configure-stamp
+	cd $(objdir) && \
+	$(MAKE)
+	
+	touch $@
+
+#
 
 clean:
-	$(MAKE) -f debian/sys-build.mk source.clean
-	dh_clean
-
-# target used by the maintainer
-unpack.nopatch: 
-	$(MAKE) -f debian/sys-build.mk source.build
-	rm -f $B/Muttrc $B/doc/muttrc.man \
-		$B/doc/manual.sgml $B/doc/manual.txt $B/doc/*.html 
-
-diff:
-	$(MAKE) -f debian/sys-build.mk make-diff
-
-unpack: $(STAMP_DIR)/source.make
-$(STAMP_DIR)/source.make:
-	$(MAKE) -f debian/sys-build.mk source.make
-	
-	# sort the patches list
-	sort $B/PATCHES > $B/PATCHES.temp
-	mv $B/PATCHES.temp $B/PATCHES
-
-	# rebuild these files	
-	rm -f $B/Muttrc $B/doc/muttrc.man \
-		$B/doc/manual.sgml $B/doc/manual.txt $B/doc/*.html 
-
-	# we include some #defines in debian-config.h
-	echo '#include "debian-config.h"' >> $B/config.h.in
-
-	# do not rebuild these files
-	touch $B/configure.in $B/aclocal.m4 $B/Makefile.in $B/configure \
-		$B/stamp-h.in $B/config.h.in
-	touch $@
-
-	# update config.guess and config.sub
-	-test -r /usr/share/misc/config.sub && \
-	cp -f /usr/share/misc/config.sub $B/config.sub
-	-test -r /usr/share/misc/config.guess && \
-	cp -f /usr/share/misc/config.guess $B/config.guess
-
-configure: $(STAMP_DIR)/configure
-$(STAMP_DIR)/configure: $(STAMP_DIR)/source.make
-	CPPFLAGS=-I/usr/include/qdbm   \
-	CC=cc ac_cv_path_ISPELL=ispell \
-	SENDMAIL=/usr/sbin/sendmail PERL=/usr/bin/perl \
-	$(MAKE) -f debian/sys-build.mk source.command SOURCE_CMD=" \
-	./configure --prefix=/usr --sysconfdir=/etc --mandir=/usr/share/man \
-		--with-sharedir=/usr/share/mutt --with-docdir=/usr/share/doc \
-		--with-mailpath=/var/mail \
-		--enable-fcntl --enable-pop --enable-imap \
-		--with-mixmaster --with-sasl --with-idn \
-		--with-curses \
-		--with-gnutls \
-		--enable-debug \
-		--enable-inodesort \
-		--enable-compressed \
-		--enable-hcache $(HCACHE_WITH_DB) \
-	"
-	touch $@
-
-build: $(STAMP_DIR)/build
-$(STAMP_DIR)/build: $(STAMP_DIR)/configure $(STAMP_DIR)/source.make
-	GROFF_NO_SGR=1 \
-	$(MAKE) -f debian/sys-build.mk source.command SOURCE_CMD=" \
-		make keymap_defs.h all CFLAGS=\"-O2 -g\" \
-	"
-	touch $@
-
-binary-arch: $(STAMP_DIR)/build checkroot
 	dh_testdir
-	dh_clean -k
-	$(MAKE) -f debian/sys-build.mk source.command SOURCE_CMD=" \
-		$(MAKE) install DESTDIR=$D SUBDIRS=\"intl po\" \
-	"
+	dh_testroot
+	
+	[ ! -e PATCHES.unsorted ] || mv PATCHES.unsorted PATCHES
+	quilt pop -a -R || test $$? = 2
+	
+	# quilt cruft
+	rm -f   patches
+	rm -rf .pc
+	
+	# please dpkg-source
+	rm -f po/*.gmo
+	rm -f config.guess config.sub
+	
+	# remove build tree
+	rm -rf $(objdir)
+	
+	dh_clean
+	
+#
 
-	dh_installdirs -p mutt usr/share/pixmaps usr/lib/mutt/ \
-		usr/bin/ usr/share/doc/mutt/html/
-	dh_installmenu
-	dh_installdocs $B/README $B/README.SECURITY $B/README.SSL $B/NEWS \
-		$B/doc/manual.txt $B/doc/PGP-Notes.txt extra/README.SMIME
-	cp $B/doc/*.html $D/usr/share/doc/mutt/html/
-	for file in README BUGS TODO; do \
-		cp $B/imap/$$file $D/usr/share/doc/mutt/$$file.IMAP; \
-	done
-	# generate README.Patches
-	for file in $(EXTRA_PATCHES)/*; do \
-		mawk -f debian/gen-README.Patches $$file >> \
-			$D/usr/share/doc/mutt/README.Patches; \
-	done
-	dh_installexamples \
-		$B/contrib/*rc $B/contrib/sample.muttrc-tlr \
-		extra/ray.muttrc extra/colors.angdraug
-	dh_installman \
-		$B/doc/mutt.1 $B/doc/dotlock.man \
-		$B/doc/muttrc.man $B/doc/mbox.man
-
-	install --mode=755 extra/debian-ldap-query extra/mailspell \
-		extra/source-muttrc.d $D/usr/lib/mutt/
-	cp extra/mutt.xpm $D/usr/share/pixmaps/
-
-#	some fixes to the package structure
-	mv $D/usr/bin/pgp* $D/usr/lib/mutt/
-	mv $D/usr/share/man/man1/dotlock.1 $D/usr/share/man/man1/mutt_dotlock.1
-	rm $D/etc/mime.types $D/usr/bin/muttbug $D/usr/bin/flea
-
-#	I think the default config file with the embedded manual is too big
-	mv $D/etc/Muttrc $D/usr/share/doc/mutt/examples/
-	cp $B/Muttrc.head $D/etc/Muttrc
-	echo "# GnuPG configuration" >> $D/etc/Muttrc
-	grep ^set $B/contrib/gpg.rc \
+install: debian/tmp/install-stamp
+debian/tmp/install-stamp:
+	dh_testdir
+	dh_testroot
+	dh_clean
+	cd $(objdir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+	
+	rm -rf debian/tmp/usr/share/doc/samples/iconv
+	rm -rf debian/tmp/usr/share/doc/samples/ca-bundle.crt
+	
+	chmod +x debian/extra/lib/*
+	chmod +x debian/header.awk
+	debian/header.awk debian/patches/features/* >debian/tmp/README.Patches
+	
+	cp $(objdir)/Muttrc.head debian/tmp/Muttrc
+	echo "# GnuPG configuration" >>debian/tmp/Muttrc
+	grep '^set' contrib/gpg.rc \
 		| sed -e 's#pgpewrap#/usr/lib/mutt/pgpewrap#' \
 		| sed -e 's#/usr/bin/gpg#gpg#' \
-		>> $D/etc/Muttrc
-	cat extra/smime-paths.rc extra/source-Muttrc.d.rc >> $D/etc/Muttrc
+		>> debian/tmp/Muttrc
+	cat debian/extra/rc/* >>debian/tmp/Muttrc
+	
+	touch $@
 
-	dh_installchangelogs $B/ChangeLog
+#
+
+binary: binary-arch
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	
+	dh_install
+	dh_installman
+	dh_installmime
+	dh_installmenu
+	dh_installdocs
+	dh_installexamples
+	dh_installchangelogs ChangeLog
+	
+	dh_link
 	dh_strip
-	dh_compress
-	dh_fixperms --exclude=usr/bin/mutt_dotlock
+	dh_compress --exclude usr/share/doc/mutt/README.Patches
+	dh_fixperms --exclude usr/bin/mutt_dotlock
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
+	dh_md5sums
 	dh_builddeb
 
-binary:	binary-arch
+binary-indep:
+	@echo "Nothing to do."
 
-extra-clean:
-	find -type f \( -name "*.orig" -o -name "*.rej" \) -exec rm -v {} \;
+#
 
-checkroot:
-	test root = "`whoami`"
-
-.PHONY: binary binary-arch build clean configure checkroot extra-clean
+.PHONY: configure build clean install binary binary-arch binary-indep

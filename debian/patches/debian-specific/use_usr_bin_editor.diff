@@ -1,0 +1,22 @@
+--- mutt-1.5.11.orig/init.c
++++ mutt-1.5.11/init.c
+@@ -2920,7 +2920,7 @@
+   {
+     p = getenv ("EDITOR");
+     if (!p)
+-      p = "vi";
++      p = "/usr/bin/editor";
+   }
+   Editor = safe_strdup (p);
+   Visual = safe_strdup (p);
+--- mutt-1.5.11.orig/init.h
++++ mutt-1.5.11/init.h
+@@ -547,7 +547,7 @@
+   ** .pp
+   ** This variable specifies which editor is used by mutt.
+   ** It defaults to the value of the VISUAL, or EDITOR, environment
+-  ** variable, or to the string "vi" if neither of those are set.
++  ** variable, or to the string "/usr/bin/editor" if neither of those are set.
+   */
+   { "encode_from",	DT_BOOL, R_NONE, OPTENCODEFROM, 0 },
+   /*

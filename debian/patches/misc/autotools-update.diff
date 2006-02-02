@@ -1,0 +1,90 @@
+diff -ru mutt-1.5.11+cvs20060126.orig/Makefile.in mutt-1.5.11+cvs20060126/Makefile.in
+--- mutt-1.5.11+cvs20060126.orig/Makefile.in	2006-02-02 04:15:38.000000000 +0100
++++ mutt-1.5.11+cvs20060126/Makefile.in	2006-02-02 04:40:04.000000000 +0100
+@@ -75,10 +75,10 @@
+ am_mutt_OBJECTS = $(am__objects_1) addrbook.$(OBJEXT) alias.$(OBJEXT) \
+ 	attach.$(OBJEXT) base64.$(OBJEXT) browser.$(OBJEXT) \
+ 	buffy.$(OBJEXT) color.$(OBJEXT) crypt.$(OBJEXT) \
+-	cryptglue.$(OBJEXT) commands.$(OBJEXT) complete.$(OBJEXT) \
+-	compose.$(OBJEXT) copy.$(OBJEXT) curs_lib.$(OBJEXT) \
+-	curs_main.$(OBJEXT) date.$(OBJEXT) edit.$(OBJEXT) \
+-	enter.$(OBJEXT) flags.$(OBJEXT) init.$(OBJEXT) \
++	cryptglue.$(OBJEXT) compress.$(OBJEXT) commands.$(OBJEXT) \
++	complete.$(OBJEXT) compose.$(OBJEXT) copy.$(OBJEXT) \
++	curs_lib.$(OBJEXT) curs_main.$(OBJEXT) date.$(OBJEXT) \
++	edit.$(OBJEXT) enter.$(OBJEXT) flags.$(OBJEXT) init.$(OBJEXT) \
+ 	filter.$(OBJEXT) from.$(OBJEXT) getdomain.$(OBJEXT) \
+ 	group.$(OBJEXT) handler.$(OBJEXT) hash.$(OBJEXT) \
+ 	hdrline.$(OBJEXT) headers.$(OBJEXT) help.$(OBJEXT) \
+@@ -299,7 +299,7 @@
+ BUILT_SOURCES = keymap_defs.h patchlist.c
+ mutt_SOURCES = $(BUILT_SOURCES) \
+ 	addrbook.c alias.c attach.c base64.c browser.c buffy.c color.c \
+-        crypt.c cryptglue.c \
++        crypt.c cryptglue.c compress.c \
+ 	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
+ 	edit.c enter.c flags.c init.c filter.c from.c \
+ 	getdomain.c group.c \
+@@ -331,7 +331,7 @@
+ 	crypt-gpgme.c crypt-mod-pgp-gpgme.c crypt-mod-smime-gpgme.c
+ 
+ EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO \
+-	configure account.h \
++	configure account.h compress.h \
+ 	attach.h buffy.h charset.h copy.h crypthash.h dotlock.h functions.h gen_defs \
+ 	globals.h hash.h history.h init.h keymap.h mutt_crypt.h \
+ 	mailbox.h mapping.h md5.h mime.h mutt.h mutt_curses.h mutt_menu.h \
+@@ -497,6 +497,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/commands.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/complete.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compose.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compress.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copy.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypt-gpgme.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypt-mod-pgp-classic.Po@am__quote@
+Only in mutt-1.5.11+cvs20060126: autom4te.cache
+diff -ru mutt-1.5.11+cvs20060126.orig/config.h.in mutt-1.5.11+cvs20060126/config.h.in
+--- mutt-1.5.11+cvs20060126.orig/config.h.in	2006-02-02 04:14:49.000000000 +0100
++++ mutt-1.5.11+cvs20060126/config.h.in	2006-02-02 04:40:00.000000000 +0100
+@@ -507,6 +507,9 @@
+ /* Define to enable Sun mailtool attachments support. */
+ #undef SUN_ATTACHMENT
+ 
++/* Define to support compressed folders. */
++#undef USE_COMPRESSED
++
+ /* Define to use dotlocking for mailboxes. */
+ #undef USE_DOTLOCK
+ 
+Only in mutt-1.5.11+cvs20060126: config.h.in~
+diff -ru mutt-1.5.11+cvs20060126.orig/configure mutt-1.5.11+cvs20060126/configure
+--- mutt-1.5.11+cvs20060126.orig/configure	2006-02-02 04:39:52.000000000 +0100
++++ mutt-1.5.11+cvs20060126/configure	2006-02-02 04:40:05.000000000 +0100
+@@ -868,6 +868,7 @@
+   --enable-buffy-size     Use file size attribute instead of access time
+   --enable-mailtool       Enable Sun mailtool attachments support
+   --enable-locales-fix    The result of isprint() is unreliable
++  --enable-compressed     Enable compressed folders support
+   --enable-exact-address  Enable regeneration of email addresses
+   --enable-hcache         Enable header caching
+   --disable-iconv         Disable iconv support
+@@ -14682,6 +14682,18 @@
+         fi
+ fi;
+ 
++# Check whether --enable-compressed or --disable-compressed was given.
++if test "${enable_compressed+set}" = set; then
++  enableval="$enable_compressed"
++  if test x$enableval = xyes; then
++
++cat >>confdefs.h <<\_ACEOF
++#define USE_COMPRESSED 1
++_ACEOF
++
++        fi
++fi;
++
+ 
+ # Check whether --with-exec-shell or --without-exec-shell was given.
+ if test "${with_exec_shell+set}" = set; then
+Only in mutt-1.5.11+cvs20060126: diff.zHFCuH
