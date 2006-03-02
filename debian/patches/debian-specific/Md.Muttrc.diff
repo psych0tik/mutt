@@ -1,5 +1,5 @@
---- mutt-1.5.11.orig/Muttrc.head.in
-+++ mutt-1.5.11/Muttrc.head.in
+--- mutt-1.5.11+cvs20060126.orig/Muttrc.head.in
++++ mutt-1.5.11+cvs20060126/Muttrc.head.in
 @@ -6,6 +6,38 @@
  #
  ignore "from " received content- mime-version status x-status message-id
@@ -7,7 +7,7 @@
 +ignore date delivered-to precedence errors-to in-reply-to user-agent
 +ignore x-loop x-sender x-mailer x-msmail-priority x-mimeole x-ms- x-priority
 +ignore x-accept-language x-authentication-warning thread- priority importance
-+ignore x-original-to domainkey-signature
++ignore x-original-to domainkey-signature dkim-signature
 +
 +# emacs-like bindings
 +bind editor    "\e<delete>"    kill-word
