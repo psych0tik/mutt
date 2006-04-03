@@ -1,3 +1,18 @@
+mutt (1.5.11+cvs20060330-1) unstable; urgency=low
+
+  * Update to CVS 2006-03-30, which fixes the following bugs:
+    + IMAP cache works again with Courier. (Closes: #351220)
+    + does not segfault if external query command output contains spaces.
+      (Closes: #351258)
+    + does not segfault when replying from the view-attachments menu when a
+      reply-hook is in use. (Closes: #352357)
+    + default save location for attachments which specify a path in their name
+      is not `dirname $attachment` anymore, but $CWD. (Closes: #301236)
+  
+  * Switch to libdb4.4. (Closes: #355433)
+
+ -- Adeodato Simó <dato@net.com.org.es>  Mon,  3 Apr 2006 02:41:15 +0200
+
 mutt (1.5.11+cvs20060126-2) unstable; urgency=medium
 
   * Make imap_idle default to off, since it does not work with dovecot from

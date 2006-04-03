@@ -18,6 +18,5 @@ debian-specific/build_doc_adjustments.diff
 debian-specific/correct_docdir_in_man_page.diff 
 debian-specific/dont_document_not_present_features.diff
 
-misc/imap_idle_default_off.diff -p0
 misc/define-pgp_getkeys_command.diff
 misc/autotools-update.diff
