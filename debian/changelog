@@ -1,3 +1,11 @@
+mutt (1.5.11+cvs20060403-1) unstable; urgency=low
+
+  * Update to CVS 2006-04-03, which finally:
+    + fixes segfault when changing to an IMAP folder and the mailbox name
+      is implicitly INBOX. (Closes: #351337, #353550)
+
+ -- Adeodato Simó <dato@net.com.org.es>  Tue,  4 Apr 2006 06:10:12 +0200
+
 mutt (1.5.11+cvs20060330-1) unstable; urgency=low
 
   * Update to CVS 2006-03-30, which fixes the following bugs:
