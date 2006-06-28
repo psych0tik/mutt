@@ -1,3 +1,9 @@
+mutt (1.5.9-2sarge2) stable-security; urgency=high
+
+  * Fix buffer overflow in IMAP parsing code 
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Wed, 28 Jun 2006 17:12:05 +0000
+
 mutt (1.5.9-2sarge1) stable; urgency=low
 
   * For attachments marked for deletion after the message is sent, don't
