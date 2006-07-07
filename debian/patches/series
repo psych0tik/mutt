@@ -20,3 +20,4 @@ debian-specific/dont_document_not_present_features.diff
 
 misc/define-pgp_getkeys_command.diff
 misc/autotools-update.diff
+upstream/fix_cve-2006-3242.diff -p0
