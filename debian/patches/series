@@ -1,8 +1,6 @@
-version.diff
-
 features/maildir-mtime
 features/assumed-charset
-features/compressed-folders
+features/compressed-folders -p0
 features/compressed-folders.ranty-fix
 features/compressed-folders.debian
 
@@ -16,8 +14,7 @@ debian-specific/use_usr_bin_editor.diff
 debian-specific/dont_rebuild_po_files.diff 
 debian-specific/build_doc_adjustments.diff
 debian-specific/correct_docdir_in_man_page.diff 
-debian-specific/dont_document_not_present_features.diff
+debian-specific/dont_document_not_present_features.diff -p0
 
 misc/define-pgp_getkeys_command.diff
-misc/autotools-update.diff
-upstream/fix_cve-2006-3242.diff -p0
+#misc/autotools-update.diff

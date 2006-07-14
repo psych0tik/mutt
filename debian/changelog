@@ -1,3 +1,9 @@
+mutt (1.5.12) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Adeodato Simó <dato@net.com.org.es>  Sat, 15 Jul 2006 01:14:33 +0200
+
 mutt (1.5.11+cvs20060403-2) unstable; urgency=high
 
   * Fix CVE-2006-3242, stack-based buffer overflow when processing an overly
