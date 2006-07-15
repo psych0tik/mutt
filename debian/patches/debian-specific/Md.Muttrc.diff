@@ -1,5 +1,5 @@
---- mutt-1.5.11+cvs20060126.orig/Muttrc.head.in
-+++ mutt-1.5.11+cvs20060126/Muttrc.head.in
+--- Muttrc.head.in.orig
++++ Muttrc.head.in
 @@ -6,6 +6,38 @@
  #
  ignore "from " received content- mime-version status x-status message-id

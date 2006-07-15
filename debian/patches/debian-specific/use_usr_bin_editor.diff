@@ -1,6 +1,6 @@
---- mutt-1.5.11.orig/init.c
-+++ mutt-1.5.11/init.c
-@@ -2920,7 +2920,7 @@
+--- init.c.orig
++++ init.c
+@@ -2929,7 +2929,7 @@
    {
      p = getenv ("EDITOR");
      if (!p)
@@ -9,9 +9,9 @@
    }
    Editor = safe_strdup (p);
    Visual = safe_strdup (p);
---- mutt-1.5.11.orig/init.h
-+++ mutt-1.5.11/init.h
-@@ -547,7 +547,7 @@
+--- init.h.orig
++++ init.h
+@@ -551,7 +551,7 @@
    ** .pp
    ** This variable specifies which editor is used by mutt.
    ** It defaults to the value of the VISUAL, or EDITOR, environment

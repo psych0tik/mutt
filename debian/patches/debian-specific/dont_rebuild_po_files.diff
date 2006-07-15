@@ -1,5 +1,5 @@
---- mutt-1.5.11.orig/po/Makefile.in.in
-+++ mutt-1.5.11/po/Makefile.in.in
+--- po/Makefile.in.in.orig
++++ po/Makefile.in.in
 @@ -85,7 +85,7 @@
  # otherwise packages like GCC can not be built if only parts of the source
  # have been downloaded.

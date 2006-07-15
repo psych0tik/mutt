@@ -1,5 +1,5 @@
---- mutt-1.5.11.orig/init.c
-+++ mutt-1.5.11/init.c
+--- init.c.orig
++++ init.c
 @@ -46,6 +46,7 @@
  #include <unistd.h>
  #include <string.h>
@@ -8,7 +8,7 @@
  #include <errno.h>
  #include <sys/wait.h>
  
-@@ -2761,6 +2762,31 @@
+@@ -2770,6 +2771,31 @@
    return 0;
  }
  
@@ -40,7 +40,7 @@
  void mutt_init (int skip_sys_rc, LIST *commands)
  {
    struct passwd *pw;
-@@ -2832,10 +2858,25 @@
+@@ -2841,10 +2867,25 @@
      Hostname = mutt_substrdup (utsname.nodename, p);
      p++;
      strfcpy (buffer, p, sizeof (buffer)); /* save the domain for below */

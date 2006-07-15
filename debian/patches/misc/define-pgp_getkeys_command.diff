@@ -1,5 +1,5 @@
---- mutt-1.5.11.orig/contrib/gpg.rc
-+++ mutt-1.5.11/contrib/gpg.rc
+--- contrib/gpg.rc.orig
++++ contrib/gpg.rc
 @@ -72,6 +72,8 @@
  
  # fetch keys

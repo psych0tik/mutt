@@ -1,5 +1,5 @@
---- mutt-1.5.11.orig/doc/mutt.man
-+++ mutt-1.5.11/doc/mutt.man
+--- doc/mutt.man.orig
++++ doc/mutt.man
 @@ -154,7 +154,7 @@
  System mapping between MIME types and file extensions.
  .IP "@bindir@/mutt_dotlock"

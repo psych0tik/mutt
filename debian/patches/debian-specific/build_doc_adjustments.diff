@@ -1,5 +1,5 @@
---- mutt-1.5.11.orig/doc/Makefile.in
-+++ mutt-1.5.11/doc/Makefile.in
+--- doc/Makefile.in.orig
++++ doc/Makefile.in
 @@ -111,13 +111,13 @@
  
  check:
