@@ -1,9 +1,9 @@
-mutt (1.5.12) UNRELEASED; urgency=low
+mutt (1.5.12-1) unstable; urgency=low
 
   * New upstream release. Ship upstream's UPDATING file as NEWS.gz in
     /usr/share/doc/mutt.
 
- -- Adeodato Simó <dato@net.com.org.es>  Sat, 15 Jul 2006 01:14:33 +0200
+ -- Adeodato Simó <dato@net.com.org.es>  Sat, 15 Jul 2006 02:49:50 +0200
 
 mutt (1.5.11+cvs20060403-2) unstable; urgency=high
 
