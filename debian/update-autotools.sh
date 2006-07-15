@@ -29,8 +29,9 @@ diff -ru $D.orig $D >$T || test $? -eq 1
 patch -p1 -R -d $D <$T
 
 cd $D
-quilt import -f -n $PATCH_NAME `basename $T`
+quilt import -f -P $PATCH_NAME `basename $T`
 quilt push
+quilt refresh -p0
 cd -
 
 rm -f $T
