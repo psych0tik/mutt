@@ -18,3 +18,5 @@ debian-specific/dont_document_not_present_features.diff -p0
 
 misc/define-pgp_getkeys_command.diff
 misc/autotools-update.diff -p0
+
+# not-applied/patch-1.5.8.hr.sensible_browser_position.3
