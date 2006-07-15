@@ -144,8 +144,11 @@ debian/tmp/install-stamp:
 	dh_clean
 	cd $(objdir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	
-	rm -rf debian/tmp/usr/share/doc/samples/iconv
-	rm -rf debian/tmp/usr/share/doc/samples/ca-bundle.crt
+	cd debian/tmp/usr/share/doc; \
+	rm -rf samples/iconv samples/ca-bundle.crt; \
+	mv NEWS NEWS.old; \
+	mv ChangeLog.old changelog.old; \
+	cp $(CURDIR)/UPDATING NEWS
 	
 	chmod +x debian/extra/lib/*
 	chmod +x debian/header.awk
