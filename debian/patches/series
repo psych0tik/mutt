@@ -17,4 +17,4 @@ debian-specific/correct_docdir_in_man_page.diff
 debian-specific/dont_document_not_present_features.diff -p0
 
 misc/define-pgp_getkeys_command.diff
-#misc/autotools-update.diff
+misc/autotools-update.diff -p0
