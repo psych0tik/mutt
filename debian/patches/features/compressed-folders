@@ -16,6 +16,7 @@ The home page for this patch is:
       doc/manual.sgml 'doc/manual*.html' doc/muttrc.man; do echo "-x $f"; done)
   - adjust the init.h hunk to the presence of group & ungroup
   - 2006-07-15: adjust Makefile.am and doc/manual.xml.head to mutt-1.5.12
+  - 2006-08-16: adjust Makefile.am mutt-1.5.13
 
 == END PATCH
 --- /dev/null
@@ -540,7 +541,7 @@ The home page for this patch is:
 +void mutt_fast_close_compressed (CONTEXT *);
 --- configure.in.orig
 +++ configure.in
-@@ -745,6 +745,11 @@
+@@ -798,6 +798,11 @@
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
  
@@ -568,7 +569,7 @@ The home page for this patch is:
  
 --- doc/manual.xml.head.orig
 +++ doc/manual.xml.head
-@@ -4745,6 +4745,205 @@
+@@ -4749,6 +4749,205 @@
  
  </sect1>
  
@@ -833,7 +834,7 @@ The home page for this patch is:
        )
 --- init.h.orig
 +++ init.h
-@@ -3108,6 +3108,11 @@
+@@ -3119,6 +3119,11 @@
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
    { "group",		parse_group,		0 },
    { "ungroup",		parse_ungroup,		0 },
@@ -866,12 +867,12 @@ The home page for this patch is:
  bin_PROGRAMS = mutt @DOTLOCK_TARGET@ @PGPAUX_TARGET@
  mutt_SOURCES = $(BUILT_SOURCES) \
  	addrbook.c alias.c attach.c base64.c browser.c buffy.c color.c \
--        crypt.c cryptglue.c \
-+        crypt.c cryptglue.c compress.c \
+-	crypt.c cryptglue.c \
++	crypt.c cryptglue.c compress.c \
  	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
  	edit.c enter.c flags.c init.c filter.c from.c \
  	getdomain.c group.c \
-@@ -68,7 +68,7 @@
+@@ -66,7 +66,7 @@
  	crypt-gpgme.c crypt-mod-pgp-gpgme.c crypt-mod-smime-gpgme.c
  
  EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO UPDATING \
@@ -920,7 +921,7 @@ The home page for this patch is:
  
  /* tree characters for linearize_tree and print_enriched_string */
  #define M_TREE_LLCORNER		1
-@@ -863,6 +868,11 @@
+@@ -864,6 +869,11 @@
    void *data;			/* driver specific data */
  #endif /* USE_IMAP */
  
@@ -1052,7 +1053,7 @@ The home page for this patch is:
  patch-1.5.6.dw.maildir-mtime.1
 --- po/de.po.orig
 +++ po/de.po
-@@ -1262,6 +1262,48 @@
+@@ -1267,6 +1267,48 @@
  msgid "Failed to figure out sender"
  msgstr "Kann Absender nicht ermitteln"
  
@@ -1101,7 +1102,7 @@ The home page for this patch is:
  #: crypt.c:69
  #, c-format
  msgid " (current time: %c)"
-@@ -1910,6 +1952,10 @@
+@@ -1915,6 +1957,10 @@
  msgid "Help for %s"
  msgstr "Hilfe für %s"
  
@@ -1112,7 +1113,7 @@ The home page for this patch is:
  #: hook.c:246
  #, c-format
  msgid "unhook: Can't do unhook * from within a hook."
-@@ -3424,18 +3470,10 @@
+@@ -3422,18 +3468,10 @@
  msgid "Mailbox is corrupt!"
  msgstr "Mailbox fehlerhaft!"
  

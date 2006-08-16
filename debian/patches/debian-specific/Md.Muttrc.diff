@@ -39,11 +39,11 @@
  
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
-@@ -14,7 +46,17 @@
- macro index,pager \cb "<pipe-message>urlview<Enter>" "call urlview to extract URLs out of a message"
+@@ -15,7 +47,17 @@
+ macro attach,compose \cb "<pipe-entry> urlview<Enter>" "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
--macro generic,pager <F1> "<shell-escape>less @docdir@/manual.txt<Enter>" "show Mutt documentation"
+-macro generic,pager <F1> "<shell-escape> less @docdir@/manual.txt<Enter>" "show Mutt documentation"
 +macro generic <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
 +macro index   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
 +macro pager   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
@@ -58,7 +58,7 @@
  
  # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
-@@ -83,7 +125,22 @@
+@@ -84,7 +126,22 @@
  attachments   -A message/external-body
  attachments   -I message/external-body
  

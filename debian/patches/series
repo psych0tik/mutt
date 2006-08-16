@@ -18,6 +18,7 @@ debian-specific/dont_document_not_present_features.diff -p0
 
 misc/define-pgp_getkeys_command.diff -p0
 misc/autotools-update.diff -p0
-misc/fix-reldate-location.diff -p0
+
+upstream/thread_pattern_in_UPDATING.diff -p0
 
 # not-applied/patch-1.5.8.hr.sensible_browser_position.3
