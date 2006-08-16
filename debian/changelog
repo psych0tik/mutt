@@ -1,6 +1,7 @@
 mutt (1.5.13-1) unstable; urgency=low
 
-  * New upstream release.
+  * New upstream release, with a new pattern to match full threads (see
+    NEWS.gz).
 
  -- Adeodato Simó <dato@net.com.org.es>  Wed, 16 Aug 2006 15:22:53 +0200
 
