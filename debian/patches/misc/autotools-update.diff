@@ -23757,23 +23757,6 @@
  .PRECIOUS: Makefile
  Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  	@case '$?' in \
-@@ -431,13 +435,13 @@
- 
- check:
- manual.txt: manual.html
--	/usr/bin/links.main -dump $^ > $@ || links -dump $^ > $@
-+	-lynx -dump -nolist -with_backspaces $^ > $@ || w3m -dump $^ > $@
- 
- manual.html: $(srcdir)/html.xsl stamp-doc-xml
--	xsltproc --nonet -o $@ $(srcdir)/html.xsl manual.xml
-+	-xsltproc --nonet -o $@ $(srcdir)/html.xsl manual.xml
- 
- stamp-doc-chunked: $(srcdir)/chunk.xsl stamp-doc-xml
--	xsltproc --nonet $(srcdir)/chunk.xsl manual.xml
-+	-xsltproc --nonet $(srcdir)/chunk.xsl manual.xml
- 	touch stamp-doc-chunked
- 
- manual.pdf: manual.tex
 --- imap/Makefile.in.orig
 +++ imap/Makefile.in
 @@ -124,6 +124,7 @@
