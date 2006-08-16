@@ -2,18 +2,18 @@
 
 set -e
 
-D="$1" # mutt-1.5.X
+dh_testdir
+
+D=$(basename "$PWD")
 PATCH_NAME=misc/autotools-update.diff 
 
-cd $D
-dh_testdir
 debclean
 quilt delete $PATCH_NAME || test $? -eq 1
 quilt push -aq
 ln -sf /usr/share/misc/config.sub .
 ln -sf /usr/share/misc/config.guess .
-cd -
 
+cd ..
 cp -al $D $D.orig
 
 cd $D 
@@ -32,7 +32,7 @@ cd $D
 quilt import -f -P $PATCH_NAME `basename $T`
 quilt push
 quilt refresh -p0
-cd -
+cd ..
 
 rm -f $T
 rm -rf $D.orig
