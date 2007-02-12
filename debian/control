@@ -2,8 +2,9 @@ Source: mutt
 Section: mail
 Priority: standard
 Maintainer: Adeodato Simó <dato@net.com.org.es>
+Uploaders: Christoph Berg <myon@debian.org>
 Build-Depends: debhelper, quilt, autotools-dev, gawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.4-dev
-Standards-Version: 3.6.2
+Standards-Version: 3.7.2
 
 Package: mutt
 Architecture: any

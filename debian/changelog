@@ -1,3 +1,14 @@
+mutt (1.5.13-2) experimental; urgency=low
+
+  * Adding myself as uploader, thanks Dato.
+  * debian/rules:
+    + Actually support DEB_BUILD_OPTIONS=noopt.
+    + Do not touch stamp-h.in, touch PATCHES in clean.
+  * Patches:
+    + Moved xtitles to features/ and fixed a segfault (Closes: #365683).
+
+ -- Christoph Berg <myon@debian.org>  Mon, 12 Feb 2007 18:37:44 +0100
+
 mutt (1.5.13-1.1) unstable; urgency=high
 
   * Non-maintainer upload.

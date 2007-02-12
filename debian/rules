@@ -93,7 +93,7 @@ $(objdir)/configure-stamp:
 	env LC_COLLATE=C sort PATCHES.unsorted >PATCHES
 	
 	# do not rebuild these files
-	touch configure.in aclocal.m4 Makefile.in configure stamp-h.in config.h.in
+	touch configure.in aclocal.m4 Makefile.in configure config.h.in
 	
 	-mkdir $(objdir)
 	cd $(objdir) && \
@@ -109,7 +109,7 @@ $(objdir)/configure-stamp:
 build: $(objdir)/build-stamp
 $(objdir)/build-stamp: $(objdir)/configure-stamp
 	cd $(objdir) && \
-	$(MAKE)
+	$(MAKE) CFLAGS="$(CFLAGS)"
 	
 	touch $@
 
@@ -125,6 +125,7 @@ clean:
 	# quilt cruft
 	rm -f   patches
 	rm -rf .pc
+	touch PATCHES
 	
 	# please dpkg-source
 	rm -f po/*.gmo
