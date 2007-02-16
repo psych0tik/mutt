@@ -1,0 +1,16 @@
+Index: mutt/doc/Makefile.in
+===================================================================
+--- mutt.orig/doc/Makefile.in	2007-02-16 00:38:54.388287904 +0100
++++ mutt/doc/Makefile.in	2007-02-16 00:39:18.992547488 +0100
+@@ -477,9 +477,9 @@ mutt.1: $(srcdir)/mutt.man
+ 	$(EDIT) $(srcdir)/mutt.man > $@
+ 
+ stamp-doc-xml: $(top_srcdir)/makedoc.c $(top_srcdir)/init.h manual.xml.head manual.xml.tail \
+-               $(top_srcdir)/VERSION ../reldate.h
++               $(top_srcdir)/VERSION ../../reldate.h
+ 	$(MAKE) ../makedoc$(EXEEXT)
+-	( date=`cut -d\" -f2 ../reldate.h`; \
++	( date=`cut -d\" -f2 ../../reldate.h`; \
+ 	  sed -e "s/@VERSION\@/`cat $(top_srcdir)/VERSION` ($$date)/" $(srcdir)/manual.xml.head ;\
+ 	  $(MAKEDOC_CPP) $(top_srcdir)/init.h | ../makedoc -s ) |      \
+ 		cat - $(srcdir)/manual.xml.tail > manual.xml

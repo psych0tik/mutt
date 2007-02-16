@@ -1,3 +1,35 @@
+mutt (1.5.13+cvs20070215-1) experimental; urgency=low
+
+  * Update to a CVS snapshot:
+    Closes: #47284: newlines/spaces are removed from custom multiple header
+      lines
+    Closes: #397858: /usr/bin/mutt_dotlock: off-by-one error in mutt_dotlock.c
+    Closes: #400831: logic error in mutt-1.5.13/account.c
+    Closes: #404916: sort-mailbox by spam tag score sorting strangeness
+    Closes: #410678: crash when IMAP server skips messages during a FETCH
+      without a cast.
+
+  * Patches:
+    + Reshuffle patches to move autotools-needing/updating to front.
+    + compressed-folders: refreshed.
+    + autotools-update: updated.
+    + tempfile-race, thread_pattern_in_UPDATING: removed, included upstream.
+
+    New patches:
+    + ifdef: test for presence of features, patch by Cedric Duval.
+    + trash-folder, purge-message: trash folder support, also by Cedric Duval
+      (Closes: #263204).
+
+    Patches shipped but not applied by default:
+    + chdir: change working directory.
+    + indexcolor: color index colums.
+    + w3mface: display X-Face headers using w3mimgdisplay.
+
+  * Create /etc/Muttrc.d/ (Closes: #391961).
+  * Make sure reldate.h is found while building the docs.
+
+ -- Christoph Berg <myon@debian.org>  Fri, 16 Feb 2007 02:04:35 +0100
+
 mutt (1.5.13-2) experimental; urgency=low
 
   * Adding myself as uploader, thanks Dato.
@@ -56,7 +88,7 @@ mutt (1.5.11+cvs20060330-1) unstable; urgency=low
       reply-hook is in use. (Closes: #352357)
     + default save location for attachments which specify a path in their name
       is not `dirname $attachment` anymore, but $CWD. (Closes: #301236)
-  
+
   * Switch to libdb4.4. (Closes: #355433)
 
  -- Adeodato Simó <dato@net.com.org.es>  Mon,  3 Apr 2006 02:41:15 +0200
@@ -144,7 +176,7 @@ mutt (1.5.11-3) unstable; urgency=low
     + attachment counting patch merged upstream (%X in index_format); check
       the "Attachment Searching and Counting" section in the manual for more
       information.
-    
+
     And the following bugs are fixed as well:
 
     + S/MIME keys can be selected from the menu.  (Closes: #318470)
