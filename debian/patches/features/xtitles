@@ -4,25 +4,27 @@ This is the xterm title patch as found on the mutt mailing lists.
 * Changes made:
   - 2007-01-27 myon: using %P caused a segfault, updated status.c to catch
     menu==NULL.
+  - 2007-02-20 myon: make the note about the xterm_set_titles defaults a
+    comment.
 
 == END PATCH
 Index: mutt/PATCHES
 ===================================================================
---- mutt.orig/PATCHES	2007-01-27 19:33:32.932962104 +0100
-+++ mutt/PATCHES	2007-01-27 19:33:32.932962104 +0100
+--- mutt/PATCHES.orig	2007-02-20 16:46:09.943601256 +0100
++++ mutt/PATCHES	2007-02-20 16:46:09.943601256 +0100
 @@ -0,0 +1 @@
 +patch-1.5.13.nt+ab.xtitles.4
 Index: mutt/curs_main.c
 ===================================================================
 --- mutt.orig/curs_main.c	2006-12-12 14:15:02.000000000 +0100
-+++ mutt/curs_main.c	2007-01-27 19:33:32.933961952 +0100
++++ mutt/curs_main.c	2007-02-20 16:53:27.211126488 +0100
 @@ -110,6 +110,19 @@ static const char *No_visible = N_("No v
  
  extern size_t UngetCount;
  
 +#define ASCII_CTRL_G                  0x07
 +#define ASCII_CTRL_OPEN_SQUARE_BRAKET 0x1b
-+ 
++
 +void set_xterm_title_bar(char *title)
 +{
 +  fprintf(stderr ,"%c]2;%s%c", ASCII_CTRL_OPEN_SQUARE_BRAKET, title, ASCII_CTRL_G);
@@ -53,7 +55,7 @@ Index: mutt/curs_main.c
 Index: mutt/globals.h
 ===================================================================
 --- mutt.orig/globals.h	2007-01-04 15:23:49.000000000 +0100
-+++ mutt/globals.h	2007-01-27 19:33:32.933961952 +0100
++++ mutt/globals.h	2007-01-27 19:33:32.000000000 +0100
 @@ -137,6 +137,8 @@ WHERE char *Tempdir;
  WHERE char *Tochars;
  WHERE char *Username;
@@ -66,7 +68,7 @@ Index: mutt/globals.h
 Index: mutt/init.c
 ===================================================================
 --- mutt.orig/init.c	2006-12-12 14:15:03.000000000 +0100
-+++ mutt/init.c	2007-01-27 19:33:32.934961800 +0100
++++ mutt/init.c	2007-01-27 19:33:32.000000000 +0100
 @@ -1747,6 +1747,26 @@ static int parse_set (BUFFER *tmp, BUFFE
  	toggle_option (MuttVars[idx].data);
        else
@@ -97,7 +99,7 @@ Index: mutt/init.c
 Index: mutt/init.h
 ===================================================================
 --- mutt.orig/init.h	2006-12-12 14:15:03.000000000 +0100
-+++ mutt/init.h	2007-01-27 19:33:32.936961496 +0100
++++ mutt/init.h	2007-02-20 16:47:02.718578240 +0100
 @@ -2941,6 +2941,27 @@ struct option_t MuttVars[] = {
    ** Controls whether mutt writes out the Bcc header when preparing
    ** messages to be sent.  Exim users may wish to unset this.
@@ -110,11 +112,11 @@ Index: mutt/init.h
 +  ** ``$$status_format''.
 +  */
 +  {"xterm_set_titles", DT_BOOL,  R_BOTH, OPTXTERMSETTITLES, 0},
++  /* The default must be off to force in the validity checking. */
 +  /*
 +  ** .pp
 +  ** Controls whether mutt sets the xterm title bar and icon name
-+  ** (as long as you're in an appropriate terminal). The default must
-+  ** be off to force in the validity checking.
++  ** (as long as you are in an appropriate terminal).
 +  */
 +  {"xterm_title",      DT_STR,   R_BOTH, UL &XtermTitle, UL "Mutt with %?m?%m messages&no messages?%?n? [%n NEW]?"},
 +  /*
@@ -129,7 +131,7 @@ Index: mutt/init.h
 Index: mutt/mutt.h
 ===================================================================
 --- mutt.orig/mutt.h	2007-01-04 15:23:49.000000000 +0100
-+++ mutt/mutt.h	2007-01-27 19:33:32.936961496 +0100
++++ mutt/mutt.h	2007-01-27 19:33:32.000000000 +0100
 @@ -451,6 +451,7 @@ enum
    OPTWRAPSEARCH,
    OPTWRITEBCC,		/* write out a bcc header? */
@@ -141,7 +143,7 @@ Index: mutt/mutt.h
 Index: mutt/pager.c
 ===================================================================
 --- mutt.orig/pager.c	2006-12-12 14:15:03.000000000 +0100
-+++ mutt/pager.c	2007-01-27 19:33:32.937961344 +0100
++++ mutt/pager.c	2007-01-27 19:33:32.000000000 +0100
 @@ -30,6 +30,8 @@
  #include "pager.h"
  #include "attach.h"
@@ -167,8 +169,8 @@ Index: mutt/pager.c
      if ((redraw & REDRAW_INDEX) && index)
 Index: mutt/status.c
 ===================================================================
---- mutt.orig/status.c	2007-01-27 19:33:36.429430560 +0100
-+++ mutt/status.c	2007-01-27 19:34:11.072164064 +0100
+--- mutt.orig/status.c	2007-01-27 19:33:36.000000000 +0100
++++ mutt/status.c	2007-01-27 19:34:11.000000000 +0100
 @@ -191,6 +191,8 @@ status_format_str (char *buf, size_t buf
        break;
  

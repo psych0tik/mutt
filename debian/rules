@@ -23,7 +23,9 @@ confflags  = 	--prefix=/usr			\
 		--enable-debug			\
 		--enable-fcntl			\
 		--enable-hcache			\
+		--enable-gpgme			\
 		--enable-imap			\
+		--enable-smtp			\
 		--enable-inodesort		\
 		--enable-pop			\
 						\
@@ -155,13 +157,11 @@ debian/tmp/install-stamp:
 	chmod +x debian/header.awk
 	debian/header.awk debian/patches/features/* >debian/tmp/README.Patches
 	
-	cp $(objdir)/Muttrc.head debian/tmp/Muttrc
-	echo "# GnuPG configuration" >>debian/tmp/Muttrc
-	grep '^set' contrib/gpg.rc \
-		| sed -e 's#pgpewrap#/usr/lib/mutt/pgpewrap#' \
-		| sed -e 's#/usr/bin/gpg#gpg#' \
-		>> debian/tmp/Muttrc
-	cat debian/extra/rc/* >>debian/tmp/Muttrc
+	( cat $(objdir)/Muttrc.head; \
+	  echo "# GnuPG configuration"; \
+	  grep '^set' contrib/gpg.rc; \
+	  echo; \
+	  cat debian/extra/rc/* ) > debian/tmp/Muttrc
 	
 	touch $@
 
@@ -176,7 +176,6 @@ binary-arch: build install
 	dh_installdirs
 	dh_install
 	dh_installman
-	dh_installmime
 	dh_installmenu
 	dh_installdocs
 	dh_installexamples

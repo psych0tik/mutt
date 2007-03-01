@@ -1,3 +1,26 @@
+mutt (1.5.14+cvs20070301-1) experimental; urgency=low
+
+  * New upstream snapshot. Hilights:
+    + Now features ESMTP support, yay!
+    + PKA support via gpgme.
+    + Ability to save history.
+  * Enable gpgme backend (Closes: #263443).
+  * Move mail-transport-agent from Depends to Recommends (Closes: #356297).
+  * /etc/Muttrc:
+    + Do not unset write_bcc (Closes: #304718).
+    + Do not unset use_from and use_domain (Closes: #283311, #398699).
+    + Add quotes for compressed folder hooks (Closes: #238034),
+    + mime_lookup application/octet-stream.
+  * Patches:
+    + assumed-charset: removed, applied upstream.
+    + xtitles: Removed a comment on the default of xterm_set_titles (mentioned
+      in #366413).
+  * colors.angdraug: Fix spelling (Closes: #295241).
+  * gpg.rc: add full path for pgpewrap (Closes: #396207).
+  * Update copyright holders.
+
+ -- Christoph Berg <myon@debian.org>  Thu,  1 Mar 2007 22:48:53 +0100
+
 mutt (1.5.13+cvs20070215-1) experimental; urgency=low
 
   * Update to a CVS snapshot:

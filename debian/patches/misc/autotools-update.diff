@@ -1,8 +1,8 @@
 Index: mutt/Makefile.in
 ===================================================================
---- mutt.orig/Makefile.in	2007-02-16 01:48:07.977846312 +0100
-+++ mutt/Makefile.in	2007-02-16 01:48:38.461212136 +0100
-@@ -72,10 +72,10 @@ am__objects_1 = patchlist.$(OBJEXT)
+--- mutt.orig/Makefile.in	2007-03-01 22:20:47.892627216 +0100
++++ mutt/Makefile.in	2007-03-01 22:32:08.839107616 +0100
+@@ -73,10 +73,10 @@ am__objects_1 = patchlist.$(OBJEXT)
  am_mutt_OBJECTS = $(am__objects_1) addrbook.$(OBJEXT) alias.$(OBJEXT) \
  	attach.$(OBJEXT) base64.$(OBJEXT) browser.$(OBJEXT) \
  	buffy.$(OBJEXT) color.$(OBJEXT) crypt.$(OBJEXT) \
@@ -17,7 +17,7 @@ Index: mutt/Makefile.in
  	filter.$(OBJEXT) from.$(OBJEXT) getdomain.$(OBJEXT) \
  	group.$(OBJEXT) handler.$(OBJEXT) hash.$(OBJEXT) \
  	hdrline.$(OBJEXT) headers.$(OBJEXT) help.$(OBJEXT) \
-@@ -300,7 +300,7 @@ bin_SCRIPTS = muttbug flea @SMIMEAUX_TAR
+@@ -301,7 +301,7 @@ bin_SCRIPTS = muttbug flea @SMIMEAUX_TAR
  BUILT_SOURCES = keymap_defs.h patchlist.c
  mutt_SOURCES = $(BUILT_SOURCES) \
  	addrbook.c alias.c attach.c base64.c browser.c buffy.c color.c \
@@ -26,7 +26,7 @@ Index: mutt/Makefile.in
  	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
  	edit.c enter.c flags.c init.c filter.c from.c \
  	getdomain.c group.c \
-@@ -333,7 +333,7 @@ EXTRA_mutt_SOURCES = account.c md5c.c mu
+@@ -334,7 +334,7 @@ EXTRA_mutt_SOURCES = account.c md5c.c mu
  	utf8.c wcwidth.c 
  
  EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO UPDATING \
@@ -35,7 +35,7 @@ Index: mutt/Makefile.in
  	attach.h buffy.h charset.h copy.h crypthash.h dotlock.h functions.h gen_defs \
  	globals.h hash.h history.h init.h keymap.h mutt_crypt.h \
  	mailbox.h mapping.h md5.h mime.h mutt.h mutt_curses.h mutt_menu.h \
-@@ -505,6 +505,7 @@ distclean-compile:
+@@ -506,6 +506,7 @@ distclean-compile:
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/commands.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/complete.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compose.Po@am__quote@
@@ -45,9 +45,9 @@ Index: mutt/Makefile.in
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypt-mod-pgp-classic.Po@am__quote@
 Index: mutt/config.h.in
 ===================================================================
---- mutt.orig/config.h.in	2007-02-16 01:48:08.076831264 +0100
-+++ mutt/config.h.in	2007-02-16 01:48:34.256851296 +0100
-@@ -510,6 +510,9 @@
+--- mutt.orig/config.h.in	2007-03-01 22:20:48.710502880 +0100
++++ mutt/config.h.in	2007-03-01 22:32:04.696737352 +0100
+@@ -513,6 +513,9 @@
  /* Define to enable Sun mailtool attachments support. */
  #undef SUN_ATTACHMENT
  
@@ -59,9 +59,9 @@ Index: mutt/config.h.in
  
 Index: mutt/configure
 ===================================================================
---- mutt.orig/configure	2007-02-16 01:48:08.172816672 +0100
-+++ mutt/configure	2007-02-16 01:48:33.888907232 +0100
-@@ -1366,6 +1366,7 @@ Optional Features:
+--- mutt.orig/configure	2007-03-01 22:20:51.923014504 +0100
++++ mutt/configure	2007-03-01 22:32:04.324793896 +0100
+@@ -1367,6 +1367,7 @@ Optional Features:
    --enable-buffy-size     Use file size attribute instead of access time
    --enable-mailtool       Enable Sun mailtool attachments support
    --enable-locales-fix    The result of isprint() is unreliable
@@ -69,7 +69,7 @@ Index: mutt/configure
    --enable-exact-address  Enable regeneration of email addresses
    --enable-hcache         Enable header caching
    --disable-iconv         Disable iconv support
-@@ -15266,6 +15267,18 @@ _ACEOF
+@@ -15491,6 +15492,18 @@ _ACEOF
  fi
  
  

@@ -1,3 +1,17 @@
+mutt (1.5.14+cvs20070301-1) experimental; urgency=low
+
+  We no longer unset write_bcc in /etc/Muttrc. If your MTA does not strip Bcc:
+  headers, edit /etc/Muttrc. (exim4 and postfix strip them, exim(3) does not.)
+  We also no longer unset use_from and use_domain. Mutt will use the contents
+  of /etc/mailname to determine the domain part of the From: header.
+
+  This release adds ESMTP support to mutt. To use, set smtp_url to your
+  smarthost, e.g. smtps://mail.company.com/.
+
+  The gpgme crypt backend is now enabled.
+
+ -- Christoph Berg <myon@debian.org>  Thu,  1 Mar 2007 23:56:58 +0100
+
 mutt (1.5.6-1) unstable; urgency=low
 
   In this release the alternates, lists, and subscribe configuration

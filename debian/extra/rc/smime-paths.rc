@@ -1,4 +1,3 @@
-
 # S/MIME configuration
 set smime_ca_location="~/.smime/ca-bundle.crt"
 set smime_certificates="~/.smime/certificates"
@@ -17,4 +16,3 @@ set smime_decrypt_command="openssl smime -decrypt -passin stdin -inform DER -in 
 set smime_verify_command="openssl smime -verify -inform DER -in %s %C -content %f"
 set smime_verify_opaque_command="openssl smime -verify -inform DER -in %s %C"
 
-set mixmaster="mixmaster-filter"

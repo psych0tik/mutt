@@ -13,7 +13,6 @@ misc/doc-fix-reldate.h-location
 # features
 features/ifdef
 features/maildir-mtime
-features/assumed-charset
 features/xtitles
 features/trash-folder
 features/purge-message
@@ -26,6 +25,7 @@ debian-specific/use_usr_bin_editor.diff -p0
 debian-specific/correct_docdir_in_man_page.diff -p0
 debian-specific/dont_document_not_present_features.diff -p0
 misc/define-pgp_getkeys_command.diff -p0
+misc/gpg.rc-paths
 
 # unapplied patches for custom packages
 # not-applied/patch-1.5.8.hr.sensible_browser_position.3

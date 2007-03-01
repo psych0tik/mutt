@@ -1,6 +1,8 @@
---- Muttrc.head.in.orig
-+++ Muttrc.head.in
-@@ -6,6 +6,38 @@
+Index: Muttrc.head.in
+===================================================================
+--- Muttrc.head.in.orig	2007-03-01 23:38:41.396146688 +0100
++++ Muttrc.head.in	2007-03-02 00:19:31.107733920 +0100
+@@ -6,6 +6,33 @@
  #
  ignore "from " received content- mime-version status x-status message-id
  ignore sender references return-path lines
@@ -21,25 +23,20 @@
 +#bind pager <up> previous-line
 +#bind pager <down> next-line
 +
-+# don't add the hostname to the From header
-+unset use_domain
-+# don't generate a From header
-+unset use_from
-+
 +# Specifies how to sort messages in the index menu.
 +set sort=threads
 +
-+# Exim does not remove Bcc headers
-+unset write_bcc
++# Uncomment if your MTA does not strip Bcc: headers.
++# (exim4 and postfix strip them, exim(3) does not.)
++#unset write_bcc
 +# Postfix and qmail use Delivered-To for detecting loops
 +unset bounce_delivered
 +
-+# weed out binary-only announcements to -devel-changes
-+#macro index \CW T!~s\(.*source.*\)\nWn^T~A\n "Weed out binary-only announcements"
++set mixmaster="mixmaster-filter"
  
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
-@@ -15,7 +47,17 @@
+@@ -15,14 +42,16 @@ macro index,pager \cb "<pipe-message> ur
  macro attach,compose \cb "<pipe-entry> urlview<Enter>" "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
@@ -47,40 +44,24 @@
 +macro generic <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
 +macro index   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
 +macro pager   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
-+
-+# Use folders which match on \\.gz$ or \\.bz2$ as [gb]zipped folders:
-+open-hook	\\.gz$ "gzip -cd %f > %t"
-+close-hook	\\.gz$ "gzip -c %t > %f"
-+append-hook	\\.gz$ "gzip -c %t >> %f"
-+open-hook	\\.bz2$ "bzip2 -cd %f > %t"
-+close-hook	\\.bz2$ "bzip2 -c %t > %f"
-+append-hook	\\.bz2$ "bzip2 -c %t >> %f"
  
  # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
-@@ -84,7 +126,22 @@
+ bind browser y exit
+ 
+ # If Mutt is unable to determine your site's domain name correctly, you can
+-# set the default here.
++# set the default here. (better: fix /etc/mailname)
+ #
+ # set hostname=cs.hmc.edu
+ 
+@@ -84,7 +113,6 @@ attachments   +I text/plain
  attachments   -A message/external-body
  attachments   -I message/external-body
  
 -##
 -## More settings
 -##
-+# colors
-+color normal	white black
-+color attachment brightyellow black
-+color hdrdefault cyan black
-+color indicator black cyan
-+color markers	brightred black
-+color quoted	green black
-+color signature cyan black
-+color status	brightgreen blue
-+color tilde	blue black
-+color tree	red black
-+#color header	brightgreen black ^From:
-+#color header	brightcyan black ^To:
-+#color header	brightcyan black ^Reply-To:
-+#color header	brightcyan black ^Cc:
-+#color header	brightblue black ^Subject:
-+#color body	brightred black [\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+
-+#color body	brightblue black (https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+
++# enable mime lookup by extension
++mime_lookup application/octet-stream
  
