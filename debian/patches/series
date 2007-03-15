@@ -1,6 +1,5 @@
 # compressed folders need an autotools rerun
-features/compressed-folders -p0
-features/compressed-folders.ranty-fix
+features/compressed-folders
 features/compressed-folders.debian
 
 # build system patches
@@ -8,6 +7,7 @@ misc/autotools-update.diff
 debian-specific/Md.sasl2_needs_md5.diff -p0
 debian-specific/dont_rebuild_po_files.diff -p0
 debian-specific/build_doc_adjustments.diff -p0
+debian-specific/sort-patchlist
 misc/doc-fix-reldate.h-location
 
 # features
@@ -19,11 +19,12 @@ features/purge-message
 features-old/patch-1.5.4.vk.pgp_verbose_mime
 
 # Debian config
-debian-specific/Md.Muttrc.diff -p0
+debian-specific/Muttrc
 debian-specific/Md.etc_mailname_gethostbyname.diff -p0
 debian-specific/use_usr_bin_editor.diff -p0
 debian-specific/correct_docdir_in_man_page.diff -p0
 debian-specific/dont_document_not_present_features.diff -p0
+debian-specific/assumed_charset-compat
 misc/define-pgp_getkeys_command.diff -p0
 misc/gpg.rc-paths
 

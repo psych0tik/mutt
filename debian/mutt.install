@@ -10,5 +10,7 @@ debian/extra/lib/source-muttrc.d	usr/lib/mutt
 debian/extra/lib/debian-ldap-query	usr/lib/mutt
 
 debian/tmp/Muttrc			etc
+debian/tmp/gpg.rc			etc/Muttrc.d
+debian/extra/rc/*.rc			etc/Muttrc.d
 debian/extra/mutt.xpm			usr/share/pixmaps
 debian/tmp/usr/share/doc/*.html		usr/share/doc/mutt/html

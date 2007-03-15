@@ -1,7 +1,7 @@
-Index: Muttrc.head.in
+Index: trunk/Muttrc.head
 ===================================================================
---- Muttrc.head.in.orig	2007-03-01 23:38:41.396146688 +0100
-+++ Muttrc.head.in	2007-03-02 00:19:31.107733920 +0100
+--- trunk.orig/Muttrc.head	2007-03-15 16:33:18.000000000 +0100
++++ trunk/Muttrc.head	2007-03-15 16:35:15.000000000 +0100
 @@ -6,6 +6,33 @@
  #
  ignore "from " received content- mime-version status x-status message-id
@@ -36,14 +36,12 @@ Index: Muttrc.head.in
  
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
-@@ -15,14 +42,16 @@ macro index,pager \cb "<pipe-message> ur
+@@ -15,14 +42,14 @@ macro index,pager \cb "<pipe-message> ur
  macro attach,compose \cb "<pipe-entry> urlview<Enter>" "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
 -macro generic,pager <F1> "<shell-escape> less @docdir@/manual.txt<Enter>" "show Mutt documentation"
-+macro generic <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
-+macro index   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
-+macro pager   <f1> "!zcat @docdir@/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
++macro generic,pager <f1> "<shell-escape> zcat @docdir@/mutt/manual.txt.gz | sensible-pager<enter>" "show Mutt documentation"
  
  # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
@@ -55,13 +53,13 @@ Index: Muttrc.head.in
  #
  # set hostname=cs.hmc.edu
  
-@@ -84,7 +113,6 @@ attachments   +I text/plain
+@@ -84,6 +111,9 @@ attachments   +I text/plain
  attachments   -A message/external-body
  attachments   -I message/external-body
  
--##
--## More settings
--##
 +# enable mime lookup by extension
 +mime_lookup application/octet-stream
- 
++
+ ##
+ ## More settings
+ ##

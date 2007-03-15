@@ -1,16 +1,15 @@
-Index: mutt/doc/Makefile.in
+Index: trunk/doc/Makefile.in
 ===================================================================
---- mutt.orig/doc/Makefile.in	2007-02-16 00:38:54.388287904 +0100
-+++ mutt/doc/Makefile.in	2007-02-16 00:39:18.992547488 +0100
-@@ -477,9 +477,9 @@ mutt.1: $(srcdir)/mutt.man
- 	$(EDIT) $(srcdir)/mutt.man > $@
+--- trunk.orig/doc/Makefile.in	2007-03-15 15:47:11.000000000 +0100
++++ trunk/doc/Makefile.in	2007-03-15 15:48:18.000000000 +0100
+@@ -483,8 +483,8 @@ mutt.1: $(srcdir)/mutt.man
  
- stamp-doc-xml: $(top_srcdir)/makedoc.c $(top_srcdir)/init.h manual.xml.head manual.xml.tail \
+ stamp-doc-xml: ../makedoc$(EXEEXT) $(top_srcdir)/init.h manual.xml.head \
+                $(top_srcdir)/functions.h $(top_srcdir)/OPS* manual.xml.tail \
 -               $(top_srcdir)/VERSION ../reldate.h
-+               $(top_srcdir)/VERSION ../../reldate.h
- 	$(MAKE) ../makedoc$(EXEEXT)
 -	( date=`cut -d\" -f2 ../reldate.h`; \
++               $(top_srcdir)/VERSION ../../reldate.h
 +	( date=`cut -d\" -f2 ../../reldate.h`; \
  	  sed -e "s/@VERSION\@/`cat $(top_srcdir)/VERSION` ($$date)/" $(srcdir)/manual.xml.head ;\
- 	  $(MAKEDOC_CPP) $(top_srcdir)/init.h | ../makedoc -s ) |      \
- 		cat - $(srcdir)/manual.xml.tail > manual.xml
+ 	  $(MAKEDOC_CPP) $(top_srcdir)/init.h | ../makedoc -s ;\
+ 	  perl $(srcdir)/gen-map-doc $(top_srcdir)/functions.h $(top_srcdir)/OPS* < $(srcdir)/manual.xml.tail \

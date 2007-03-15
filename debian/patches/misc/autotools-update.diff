@@ -1,7 +1,7 @@
 Index: mutt/Makefile.in
 ===================================================================
---- mutt.orig/Makefile.in	2007-03-01 22:20:47.892627216 +0100
-+++ mutt/Makefile.in	2007-03-01 22:32:08.839107616 +0100
+--- mutt.orig/Makefile.in	2007-03-13 20:40:30.000000000 +0100
++++ mutt/Makefile.in	2007-03-13 21:08:37.000000000 +0100
 @@ -73,10 +73,10 @@ am__objects_1 = patchlist.$(OBJEXT)
  am_mutt_OBJECTS = $(am__objects_1) addrbook.$(OBJEXT) alias.$(OBJEXT) \
  	attach.$(OBJEXT) base64.$(OBJEXT) browser.$(OBJEXT) \
@@ -45,8 +45,8 @@ Index: mutt/Makefile.in
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypt-mod-pgp-classic.Po@am__quote@
 Index: mutt/config.h.in
 ===================================================================
---- mutt.orig/config.h.in	2007-03-01 22:20:48.710502880 +0100
-+++ mutt/config.h.in	2007-03-01 22:32:04.696737352 +0100
+--- mutt.orig/config.h.in	2007-03-12 19:15:58.000000000 +0100
++++ mutt/config.h.in	2007-03-13 21:08:09.000000000 +0100
 @@ -513,6 +513,9 @@
  /* Define to enable Sun mailtool attachments support. */
  #undef SUN_ATTACHMENT
@@ -59,8 +59,8 @@ Index: mutt/config.h.in
  
 Index: mutt/configure
 ===================================================================
---- mutt.orig/configure	2007-03-01 22:20:51.923014504 +0100
-+++ mutt/configure	2007-03-01 22:32:04.324793896 +0100
+--- mutt.orig/configure	2007-03-13 20:40:37.000000000 +0100
++++ mutt/configure	2007-03-13 21:08:33.000000000 +0100
 @@ -1367,6 +1367,7 @@ Optional Features:
    --enable-buffy-size     Use file size attribute instead of access time
    --enable-mailtool       Enable Sun mailtool attachments support
@@ -69,7 +69,7 @@ Index: mutt/configure
    --enable-exact-address  Enable regeneration of email addresses
    --enable-hcache         Enable header caching
    --disable-iconv         Disable iconv support
-@@ -15491,6 +15492,18 @@ _ACEOF
+@@ -15489,6 +15490,18 @@ _ACEOF
  fi
  
  

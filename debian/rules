@@ -1,16 +1,24 @@
 #!/usr/bin/make -f
 
-###
+include /usr/share/quilt/quilt.make
 
+###
 # Uncomment one of these if you're rebuilding using them instead of libdb4.X
 # HCACHE_DB := gdbm
 # HCACHE_DB := qdbm
-
 ###
 
 # Configure arguments
 
-confflags  = 	--prefix=/usr			\
+hcache_db := --without-gdbm --without-qdbm
+ifeq ($(HCACHE_DB),gdbm)
+    hcache_db := --without-qdbm --without-bdb
+endif
+ifeq ($(HCACHE_DB),qdbm)
+    hcache_db := --without-gdbm --without-bdb
+endif
+
+confflags =	--prefix=/usr			\
 		--sysconfdir=/etc		\
 		--mandir=/usr/share/man		\
 		--with-sharedir=/usr/share/mutt	\
@@ -39,60 +47,30 @@ confflags  = 	--prefix=/usr			\
 
 DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-
 confflags += --build $(DEB_BUILD_GNU_TYPE)
-
 # Only specify --host when cross-compiling
 ifneq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
     confflags += --host $(DEB_HOST_GNU_TYPE)
 endif
 
-#
-
-hcache_db := --without-gdbm --without-qdbm
-
-ifeq ($(HCACHE_DB),gdbm)
-    hcache_db := --without-qdbm --without-bdb
-endif
-
-ifeq ($(HCACHE_DB),qdbm)
-    hcache_db := --without-gdbm --without-bdb
-endif
-
-###
-
-# Directory to make the build on
-
-objdir = $(CURDIR)/obj-$(DEB_HOST_GNU_TYPE)
-
-###
-
 # CFLAGS
-
 CFLAGS   = -Wall -g
 CPPFLAGS = -I/usr/include/qdbm
-
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
 	CFLAGS += -O2
 endif
 
-###
+# Directory to make the build on
+objdir = $(CURDIR)/obj-$(DEB_HOST_GNU_TYPE)
 
 configure: $(objdir)/configure-stamp
-$(objdir)/configure-stamp:
+$(objdir)/configure-stamp: $(QUILT_STAMPFN)
 	dh_testdir
 	
 	ln -sf /usr/share/misc/config.sub .
 	ln -sf /usr/share/misc/config.guess .
-	
-	ln -sf debian/patches
-	quilt push -a || test $$? = 2
-	
-	# sort the patches as printed by mutt -v
-	[ -e PATCHES.unsorted ] || mv PATCHES PATCHES.unsorted && \
-	env LC_COLLATE=C sort PATCHES.unsorted >PATCHES
 	
 	# do not rebuild these files
 	touch configure.in aclocal.m4 Makefile.in configure config.h.in
@@ -106,70 +84,38 @@ $(objdir)/configure-stamp:
 	
 	touch $@
 
-#
-
-build: $(objdir)/build-stamp
+build build-arch: $(objdir)/build-stamp
 $(objdir)/build-stamp: $(objdir)/configure-stamp
-	cd $(objdir) && \
-	$(MAKE) CFLAGS="$(CFLAGS)"
-	
+	cd $(objdir) && $(MAKE) CFLAGS="$(CFLAGS)"
 	touch $@
 
-#
-
-clean:
-	dh_testdir
-	dh_testroot
-	
-	[ ! -e PATCHES.unsorted ] || mv PATCHES.unsorted PATCHES
-	quilt pop -a -R || test $$? = 2
-	
-	# quilt cruft
-	rm -f   patches
-	rm -rf .pc
-	touch PATCHES
-	
-	# please dpkg-source
-	rm -f po/*.gmo
-	rm -f config.guess config.sub
-	
-	# remove build tree
-	rm -rf $(objdir)
-	
-	dh_clean
-	
-#
-
 install: debian/tmp/install-stamp
-debian/tmp/install-stamp:
+debian/tmp/install-stamp: $(objdir)/build-stamp
 	dh_testdir
 	dh_testroot
 	dh_clean
 	cd $(objdir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	
-	cd debian/tmp/usr/share/doc; \
-	rm -rf samples/iconv samples/ca-bundle.crt; \
-	mv NEWS NEWS.old; \
-	mv ChangeLog.old changelog.old; \
+	cd debian/tmp/usr/share/doc && \
+	rm -rf samples/iconv samples/ca-bundle.crt && \
+	mv NEWS NEWS.old && \
+	mv ChangeLog.old changelog.old && \
 	cp $(CURDIR)/UPDATING NEWS
 	
 	chmod +x debian/extra/lib/*
 	chmod +x debian/header.awk
 	debian/header.awk debian/patches/features/* >debian/tmp/README.Patches
 	
-	( cat $(objdir)/Muttrc.head; \
-	  echo "# GnuPG configuration"; \
+	( sed -e '/## More settings/,$$d' $(objdir)/Muttrc || exit 1 ; \
+	  cat debian/extra/rc/Muttrc.foot ) > debian/tmp/Muttrc
+	
+	( echo "# GnuPG configuration"; \
 	  grep '^set' contrib/gpg.rc; \
-	  echo; \
-	  cat debian/extra/rc/* ) > debian/tmp/Muttrc
+	  echo ) > debian/tmp/gpg.rc
 	
 	touch $@
 
-#
-
-binary: binary-arch
-
-binary-arch: build install
+binary binary-arch: build install
 	dh_testdir
 	dh_testroot
 	
@@ -194,6 +140,18 @@ binary-arch: build install
 binary-indep:
 	@echo "Nothing to do."
 
-#
+clean: unpatch
+	dh_testdir
+	dh_testroot
+	
+	# please dpkg-source
+	rm -f po/*.gmo
+	rm -f config.guess config.sub
+	touch PATCHES
+	
+	# remove build tree
+	rm -rf $(objdir)
+	
+	dh_clean
 
-.PHONY: configure build clean install binary binary-arch binary-indep
+.PHONY: configure build build-arch build-indep clean install binary binary-arch binary-indep patch

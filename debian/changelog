@@ -1,3 +1,31 @@
+mutt (1.5.14+cvs20070315-1) experimental; urgency=low
+
+  * New upstream snapshot (now from mercurial).
+    + send_charset supports charset-hook'd charsets (Closes: #152444).
+    + Regex for color patterns can be > 256 chars long (Closes: #229801).
+    + Reduces massive strcat use (Closes: #290701).
+    + Uses realpath of folders in the cache (Closes: #298121).
+    + Wraps help correctly on utf-8 terminals (Closes: #328921).
+    + Fixes typos in muttrc.5 (Closes: #366413).
+    + Requery IMAP capabilities after login (Closes: #384076).
+    + Various mutt.1 updates (Closes: #332803, #355912, #366413, #394256).
+    + The key binding documentation is now auto-generated, thereby documenting
+      some missing functions (Closes: #413144).
+    + Previously fixed: IMAP hangs (Closes: #413715).
+  * Split up Muttrc into separate files in /etc/Muttrc.d/.
+  * charset.rc: iconv-hooks for some commonly misused charsets
+    (Closes: #402027).
+  * Add compatibility alias file_charset for attach_charset (got renamed when
+    the assumed-charset patch went upstream).
+  * Patches:
+    + compressed-folders: synced with upstream.
+    + compressed-folders.ranty-fix: removed, went upstream.
+  * Packaging:
+    + Use quilt.make.
+    + Move patchlist sorting into patchlist.sh.
+
+ -- Christoph Berg <myon@debian.org>  Thu, 15 Mar 2007 14:11:31 +0100
+
 mutt (1.5.14+cvs20070301-1) experimental; urgency=low
 
   * New upstream snapshot. Hilights:
