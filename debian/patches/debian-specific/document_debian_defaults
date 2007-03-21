@@ -1,0 +1,54 @@
+Index: debian-mutt/init.h
+===================================================================
+--- debian-mutt.orig/init.h	2007-03-21 21:58:13.000000000 +0100
++++ debian-mutt/init.h	2007-03-21 22:10:38.000000000 +0100
+@@ -289,6 +289,9 @@ struct option_t MuttVars[] = {
+   ** .pp
+   ** When this variable is set, mutt will include Delivered-To headers when
+   ** bouncing messages.  Postfix users may wish to unset this variable.
++  ** .pp
++  ** \fBNote:\fP On Debian systems, this option is unset by default in
++  ** /etc/Muttrc.
+   */
+   { "braille_friendly", DT_BOOL, R_NONE, OPTBRAILLEFRIENDLY, 0 },
+   /*
+@@ -798,6 +801,9 @@ struct option_t MuttVars[] = {
+   ** Specifies the hostname to use after the ``@'' in local e-mail
+   ** addresses.  This overrides the compile time definition obtained from
+   ** /etc/resolv.conf.
++  ** .pp
++  ** \fBNote:\fP On Debian systems, the default for this variable is obtained
++  ** from /etc/mailname when Mutt starts.
+   */
+   { "ignore_linear_white_space",    DT_BOOL, R_NONE, OPTIGNORELWS, 0 },
+   /*
+@@ -1301,6 +1307,9 @@ struct option_t MuttVars[] = {
+   ** system.  It is used with various sets of parameters to gather the
+   ** list of known remailers, and to finally send a message through the
+   ** mixmaster chain.
++  ** .pp
++  ** \fBNote:\fP On Debian systems, this option is set by default to
++  ** ``mixmaster-filter'' in /etc/Muttrc.
+   */
+ #endif
+ 
+@@ -2626,6 +2635,9 @@ struct option_t MuttVars[] = {
+   ** .pp
+   ** You may optionally use the reverse- prefix to specify reverse sorting
+   ** order (example: set sort=reverse-date-sent).
++  ** .pp
++  ** \fBNote:\fP On Debian systems, this option is set by default to
++  ** ``threads'' in /etc/Muttrc.
+   */
+   { "sort_alias",	DT_SORT|DT_SORT_ALIAS,	R_NONE,	UL &SortAlias, SORT_ALIAS },
+   /*
+@@ -3022,6 +3034,9 @@ struct option_t MuttVars[] = {
+   ** is set to deliver directly via SMTP (see ``$$smtp_url''), this
+   ** option does nothing: mutt will never write out the BCC header
+   ** in this case.
++  ** .pp
++  ** \fBNote:\fP On Debian systems, exim4 and postfix strip BCC headers by
++  ** default. The above warning applies to exim3 users, see /etc/Muttrc.
+   */
+   {"xterm_icon",       DT_STR,   R_BOTH, UL &XtermIcon,  UL "M%?n?AIL&ail?"},
+   /*

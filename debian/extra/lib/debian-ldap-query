@@ -5,7 +5,7 @@
 
 use strict;
 
-my @attrs = qw(sn cn ircnick uid);
+my @attrs = qw(sn mn cn ircnick uid);
 my $base = 'ou=users, dc=debian, dc=org';
 my $server = 'db.debian.org';
 my $port = 389;
@@ -32,10 +32,12 @@ foreach my $search (@ARGV) {
 	) or die 'Failed search';
     foreach my $entry ($mesg->entries) {
 		my $uid   = $entry->get_value('uid')	|| next;
-		my $fname = $entry->get_value('cn')		|| '';
-		my $lname = $entry->get_value('sn')		|| '';
+		my $fname = $entry->get_value('cn')	|| '';
+		my $mname = $entry->get_value('mn')	|| '';
+		$mname .= ' ' if $mname;
+		my $lname = $entry->get_value('sn')	|| '';
 		my $nick  = $entry->get_value('ircnick')|| '';
-		push @results, "<$uid\@debian.org>\t$fname $lname\t($nick)\n";
+		push @results, "<$uid\@debian.org>\t$fname $mname$lname\t($nick)\n";
     }
 }
 

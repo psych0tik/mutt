@@ -5,6 +5,8 @@ Maintainer: Adeodato Simó <dato@net.com.org.es>
 Uploaders: Christoph Berg <myon@debian.org>
 Build-Depends: debhelper, quilt (>= 0.40-1), autotools-dev, gawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libdb4.4-dev, libgpgme11-dev
 Standards-Version: 3.7.2
+XS-Vcs-Browser: http://hg.debian.org/hg/pkg-mutt/debian-mutt
+XS-Vcs-Hg: http://hg.debian.org/hg/pkg-mutt/debian-mutt
 
 Package: mutt
 Architecture: any

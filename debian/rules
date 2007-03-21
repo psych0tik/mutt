@@ -69,11 +69,11 @@ configure: $(objdir)/configure-stamp
 $(objdir)/configure-stamp: $(QUILT_STAMPFN)
 	dh_testdir
 	
-	ln -sf /usr/share/misc/config.sub .
-	ln -sf /usr/share/misc/config.guess .
+	#ln -sf /usr/share/misc/config.sub .
+	#ln -sf /usr/share/misc/config.guess .
 	
 	# do not rebuild these files
-	touch configure.in aclocal.m4 Makefile.in configure config.h.in
+	touch configure.ac aclocal.m4 Makefile.in configure config.h.in
 	
 	-mkdir $(objdir)
 	cd $(objdir) && \
@@ -146,7 +146,7 @@ clean: unpatch
 	
 	# please dpkg-source
 	rm -f po/*.gmo
-	rm -f config.guess config.sub
+	#rm -f config.guess config.sub
 	touch PATCHES
 	
 	# remove build tree

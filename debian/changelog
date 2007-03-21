@@ -1,3 +1,19 @@
+mutt (1.5.14+cvs20070321-1) experimental; urgency=low
+
+  * Move source package to http://hg.debian.org/hg/pkg-mutt/debian-mutt.
+  * debian/control: Add XS-Vcs fields.
+  * New snapshot:
+    + More space for the "help" string (Closes: #415277).
+    + --buffy-size is a config option, $check_mbox_size (Closes: #379472).
+  * Patches:
+    + gpg.rc: upstream ships without absolute paths, our patch is much simpler
+      now.
+    + compressed-folders: refreshed.
+  * Mention /etc/Muttrc defaults in documentation (Closes: #388667).
+  * debian-ldap-query: Support middle names (Closes: #415653).
+
+ -- Christoph Berg <myon@debian.org>  Wed, 21 Mar 2007 21:54:08 +0100
+
 mutt (1.5.14+cvs20070315-1) experimental; urgency=low
 
   * New upstream snapshot (now from mercurial).

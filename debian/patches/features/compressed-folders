@@ -15,12 +15,13 @@ The home page for this patch is:
     $(for f in Makefile.in config.h.in configure 'Muttrc*' doc/manual.txt \
       doc/manual.sgml 'doc/manual*.html' doc/muttrc.man; do echo "-x $f"; done)
   - 2007-03-13 myon: update for 1.5.14+tip (conflict in hook.c)
+  - 2007-03-20 myon: conflict in mx.c resolved (BUFFY_SIZE is gone)
 
 == END PATCH
-Index: mutt/compress.c
+Index: debian-mutt/compress.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ mutt/compress.c	2007-03-13 20:59:30.000000000 +0100
++++ debian-mutt/compress.c	2007-03-21 21:28:21.000000000 +0100
 @@ -0,0 +1,499 @@
 +/*
 + * Copyright (C) 1997 Alain Penders <Alain@Finale-Dev.com>
@@ -521,10 +522,10 @@ Index: mutt/compress.c
 +}
 +
 +#endif /* USE_COMPRESSED */
-Index: mutt/compress.h
+Index: debian-mutt/compress.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ mutt/compress.h	2007-03-13 20:59:30.000000000 +0100
++++ debian-mutt/compress.h	2007-03-21 21:28:21.000000000 +0100
 @@ -0,0 +1,27 @@
 +/*
 + * Copyright (C) 1997 Alain Penders <Alain@Finale-Dev.com>
@@ -553,11 +554,11 @@ Index: mutt/compress.h
 +int mutt_test_compress_command (const char *);
 +int mutt_check_mailbox_compressed (CONTEXT *);
 +void mutt_fast_close_compressed (CONTEXT *);
-Index: mutt/configure.in
+Index: debian-mutt/configure.ac
 ===================================================================
---- mutt.orig/configure.in	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/configure.in	2007-03-13 20:59:30.000000000 +0100
-@@ -807,6 +807,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
+--- debian-mutt.orig/configure.ac	2007-03-21 21:25:18.000000000 +0100
++++ debian-mutt/configure.ac	2007-03-21 21:28:21.000000000 +0100
+@@ -803,6 +803,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
  
@@ -569,10 +570,10 @@ Index: mutt/configure.in
  AC_ARG_WITH(exec-shell, AC_HELP_STRING([--with-exec-shell=SHELL], [Specify alternate shell (ONLY if /bin/sh is broken)]),
          [if test $withval != yes; then
                  AC_DEFINE_UNQUOTED(EXECSHELL, "$withval",
-Index: mutt/curs_main.c
+Index: debian-mutt/curs_main.c
 ===================================================================
---- mutt.orig/curs_main.c	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/curs_main.c	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/curs_main.c	2007-03-20 22:52:50.000000000 +0100
++++ debian-mutt/curs_main.c	2007-03-21 21:28:21.000000000 +0100
 @@ -1090,6 +1090,11 @@ int mutt_index_menu (void)
          {
  	  int check;
@@ -585,11 +586,11 @@ Index: mutt/curs_main.c
  	  mutt_str_replace (&LastFolder, Context->path);
  	  oldcount = Context ? Context->msgcount : 0;
  
-Index: mutt/doc/manual.xml.head
+Index: debian-mutt/doc/manual.xml.head
 ===================================================================
---- mutt.orig/doc/manual.xml.head	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/doc/manual.xml.head	2007-03-13 20:59:30.000000000 +0100
-@@ -4843,6 +4843,205 @@ becomes an issue as mutt will silently f
+--- debian-mutt.orig/doc/manual.xml.head	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/doc/manual.xml.head	2007-03-21 21:28:21.000000000 +0100
+@@ -4910,6 +4910,205 @@ becomes an issue as mutt will silently f
  
  </chapter>
  
@@ -795,11 +796,11 @@ Index: mutt/doc/manual.xml.head
  <chapter id="mimesupport">
  <title>Mutt's MIME Support</title>
  
-Index: mutt/doc/muttrc.man.head
+Index: debian-mutt/doc/muttrc.man.head
 ===================================================================
---- mutt.orig/doc/muttrc.man.head	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/doc/muttrc.man.head	2007-03-13 20:59:30.000000000 +0100
-@@ -316,6 +316,24 @@ specify the ID of the public key to be u
+--- debian-mutt.orig/doc/muttrc.man.head	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/doc/muttrc.man.head	2007-03-21 21:28:21.000000000 +0100
+@@ -345,6 +345,24 @@ specify the ID of the public key to be u
  to a certain recipient.  The meaning of "key ID" is to be taken
  broadly: This can be a different e-mail address, a numerical key ID,
  or even just an arbitrary search string.
@@ -824,10 +825,10 @@ Index: mutt/doc/muttrc.man.head
  .TP
  \fBpush\fP \fIstring\fP
  This command adds the named \fIstring\fP to the keyboard buffer.
-Index: mutt/hook.c
+Index: debian-mutt/hook.c
 ===================================================================
---- mutt.orig/hook.c	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/hook.c	2007-03-13 21:00:40.000000000 +0100
+--- debian-mutt.orig/hook.c	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/hook.c	2007-03-21 21:28:21.000000000 +0100
 @@ -24,6 +24,10 @@
  #include "mailbox.h"
  #include "mutt_crypt.h"
@@ -856,11 +857,11 @@ Index: mutt/hook.c
    else if (DefaultHook && !(data & (M_CHARSETHOOK | M_ICONVHOOK | M_ACCOUNTHOOK))
             && (!WithCrypto || !(data & M_CRYPTHOOK))
        )
-Index: mutt/init.h
+Index: debian-mutt/init.h
 ===================================================================
---- mutt.orig/init.h	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/init.h	2007-03-13 20:59:30.000000000 +0100
-@@ -3167,6 +3167,11 @@ struct command_t Commands[] = {
+--- debian-mutt.orig/init.h	2007-03-21 21:26:23.000000000 +0100
++++ debian-mutt/init.h	2007-03-21 21:28:21.000000000 +0100
+@@ -3115,6 +3115,11 @@ struct command_t Commands[] = {
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
@@ -872,11 +873,11 @@ Index: mutt/init.h
    { "group",		parse_group,		0 },
    { "ungroup",		parse_ungroup,		0 },
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
-Index: mutt/main.c
+Index: debian-mutt/main.c
 ===================================================================
---- mutt.orig/main.c	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/main.c	2007-03-13 20:59:30.000000000 +0100
-@@ -404,6 +404,12 @@ static void show_version (void)
+--- debian-mutt.orig/main.c	2007-03-20 22:52:50.000000000 +0100
++++ debian-mutt/main.c	2007-03-21 21:28:21.000000000 +0100
+@@ -400,6 +400,12 @@ static void show_version (void)
  #else
  	"-LOCALES_HACK  "
  #endif
@@ -889,10 +890,10 @@ Index: mutt/main.c
  	      
  #ifdef HAVE_WC_FUNCS
  	"+HAVE_WC_FUNCS  "
-Index: mutt/Makefile.am
+Index: debian-mutt/Makefile.am
 ===================================================================
---- mutt.orig/Makefile.am	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/Makefile.am	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/Makefile.am	2007-03-21 21:25:18.000000000 +0100
++++ debian-mutt/Makefile.am	2007-03-21 21:28:21.000000000 +0100
 @@ -18,7 +18,7 @@ BUILT_SOURCES = keymap_defs.h patchlist.
  bin_PROGRAMS = mutt @DOTLOCK_TARGET@ @PGPAUX_TARGET@
  mutt_SOURCES = $(BUILT_SOURCES) \
@@ -911,10 +912,10 @@ Index: mutt/Makefile.am
  	attach.h buffy.h charset.h copy.h crypthash.h dotlock.h functions.h gen_defs \
  	globals.h hash.h history.h init.h keymap.h mutt_crypt.h \
  	mailbox.h mapping.h md5.h mime.h mutt.h mutt_curses.h mutt_menu.h \
-Index: mutt/mbox.c
+Index: debian-mutt/mbox.c
 ===================================================================
---- mutt.orig/mbox.c	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/mbox.c	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/mbox.c	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/mbox.c	2007-03-21 21:28:21.000000000 +0100
 @@ -29,6 +29,10 @@
  #include "copy.h"
  #include "mutt_curses.h"
@@ -939,11 +940,11 @@ Index: mutt/mbox.c
    mutt_unblock_signals ();
    mx_fastclose_mailbox (ctx);
    return 0;
-Index: mutt/mutt.h
+Index: debian-mutt/mutt.h
 ===================================================================
---- mutt.orig/mutt.h	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/mutt.h	2007-03-13 20:59:30.000000000 +0100
-@@ -159,6 +159,11 @@ typedef enum
+--- debian-mutt.orig/mutt.h	2007-03-20 22:52:50.000000000 +0100
++++ debian-mutt/mutt.h	2007-03-21 21:28:21.000000000 +0100
+@@ -160,6 +160,11 @@ typedef enum
  #define M_ACCOUNTHOOK	(1<<9)
  #define M_REPLYHOOK	(1<<10)
  #define M_SEND2HOOK     (1<<11)
@@ -955,7 +956,7 @@ Index: mutt/mutt.h
  
  /* tree characters for linearize_tree and print_enriched_string */
  #define M_TREE_LLCORNER		1
-@@ -882,6 +887,11 @@ typedef struct
+@@ -886,6 +891,11 @@ typedef struct
    void *data;			/* driver specific data */
  #endif /* USE_IMAP */
  
@@ -967,10 +968,10 @@ Index: mutt/mutt.h
    short magic;			/* mailbox type */
  
    unsigned char rights[(RIGHTSMAX + 7)/8];	/* ACL bits */
-Index: mutt/mx.c
+Index: debian-mutt/mx.c
 ===================================================================
---- mutt.orig/mx.c	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/mx.c	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/mx.c	2007-03-21 21:25:18.000000000 +0100
++++ debian-mutt/mx.c	2007-03-21 21:29:55.000000000 +0100
 @@ -30,6 +30,10 @@
  #include "keymap.h"
  #include "url.h"
@@ -982,7 +983,7 @@ Index: mutt/mx.c
  #ifdef USE_IMAP
  #include "imap.h"
  #endif
-@@ -454,6 +458,10 @@ int mx_get_magic (const char *path)
+@@ -450,6 +454,10 @@ int mx_get_magic (const char *path)
      return (-1);
    }
  
@@ -993,9 +994,9 @@ Index: mutt/mx.c
    return (magic);
  }
  
-@@ -494,6 +502,13 @@ static int mx_open_mailbox_append (CONTE
+@@ -489,6 +497,13 @@ static int mx_open_mailbox_append (CONTE
+ {
    struct stat sb;
-   mode_t omask;
  
 +#ifdef USE_COMPRESSED
 +  /* special case for appending to compressed folders -
@@ -1007,7 +1008,7 @@ Index: mutt/mx.c
    ctx->append = 1;
  
  #ifdef USE_IMAP
-@@ -664,7 +679,12 @@ CONTEXT *mx_open_mailbox (const char *pa
+@@ -652,7 +667,12 @@ CONTEXT *mx_open_mailbox (const char *pa
    }
  
    ctx->magic = mx_get_magic (path);
@@ -1021,7 +1022,7 @@ Index: mutt/mx.c
    if(ctx->magic == 0)
      mutt_error (_("%s is not a mailbox."), path);
  
-@@ -770,6 +790,10 @@ void mx_fastclose_mailbox (CONTEXT *ctx)
+@@ -758,6 +778,10 @@ void mx_fastclose_mailbox (CONTEXT *ctx)
      mutt_free_header (&ctx->hdrs[i]);
    FREE (&ctx->hdrs);
    FREE (&ctx->v2r);
@@ -1032,10 +1033,10 @@ Index: mutt/mx.c
    FREE (&ctx->path);
    FREE (&ctx->pattern);
    if (ctx->limit_pattern) 
-@@ -827,6 +851,12 @@ static int sync_mailbox (CONTEXT *ctx, i
+@@ -810,6 +834,12 @@ static int sync_mailbox (CONTEXT *ctx, i
+   
    if (tmp && tmp->new == 0)
      mutt_update_mailbox (tmp);
- #endif
 +
 +#ifdef USE_COMPRESSED
 +  if (rc == 0 && ctx->compressinfo)
@@ -1045,7 +1046,7 @@ Index: mutt/mx.c
    return rc;
  }
  
-@@ -1028,6 +1058,11 @@ int mx_close_mailbox (CONTEXT *ctx, int 
+@@ -1011,6 +1041,11 @@ int mx_close_mailbox (CONTEXT *ctx, int 
        !mutt_is_spool(ctx->path) && !option (OPTSAVEEMPTY))
      mx_unlink_empty (ctx->path);
  
@@ -1057,7 +1058,7 @@ Index: mutt/mx.c
    mx_fastclose_mailbox (ctx);
  
    return 0;
-@@ -1342,6 +1377,11 @@ int mx_check_mailbox (CONTEXT *ctx, int 
+@@ -1320,6 +1355,11 @@ int mx_check_mailbox (CONTEXT *ctx, int 
  {
    int rc;
  
@@ -1069,10 +1070,10 @@ Index: mutt/mx.c
    if (ctx)
    {
      if (ctx->locked) lock = 0;
-Index: mutt/mx.h
+Index: debian-mutt/mx.h
 ===================================================================
---- mutt.orig/mx.h	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/mx.h	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/mx.h	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/mx.h	2007-03-21 21:28:21.000000000 +0100
 @@ -40,6 +40,9 @@ enum
  #ifdef USE_POP
    , M_POP
@@ -1083,16 +1084,16 @@ Index: mutt/mx.h
  };
  
  WHERE short DefaultMagic INITVAL (M_MBOX);
-Index: mutt/PATCHES
+Index: debian-mutt/PATCHES
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ mutt/PATCHES	2007-03-13 20:59:30.000000000 +0100
++++ debian-mutt/PATCHES	2007-03-21 21:28:21.000000000 +0100
 @@ -0,0 +1 @@
 +patch-1.5.14.rr.compressed.1
-Index: mutt/po/de.po
+Index: debian-mutt/po/de.po
 ===================================================================
---- mutt.orig/po/de.po	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/po/de.po	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/po/de.po	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/po/de.po	2007-03-21 21:28:21.000000000 +0100
 @@ -1266,6 +1266,48 @@ msgstr "Prüfung des Absenders fehlgeschl
  msgid "Failed to figure out sender"
  msgstr "Kann Absender nicht ermitteln"
@@ -1172,10 +1173,10 @@ Index: mutt/po/de.po
  #. this means ctx->changed or ctx->deleted was set, but no
  #. * messages were found to be changed or deleted.  This should
  #. * never happen, is we presume it is a bug in mutt.
-Index: mutt/po/POTFILES.in
+Index: debian-mutt/po/POTFILES.in
 ===================================================================
---- mutt.orig/po/POTFILES.in	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/po/POTFILES.in	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/po/POTFILES.in	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/po/POTFILES.in	2007-03-21 21:28:21.000000000 +0100
 @@ -8,6 +8,7 @@ charset.c
  color.c
  commands.c
@@ -1184,10 +1185,10 @@ Index: mutt/po/POTFILES.in
  crypt-gpgme.c
  crypt.c
  cryptglue.c
-Index: mutt/status.c
+Index: debian-mutt/status.c
 ===================================================================
---- mutt.orig/status.c	2007-03-13 20:53:07.000000000 +0100
-+++ mutt/status.c	2007-03-13 20:59:30.000000000 +0100
+--- debian-mutt.orig/status.c	2007-03-20 22:31:20.000000000 +0100
++++ debian-mutt/status.c	2007-03-21 21:28:21.000000000 +0100
 @@ -97,6 +97,14 @@ status_format_str (char *buf, size_t buf
  
      case 'f':

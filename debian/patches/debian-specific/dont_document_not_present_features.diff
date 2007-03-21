@@ -1,23 +1,26 @@
---- init.h.orig
-+++ init.h
-@@ -80,9 +80,9 @@
- #define ISPELL "ispell"
+Index: init.h
+===================================================================
+--- init.h.orig	2007-03-21 21:33:20.000000000 +0100
++++ init.h	2007-03-21 21:35:32.000000000 +0100
+@@ -19,7 +19,7 @@
+ 
+ #ifdef _MAKEDOC
+ # include "config.h"
+-# include "makedoc-defs.h"
++/* # include "makedoc-defs.h" include only documented options for Debian */
+ #else
+ # include "sort.h"
+ #endif
+Index: functions.h
+===================================================================
+--- functions.h.orig	2007-03-21 21:35:37.000000000 +0100
++++ functions.h	2007-03-21 21:35:51.000000000 +0100
+@@ -35,7 +35,7 @@
+ 
+ #ifdef _MAKEDOC
+ # include "config.h"
+-# include "makedoc-defs.h"
++/* # include "makedoc-defs.h" include only documented options for Debian */
  #endif
  
--/* build complete documentation */
-+/* Disable "build complete documentation" for Debian */
- 
--#ifdef _MAKEDOC
-+#if 0
- # ifndef USE_IMAP
- #  define USE_IMAP
- # endif
-@@ -2015,7 +2015,7 @@
-   ** .pp
-   ** Example: set certificate_file=~/.mutt/certificates
-   */
--# if defined _MAKEDOC || !defined(USE_SSL_GNUTLS)
-+# ifndef USE_SSL_GNUTLS
-   { "ssl_usesystemcerts", DT_BOOL, R_NONE, OPTSSLSYSTEMCERTS, 1 },
-   /*
-   ** .pp
+ struct binding_t OpGeneric[] = { /* map: generic */
