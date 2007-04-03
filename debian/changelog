@@ -1,3 +1,26 @@
+mutt (1.5.14+cvs20070403-1) experimental; urgency=low
+
+  * set ssl_ca_certificates_file="/etc/ssl/certs/ca-certificates.crt".
+  * Use /etc/ssl/certs/ca-certificates.crt as smime_ca_location if there is
+    none in ~/.smime/ (Closes: #255653).
+  * New snapshot:
+    + Make mutt_edit_file display error if editor return is non-zero
+      (Closes: #209244).
+    + Use ~/.muttrc as the default alias_file if no user muttrc exists
+      (Closes: #226500).
+    + Reset list.name before each list response in folder browser
+      (Mutt: #2444, Closes: #377783).
+    + Fix segfault when trying to read header cache if cwd does not exist
+      (Mutt: #2714, Closes: #387560).
+    + Make message cache write to temporary location until file is complete
+      (Closes: #394383).
+    + Use RECENT for first mailbox check if header cache check fails
+      (Closes: #372512).
+  * Patches:
+    + maildir-mtime: refreshed.
+
+ -- Christoph Berg <myon@debian.org>  Tue,  3 Apr 2007 20:54:35 +0200
+
 mutt (1.5.14+cvs20070321-1) experimental; urgency=low
 
   * Move source package to http://hg.debian.org/hg/pkg-mutt/debian-mutt.

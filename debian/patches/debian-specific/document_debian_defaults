@@ -1,7 +1,7 @@
 Index: debian-mutt/init.h
 ===================================================================
---- debian-mutt.orig/init.h	2007-03-21 21:58:13.000000000 +0100
-+++ debian-mutt/init.h	2007-03-21 22:10:38.000000000 +0100
+--- debian-mutt.orig/init.h	2007-03-24 17:54:00.000000000 +0100
++++ debian-mutt/init.h	2007-03-24 18:00:57.000000000 +0100
 @@ -289,6 +289,9 @@ struct option_t MuttVars[] = {
    ** .pp
    ** When this variable is set, mutt will include Delivered-To headers when
@@ -32,7 +32,28 @@ Index: debian-mutt/init.h
    */
  #endif
  
-@@ -2626,6 +2635,9 @@ struct option_t MuttVars[] = {
+@@ -1843,6 +1852,10 @@ struct option_t MuttVars[] = {
+   ** This variable contains the name of either a directory, or a file which
+   ** contains trusted certificates for use with OpenSSL.
+   ** (S/MIME only)
++  ** .pp
++  ** \fBNote:\fP On Debian systems, this defaults to the first existing file in
++  ** the following list: ~/.smime/ca-certificates.crt ~/.smime/ca-bundle.crt
++  ** /etc/ssl/certs/ca-certificates.crt.
+   */
+   { "smime_certificates",	DT_PATH, R_NONE, UL &SmimeCertificates, 0 },
+   /*
+@@ -2049,6 +2062,9 @@ struct option_t MuttVars[] = {
+   ** certificates are also automatically accepted.
+   ** .pp
+   ** Example: set ssl_ca_certificates_file=/etc/ssl/certs/ca-certificates.crt
++  ** .pp
++  ** \fBNote:\fP On Debian systems, this variable defaults to the example
++  ** mentioned. This file is managed by the ``ca-certificates'' package.
+   */
+ # endif /* USE_SSL_GNUTLS */
+ #endif /* defined(USE_SSL) */
+@@ -2626,6 +2642,9 @@ struct option_t MuttVars[] = {
    ** .pp
    ** You may optionally use the reverse- prefix to specify reverse sorting
    ** order (example: set sort=reverse-date-sent).
@@ -42,7 +63,7 @@ Index: debian-mutt/init.h
    */
    { "sort_alias",	DT_SORT|DT_SORT_ALIAS,	R_NONE,	UL &SortAlias, SORT_ALIAS },
    /*
-@@ -3022,6 +3034,9 @@ struct option_t MuttVars[] = {
+@@ -3022,6 +3041,9 @@ struct option_t MuttVars[] = {
    ** is set to deliver directly via SMTP (see ``$$smtp_url''), this
    ** option does nothing: mutt will never write out the BCC header
    ** in this case.

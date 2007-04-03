@@ -1,8 +1,8 @@
-Index: trunk/Muttrc.head
+Index: debian-mutt/Muttrc.head
 ===================================================================
---- trunk.orig/Muttrc.head	2007-03-15 16:33:18.000000000 +0100
-+++ trunk/Muttrc.head	2007-03-15 16:35:15.000000000 +0100
-@@ -6,6 +6,33 @@
+--- debian-mutt.orig/Muttrc.head	2007-03-24 16:53:09.000000000 +0100
++++ debian-mutt/Muttrc.head	2007-03-24 17:53:19.000000000 +0100
+@@ -6,6 +6,36 @@
  #
  ignore "from " received content- mime-version status x-status message-id
  ignore sender references return-path lines
@@ -33,10 +33,13 @@ Index: trunk/Muttrc.head
 +unset bounce_delivered
 +
 +set mixmaster="mixmaster-filter"
++
++# System-wide CA file managed by the ca-certificates package
++set ssl_ca_certificates_file="/etc/ssl/certs/ca-certificates.crt"
  
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
-@@ -15,14 +42,14 @@ macro index,pager \cb "<pipe-message> ur
+@@ -15,14 +45,14 @@ macro index,pager \cb "<pipe-message> ur
  macro attach,compose \cb "<pipe-entry> urlview<Enter>" "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
@@ -53,7 +56,7 @@ Index: trunk/Muttrc.head
  #
  # set hostname=cs.hmc.edu
  
-@@ -84,6 +111,9 @@ attachments   +I text/plain
+@@ -84,6 +114,9 @@ attachments   +I text/plain
  attachments   -A message/external-body
  attachments   -I message/external-body
  
