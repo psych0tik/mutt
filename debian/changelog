@@ -1,3 +1,16 @@
+mutt (1.5.15+20070412-1) experimental; urgency=low
+
+  * New snapshot:
+    + Avoid altering the argument to mutt_complete() when completion fails.
+      Mutt: #2871, Closes: #367405
+    + Allow reply-hook to use ~h when replying from the index.
+      Mutt: #2866, Closes: #362919
+    + Exit with a nonzero value if sending a message in batch mode fails.
+      Mutt: #2709, Closes: #273137
+    + Make mutt more posixly-correct. Mutt: #1615, Closes: #204904
+
+ -- Christoph Berg <myon@debian.org>  Thu, 12 Apr 2007 17:04:05 +0000
+
 mutt (1.5.14+cvs20070403-1) experimental; urgency=low
 
   * set ssl_ca_certificates_file="/etc/ssl/certs/ca-certificates.crt".
