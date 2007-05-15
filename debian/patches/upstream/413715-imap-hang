@@ -1,0 +1,69 @@
+
+# HG changeset patch
+# User Brendan Cully <brendan@kublai.com>
+# Date 1172684833 0
+# Node ID 0bb4645e994b24bb8b3e5c450a5b040028b4354d
+# Parent eda7244885d12b4f22fa3b38369c997560cc4a69
+Add imap_close_connection to fully reset IMAP state. (closes: #2717)
+Thanks to Sergey Svishchev for the original patch.
+
+--- a/imap/command.c	Wed Feb 28 16:27:47 2007 +0000
++++ b/imap/command.c	Wed Feb 28 17:47:13 2007 +0000
+@@ -375,11 +375,7 @@ static void cmd_handle_fatal (IMAP_DATA*
+   }
+ 
+   if (idata->state < IMAP_SELECTED)
+-  {
+-    idata->state = IMAP_DISCONNECTED;
+-    mutt_socket_close (idata->conn);
+-    idata->status = 0;
+-  }
++    imap_close_connection (idata);
+ }
+ 
+ /* cmd_handle_untagged: fallback parser for otherwise unhandled messages. */
+--- a/imap/imap.c	Wed Feb 28 16:27:47 2007 +0000
++++ b/imap/imap.c	Wed Feb 28 17:47:13 2007 +0000
+@@ -399,8 +399,7 @@ int imap_open_connection (IMAP_DATA* ida
+ 
+   if (imap_cmd_step (idata) != IMAP_CMD_CONTINUE)
+   {
+-    mutt_socket_close (idata->conn);
+-    idata->state = IMAP_DISCONNECTED;
++    imap_close_connection (idata);
+     return -1;
+   }
+ 
+@@ -467,12 +466,19 @@ int imap_open_connection (IMAP_DATA* ida
+ 
+ #if defined(USE_SSL)
+  err_close_conn:
+-  mutt_socket_close (idata->conn);
+-  idata->state = IMAP_DISCONNECTED;
++  imap_close_connection (idata);
+ #endif
+  bail:
+   FREE (&idata->capstr);
+   return -1;
++}
++
++void imap_close_connection(IMAP_DATA* idata)
++{
++  mutt_socket_close (idata->conn);
++  idata->state = IMAP_DISCONNECTED;
++  idata->seqno = idata->nextcmd = idata->lastcmd = idata->status = 0;
++  memset (idata->cmds, 0, sizeof (IMAP_COMMAND) * IMAP_PIPELINE_DEPTH);
+ }
+ 
+ /* imap_get_flags: Make a simple list out of a FLAGS response.
+--- a/imap/imap_private.h	Wed Feb 28 16:27:47 2007 +0000
++++ b/imap/imap_private.h	Wed Feb 28 17:47:13 2007 +0000
+@@ -235,6 +235,7 @@ int imap_make_msg_set (IMAP_DATA* idata,
+ int imap_make_msg_set (IMAP_DATA* idata, BUFFER* buf, int flag, int changed,
+                        int invert);
+ int imap_open_connection (IMAP_DATA* idata);
++void imap_close_connection (IMAP_DATA* idata);
+ IMAP_DATA* imap_conn_find (const ACCOUNT* account, int flags);
+ int imap_read_literal (FILE* fp, IMAP_DATA* idata, long bytes, progress_t*);
+ void imap_expunge_mailbox (IMAP_DATA* idata);
+

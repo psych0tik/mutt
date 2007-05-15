@@ -1,3 +1,12 @@
+mutt (1.5.13-1.1etch1) stable; urgency=low
+
+  * Stable update.
+  * Grab patch from upstream:
+    Add imap_close_connection to fully reset IMAP state (Closes: #413715).
+  * Add myself to Uploaders, thanks Dato.
+
+ -- Christoph Berg <myon@debian.org>  Tue, 15 May 2007 09:59:24 +0200
+
 mutt (1.5.13-1.1) unstable; urgency=high
 
   * Non-maintainer upload.
