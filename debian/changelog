@@ -1,3 +1,14 @@
+mutt (1.5.15+20070515-1) experimental; urgency=low
+
+  * New snapshot.
+    + Removed hardcoded pager progress indicator and add %P format code to
+      $pager_status which contains the same information.
+      Mutt: #2087, Closes: #259145.
+  * $smime_verify_opaque_command: fallback to -noverify.
+    Mutt: #2428, Closes: #420014.
+
+ -- Christoph Berg <myon@debian.org>  Thu, 17 May 2007 14:15:48 +0200
+
 mutt (1.5.15+20070412-1) experimental; urgency=low
 
   * New snapshot:
