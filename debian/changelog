@@ -1,3 +1,12 @@
+mutt (1.5.15+20070608-1) experimental; urgency=low
+
+  * Muttrc.head: Temporarily set pipe_decode in the \cb urlview macro.
+    Closes: #423640.
+  * Apply patch by pywatson@gmail.com to strdup strings when sorting.
+    Mutt: #2515, Closes: #196545.
+
+ -- Christoph Berg <myon@debian.org>  Fri, 08 Jun 2007 11:19:08 +0200
+
 mutt (1.5.15+20070515-1) experimental; urgency=low
 
   * New snapshot.

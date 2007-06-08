@@ -1,7 +1,7 @@
 Index: debian-mutt/Muttrc.head
 ===================================================================
---- debian-mutt.orig/Muttrc.head	2007-03-24 16:53:09.000000000 +0100
-+++ debian-mutt/Muttrc.head	2007-03-24 17:53:19.000000000 +0100
+--- debian-mutt.orig/Muttrc.head	2007-06-08 13:19:22.000000000 +0200
++++ debian-mutt/Muttrc.head	2007-06-08 13:20:36.000000000 +0200
 @@ -6,6 +6,36 @@
  #
  ignore "from " received content- mime-version status x-status message-id
@@ -39,12 +39,12 @@ Index: debian-mutt/Muttrc.head
  
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
-@@ -15,14 +45,14 @@ macro index,pager \cb "<pipe-message> ur
- macro attach,compose \cb "<pipe-entry> urlview<Enter>" "call urlview to extract URLs out of a message"
+@@ -18,14 +48,14 @@ macro index,pager,attach,compose \cb "\
+ "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
 -macro generic,pager <F1> "<shell-escape> less @docdir@/manual.txt<Enter>" "show Mutt documentation"
-+macro generic,pager <f1> "<shell-escape> zcat @docdir@/mutt/manual.txt.gz | sensible-pager<enter>" "show Mutt documentation"
++macro generic,pager <F1> "<shell-escape> zcat @docdir@/mutt/manual.txt.gz | sensible-pager<enter>" "show Mutt documentation"
  
  # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
@@ -56,7 +56,7 @@ Index: debian-mutt/Muttrc.head
  #
  # set hostname=cs.hmc.edu
  
-@@ -84,6 +114,9 @@ attachments   +I text/plain
+@@ -87,6 +117,9 @@ attachments   +I text/plain
  attachments   -A message/external-body
  attachments   -I message/external-body
  
