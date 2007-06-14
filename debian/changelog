@@ -1,3 +1,10 @@
+mutt (1.5.16-1) experimental; urgency=low
+
+  * New upstream version.
+  * compressed-folders: grab updated patch, thanks Roland.
+
+ -- Christoph Berg <myon@debian.org>  Thu, 14 Jun 2007 10:54:56 +0200
+
 mutt (1.5.15+20070608-1) experimental; urgency=low
 
   * Muttrc.head: Temporarily set pipe_decode in the \cb urlview macro.

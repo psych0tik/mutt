@@ -1,13 +1,13 @@
-Index: mutt/Makefile.in
+Index: debian-mutt/Makefile.in
 ===================================================================
---- mutt.orig/Makefile.in	2007-03-13 20:40:30.000000000 +0100
-+++ mutt/Makefile.in	2007-03-13 21:08:37.000000000 +0100
+--- debian-mutt.orig/Makefile.in	2007-06-14 10:47:56.000000000 +0200
++++ debian-mutt/Makefile.in	2007-06-14 10:51:17.000000000 +0200
 @@ -73,10 +73,10 @@ am__objects_1 = patchlist.$(OBJEXT)
  am_mutt_OBJECTS = $(am__objects_1) addrbook.$(OBJEXT) alias.$(OBJEXT) \
  	attach.$(OBJEXT) base64.$(OBJEXT) browser.$(OBJEXT) \
  	buffy.$(OBJEXT) color.$(OBJEXT) crypt.$(OBJEXT) \
 -	cryptglue.$(OBJEXT) commands.$(OBJEXT) complete.$(OBJEXT) \
--	compose.$(OBJEXT) copy.$(OBJEXT) curs_lib.$(OBJEXT) \
+-	compose.$(OBJEXT) compress.$(OBJEXT) copy.$(OBJEXT) curs_lib.$(OBJEXT) \
 -	curs_main.$(OBJEXT) date.$(OBJEXT) edit.$(OBJEXT) \
 -	enter.$(OBJEXT) flags.$(OBJEXT) init.$(OBJEXT) \
 +	cryptglue.$(OBJEXT) compress.$(OBJEXT) commands.$(OBJEXT) \
@@ -17,74 +17,53 @@ Index: mutt/Makefile.in
  	filter.$(OBJEXT) from.$(OBJEXT) getdomain.$(OBJEXT) \
  	group.$(OBJEXT) handler.$(OBJEXT) hash.$(OBJEXT) \
  	hdrline.$(OBJEXT) headers.$(OBJEXT) help.$(OBJEXT) \
-@@ -301,7 +301,7 @@ bin_SCRIPTS = muttbug flea @SMIMEAUX_TAR
- BUILT_SOURCES = keymap_defs.h patchlist.c
- mutt_SOURCES = $(BUILT_SOURCES) \
- 	addrbook.c alias.c attach.c base64.c browser.c buffy.c color.c \
--	crypt.c cryptglue.c \
-+	crypt.c cryptglue.c compress.c \
- 	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
- 	edit.c enter.c flags.c init.c filter.c from.c \
- 	getdomain.c group.c \
-@@ -334,7 +334,7 @@ EXTRA_mutt_SOURCES = account.c md5c.c mu
- 	utf8.c wcwidth.c 
- 
- EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO UPDATING \
--	configure account.h \
-+	configure account.h compress.h \
- 	attach.h buffy.h charset.h copy.h crypthash.h dotlock.h functions.h gen_defs \
- 	globals.h hash.h history.h init.h keymap.h mutt_crypt.h \
- 	mailbox.h mapping.h md5.h mime.h mutt.h mutt_curses.h mutt_menu.h \
-@@ -506,6 +506,7 @@ distclean-compile:
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/commands.Po@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/complete.Po@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compose.Po@am__quote@
-+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compress.Po@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copy.Po@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypt-gpgme.Po@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypt-mod-pgp-classic.Po@am__quote@
-Index: mutt/config.h.in
+Index: debian-mutt/config.h.in
 ===================================================================
---- mutt.orig/config.h.in	2007-03-12 19:15:58.000000000 +0100
-+++ mutt/config.h.in	2007-03-13 21:08:09.000000000 +0100
-@@ -513,6 +513,9 @@
+--- debian-mutt.orig/config.h.in	2007-06-14 10:47:56.000000000 +0200
++++ debian-mutt/config.h.in	2007-06-14 10:51:11.000000000 +0200
+@@ -513,7 +513,7 @@
  /* Define to enable Sun mailtool attachments support. */
  #undef SUN_ATTACHMENT
  
+-/* Define to enable compressed mailboxes support */
 +/* Define to support compressed folders. */
-+#undef USE_COMPRESSED
-+
- /* Define to use dotlocking for mailboxes. */
- #undef USE_DOTLOCK
+ #undef USE_COMPRESSED
  
-Index: mutt/configure
+ /* Define to use dotlocking for mailboxes. */
+Index: debian-mutt/configure
 ===================================================================
---- mutt.orig/configure	2007-03-13 20:40:37.000000000 +0100
-+++ mutt/configure	2007-03-13 21:08:33.000000000 +0100
-@@ -1367,6 +1367,7 @@ Optional Features:
-   --enable-buffy-size     Use file size attribute instead of access time
+--- debian-mutt.orig/configure	2007-06-14 10:47:56.000000000 +0200
++++ debian-mutt/configure	2007-06-14 10:51:11.000000000 +0200
+@@ -1367,11 +1367,11 @@ Optional Features:
+   --enable-nfs-fix        Work around an NFS with broken attributes caching
    --enable-mailtool       Enable Sun mailtool attachments support
    --enable-locales-fix    The result of isprint() is unreliable
 +  --enable-compressed     Enable compressed folders support
    --enable-exact-address  Enable regeneration of email addresses
    --enable-hcache         Enable header caching
    --disable-iconv         Disable iconv support
-@@ -15489,6 +15490,18 @@ _ACEOF
+   --disable-nls           Do not use Native Language Support
+-  --enable-compressed     Enable compressed folders support
+ 
+ Optional Packages:
+   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+@@ -15106,9 +15106,9 @@ _ACEOF
  fi
  
  
+-# Check whether --enable-compressed or --disable-compressed was given.
 +# Check whether --enable-compressed was given.
-+if test "${enable_compressed+set}" = set; then
+ if test "${enable_compressed+set}" = set; then
+-  enableval="$enable_compressed"; if test x$enableval = xyes; then
 +  enableval=$enable_compressed; if test x$enableval = xyes; then
-+
-+cat >>confdefs.h <<\_ACEOF
-+#define USE_COMPRESSED 1
-+_ACEOF
-+
-+        fi
-+fi
-+
-+
  
+ cat >>confdefs.h <<\_ACEOF
+ #define USE_COMPRESSED 1
+@@ -15118,6 +15118,7 @@ _ACEOF
+ fi
+ 
+ 
++
  # Check whether --with-exec-shell was given.
  if test "${with_exec_shell+set}" = set; then
+   withval=$with_exec_shell; if test $withval != yes; then
