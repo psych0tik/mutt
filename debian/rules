@@ -3,14 +3,20 @@
 include /usr/share/quilt/quilt.make
 
 ###
-# Uncomment one of these if you're rebuilding using them instead of libdb4.X
-# HCACHE_DB := gdbm
+# header cache backend
+# HCACHE_DB := bdb
+HCACHE_DB := gdbm
 # HCACHE_DB := qdbm
+###
+# GPGME backend
+# GPGME := --enable-gpgme
 ###
 
 # Configure arguments
 
-hcache_db := --without-gdbm --without-qdbm
+ifeq ($(HCACHE_DB),bdb)
+    hcache_db := --without-gdbm --without-qdbm
+endif
 ifeq ($(HCACHE_DB),gdbm)
     hcache_db := --without-qdbm --without-bdb
 endif
@@ -31,7 +37,7 @@ confflags =	--prefix=/usr			\
 		--enable-debug			\
 		--enable-fcntl			\
 		--enable-hcache			\
-		--enable-gpgme			\
+		$(GPGME)			\
 		--enable-imap			\
 		--enable-smtp			\
 		--enable-inodesort		\

@@ -1,3 +1,14 @@
+mutt (1.5.16-2) unstable; urgency=low
+
+  * Finally a new unstable version :)
+  * Disable gpgme backend again, it needs two "optional" libs we do not want
+    to pull into "standard" now, and it is still somewhat buggy.
+    Reopens: #263443.
+  * Use gdbm instead of bdb for the cache files.
+  * Enable sensible_browser_position patch.
+
+ -- Christoph Berg <myon@debian.org>  Thu, 28 Jun 2007 21:58:47 +0200
+
 mutt (1.5.16-1) experimental; urgency=low
 
   * New upstream version.

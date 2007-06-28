@@ -1,8 +1,15 @@
-Anyway, here's patch-1.5.8.hr.sensible_browser_position.3:
+# vi: ft=diff
+This is the sensible browser position patch by Haakon Riiser.
 
---- mutt-1.5.8/menu.c.orig	2005-02-12 21:01:55.000000000 +0100
-+++ mutt-1.5.8/menu.c	2005-03-09 16:39:49.000000000 +0100
-@@ -841,8 +841,12 @@
+  * Found in: <20050309162127.GA5656@s>
+    http://lists.df7cb.de/mutt/message/20050309.162127.a244a894.en.html
+
+== END PATCH
+Index: debian-mutt/menu.c
+===================================================================
+--- debian-mutt.orig/menu.c	2007-03-24 18:45:30.000000000 +0100
++++ debian-mutt/menu.c	2007-06-28 21:48:47.000000000 +0200
+@@ -840,8 +840,12 @@ int menu_redraw (MUTTMENU *menu)
  
  int mutt_menuLoop (MUTTMENU *menu)
  {
@@ -15,7 +22,7 @@ Anyway, here's patch-1.5.8.hr.sensible_browser_position.3:
    FOREVER
    {
      if (option (OPTMENUCALLER))
-@@ -1068,6 +1072,8 @@
+@@ -1073,6 +1077,8 @@ int mutt_menuLoop (MUTTMENU *menu)
  	break;
  
        default:
@@ -24,9 +31,11 @@ Anyway, here's patch-1.5.8.hr.sensible_browser_position.3:
  	return (i);
      }
    }
---- mutt-1.5.8/browser.c.orig	2005-02-03 19:47:52.000000000 +0100
-+++ mutt-1.5.8/browser.c	2005-03-09 16:48:31.000000000 +0100
-@@ -54,6 +54,7 @@
+Index: debian-mutt/browser.c
+===================================================================
+--- debian-mutt.orig/browser.c	2007-06-28 21:41:27.000000000 +0200
++++ debian-mutt/browser.c	2007-06-28 21:48:47.000000000 +0200
+@@ -56,6 +56,7 @@ typedef struct folder_t
    int num;
  } FOLDER;
  
@@ -34,7 +43,7 @@ Anyway, here's patch-1.5.8.hr.sensible_browser_position.3:
  static char LastDir[_POSIX_PATH_MAX] = "";
  static char LastDirBackup[_POSIX_PATH_MAX] = "";
  
-@@ -498,19 +499,38 @@
+@@ -510,19 +511,38 @@ static void init_menu (struct browser_st
    menu->tagged = 0;
    
    if (buffy)
@@ -79,7 +88,7 @@ Anyway, here's patch-1.5.8.hr.sensible_browser_position.3:
    }
    menu->redraw = REDRAW_FULL;
  }
-@@ -685,7 +705,6 @@
+@@ -706,7 +726,6 @@ void _mutt_select_file (char *f, size_t 
  #endif
  	    )
  	  {
@@ -87,9 +96,11 @@ Anyway, here's patch-1.5.8.hr.sensible_browser_position.3:
  
  	    /* save the old directory */
  	    strfcpy (OldLastDir, LastDir, sizeof (OldLastDir));
---- mutt-1.5.8/mutt_menu.h.orig	2003-10-04 21:29:27.000000000 +0200
-+++ mutt-1.5.8/mutt_menu.h	2005-03-09 16:39:49.000000000 +0100
-@@ -46,6 +46,7 @@
+Index: debian-mutt/mutt_menu.h
+===================================================================
+--- debian-mutt.orig/mutt_menu.h	2007-03-20 20:42:04.000000000 +0100
++++ debian-mutt/mutt_menu.h	2007-06-28 21:48:47.000000000 +0200
+@@ -49,6 +49,7 @@ typedef struct menu_t
    int offset;	/* which screen row to start the index */
    int pagelen;	/* number of entries per screen */
    int tagprefix;
@@ -97,4 +108,12 @@ Anyway, here's patch-1.5.8.hr.sensible_browser_position.3:
  
    /* Setting dialog != NULL overrides normal menu behaviour. 
     * In dialog mode menubar is hidden and prompt keys are checked before
-
+Index: debian-mutt/PATCHES
+===================================================================
+--- debian-mutt.orig/PATCHES	2007-06-28 21:49:06.000000000 +0200
++++ debian-mutt/PATCHES	2007-06-28 21:49:20.000000000 +0200
+@@ -4,3 +4,4 @@ patch-1.5.13.nt+ab.xtitles.4
+ patch-1.5.6.dw.maildir-mtime.1
+ patch-1.5.13.cd.ifdef.2
+ patch-1.5.16.rr.compressed.1
++patch-1.5.8.hr.sensible_browser_position.3

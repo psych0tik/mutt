@@ -1,3 +1,11 @@
+mutt (1.5.16-2) unstable; urgency=low
+
+  User-visible changes in this version:
+  * The gpgme crypt backend is not yet stable enough, disabled again.
+  * The imap_home_namespace variable was removed upstream.
+
+ -- Christoph Berg <myon@debian.org>  Thu, 28 Jun 2007 20:58:49 +0200
+
 mutt (1.5.14+cvs20070301-1) experimental; urgency=low
 
   We no longer unset write_bcc in /etc/Muttrc. If your MTA does not strip Bcc:
