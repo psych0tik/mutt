@@ -1,3 +1,10 @@
+mutt (1.5.16-3) unstable; urgency=medium
+
+  * Fix the maildir-mtime patch change in 1.5.14+cvs20070403-1 that broke
+    new mail message count in IMAP folders. (Closes: #421468, #428734, #433275)
+
+ -- Adeodato Simó <dato@net.com.org.es>  Thu, 19 Jul 2007 23:41:02 +0200
+
 mutt (1.5.16-2) unstable; urgency=low
 
   * Finally a new unstable version :)

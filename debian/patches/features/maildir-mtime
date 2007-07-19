@@ -153,12 +153,13 @@ Index: debian-mutt/browser.c
    }
    closedir (dp);  
    browser_sort (state);
-@@ -442,14 +448,14 @@ static int examine_mailboxes (MUTTMENU *
+@@ -442,14 +448,15 @@ static int examine_mailboxes (MUTTMENU *
      if (mx_is_imap (tmp->path))
      {
        imap_mailbox_state (tmp->path, &mbox);
 -      add_folder (menu, state, tmp->path, NULL, mbox.new);
-+      add_folder (menu, state, tmp->path, NULL, &mbox);
++      tmp->new = mbox.new;
++      add_folder (menu, state, tmp->path, NULL, tmp);
        continue;
      }
  #endif
