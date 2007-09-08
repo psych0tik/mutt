@@ -548,7 +548,7 @@ The home page for this patch is:
 +void mutt_fast_close_compressed (CONTEXT *);
 --- a/configure.ac
 +++ b/configure.ac
-@@ -804,6 +804,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
+@@ -791,6 +791,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
  
@@ -562,7 +562,7 @@ The home page for this patch is:
                  AC_DEFINE_UNQUOTED(EXECSHELL, "$withval",
 --- a/curs_main.c
 +++ b/curs_main.c
-@@ -1116,6 +1116,11 @@ int mutt_index_menu (void)
+@@ -1131,6 +1131,11 @@ int mutt_index_menu (void)
          {
  	  int check;
  
@@ -576,7 +576,7 @@ The home page for this patch is:
  
 --- a/doc/manual.xml.head
 +++ b/doc/manual.xml.head
-@@ -4932,6 +4932,205 @@ becomes an issue as mutt will silently f
+@@ -5010,6 +5010,205 @@ becomes an issue as mutt will silently f
  
  </chapter>
  
@@ -841,7 +841,7 @@ The home page for this patch is:
        )
 --- a/init.h
 +++ b/init.h
-@@ -3172,6 +3172,11 @@ struct command_t Commands[] = {
+@@ -3193,6 +3193,11 @@ struct command_t Commands[] = {
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
@@ -855,7 +855,7 @@ The home page for this patch is:
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
 --- a/main.c
 +++ b/main.c
-@@ -400,6 +400,12 @@ static void show_version (void)
+@@ -401,6 +401,12 @@ static void show_version (void)
  #else
  	"-LOCALES_HACK  "
  #endif
@@ -879,7 +879,7 @@ The home page for this patch is:
  	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
  	edit.c enter.c flags.c init.c filter.c from.c \
  	getdomain.c group.c \
-@@ -66,7 +66,7 @@ EXTRA_mutt_SOURCES = account.c md5c.c mu
+@@ -66,7 +66,7 @@ EXTRA_mutt_SOURCES = account.c md5.c mut
  	utf8.c wcwidth.c 
  
  EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO UPDATING \
@@ -928,7 +928,7 @@ The home page for this patch is:
  
  /* tree characters for linearize_tree and print_enriched_string */
  #define M_TREE_LLCORNER		1
-@@ -889,6 +894,11 @@ typedef struct _context
+@@ -891,6 +896,11 @@ typedef struct _context
    int flagged;			/* how many flagged messages */
    int msgnotreadyet;		/* which msg "new" in pager, -1 if none */
  
@@ -953,7 +953,7 @@ The home page for this patch is:
  #ifdef USE_IMAP
  #include "imap.h"
  #endif
-@@ -450,6 +454,10 @@ int mx_get_magic (const char *path)
+@@ -445,6 +449,10 @@ int mx_get_magic (const char *path)
      return (-1);
    }
  
@@ -964,7 +964,7 @@ The home page for this patch is:
    return (magic);
  }
  
-@@ -489,6 +497,13 @@ static int mx_open_mailbox_append (CONTE
+@@ -484,6 +492,13 @@ static int mx_open_mailbox_append (CONTE
  {
    struct stat sb;
  
@@ -978,7 +978,7 @@ The home page for this patch is:
    ctx->append = 1;
  
  #ifdef USE_IMAP
-@@ -652,7 +667,12 @@ CONTEXT *mx_open_mailbox (const char *pa
+@@ -647,7 +662,12 @@ CONTEXT *mx_open_mailbox (const char *pa
    }
  
    ctx->magic = mx_get_magic (path);
@@ -992,7 +992,7 @@ The home page for this patch is:
    if(ctx->magic == 0)
      mutt_error (_("%s is not a mailbox."), path);
  
-@@ -753,6 +773,10 @@ void mx_fastclose_mailbox (CONTEXT *ctx)
+@@ -748,6 +768,10 @@ void mx_fastclose_mailbox (CONTEXT *ctx)
      mutt_free_header (&ctx->hdrs[i]);
    FREE (&ctx->hdrs);
    FREE (&ctx->v2r);
@@ -1003,7 +1003,7 @@ The home page for this patch is:
    FREE (&ctx->path);
    FREE (&ctx->pattern);
    if (ctx->limit_pattern) 
-@@ -805,6 +829,12 @@ static int sync_mailbox (CONTEXT *ctx, i
+@@ -800,6 +824,12 @@ static int sync_mailbox (CONTEXT *ctx, i
    
    if (tmp && tmp->new == 0)
      mutt_update_mailbox (tmp);
@@ -1016,7 +1016,7 @@ The home page for this patch is:
    return rc;
  }
  
-@@ -1063,6 +1093,11 @@ int mx_close_mailbox (CONTEXT *ctx, int 
+@@ -1058,6 +1088,11 @@ int mx_close_mailbox (CONTEXT *ctx, int 
        !mutt_is_spool(ctx->path) && !option (OPTSAVEEMPTY))
      mx_unlink_empty (ctx->path);
  
@@ -1028,7 +1028,7 @@ The home page for this patch is:
    mx_fastclose_mailbox (ctx);
  
    return 0;
-@@ -1378,6 +1413,11 @@ int mx_check_mailbox (CONTEXT *ctx, int 
+@@ -1373,6 +1408,11 @@ int mx_check_mailbox (CONTEXT *ctx, int 
  {
    int rc;
  
@@ -1054,23 +1054,23 @@ The home page for this patch is:
  WHERE short DefaultMagic INITVAL (M_MBOX);
 --- a/PATCHES
 +++ b/PATCHES
-@@ -5,3 +5,4 @@ patch-1.5.13.nt+ab.xtitles.4
- patch-1.5.6.dw.maildir-mtime.1
+@@ -4,3 +4,4 @@ patch-1.5.13.cd.purge_message.3.4
+ patch-1.5.13.nt+ab.xtitles.4
  patch-1.5.13.cd.ifdef.2
  patch-1.5.8.hr.sensible_browser_position.3
 +patch-1.5.16.rr.compressed.1
 --- a/po/de.po
 +++ b/po/de.po
 @@ -3,7 +3,7 @@ msgstr ""
- "Project-Id-Version: 1.5.14\n"
+ "Project-Id-Version: 1.5.16\n"
  "Report-Msgid-Bugs-To: \n"
- "POT-Creation-Date: 2007-02-23 09:18-0800\n"
--"PO-Revision-Date: 2007-02-25 12:33+0100\n"
-+"PO-Revision-Date: 2007-09-08 20:55+0200\n"
+ "POT-Creation-Date: 2007-06-09 20:30-0700\n"
+-"PO-Revision-Date: 2007-06-10 17:18+0200\n"
++"PO-Revision-Date: 2007-09-08 22:04+0200\n"
  "Last-Translator: Roland Rosenfeld <roland@spinnaker.de>\n"
  "Language-Team: German <mutt-po@mutt.org>\n"
  "MIME-Version: 1.0\n"
-@@ -1266,6 +1266,48 @@ msgstr "Prüfung des Absenders fehlgeschl
+@@ -1279,6 +1279,48 @@ msgstr "Prüfung des Absenders fehlgeschl
  msgid "Failed to figure out sender"
  msgstr "Kann Absender nicht ermitteln"
  
@@ -1119,18 +1119,18 @@ The home page for this patch is:
  #: crypt.c:69
  #, c-format
  msgid " (current time: %c)"
-@@ -1926,6 +1968,10 @@ msgstr ""
- msgid "Help for %s"
- msgstr "Hilfe für %s"
+@@ -1948,6 +1990,10 @@ msgstr "Hilfe für %s"
+ msgid "Bad history file format (line %d)"
+ msgstr "Falsches Format der Datei früherer Eingaben (Zeile %d)"
  
 +#: hook.c:96
 +msgid "badly formatted command string"
 +msgstr "Hook enthält nicht die Muster %f und %t"
 +
- #: hook.c:246
+ #: hook.c:251
  #, c-format
  msgid "unhook: Can't do unhook * from within a hook."
-@@ -3428,18 +3474,10 @@ msgstr "Lese %s..."
+@@ -3452,18 +3498,10 @@ msgstr "Lese %s..."
  msgid "Mailbox is corrupt!"
  msgstr "Mailbox fehlerhaft!"
  
@@ -1161,7 +1161,7 @@ The home page for this patch is:
  cryptglue.c
 --- a/status.c
 +++ b/status.c
-@@ -97,6 +97,14 @@ status_format_str (char *buf, size_t buf
+@@ -99,6 +99,14 @@ status_format_str (char *buf, size_t buf
  
      case 'f':
        snprintf (fmt, sizeof(fmt), "%%%ss", prefix);
