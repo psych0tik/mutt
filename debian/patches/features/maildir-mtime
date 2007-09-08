@@ -143,10 +143,10 @@ The home page for this patch is:
    closedir (dp);  
    browser_sort (state);
 @@ -438,14 +444,15 @@ static int examine_mailboxes (MUTTMENU *
- #ifdef USE_IMAP
      if (mx_is_imap (tmp->path))
      {
--      add_folder (menu, state, tmp->path, NULL, tmp->new);
+       imap_mailbox_state (tmp->path, &mbox);
+-      add_folder (menu, state, tmp->path, NULL, mbox.new);
 +      tmp->new = mbox.new;
 +      add_folder (menu, state, tmp->path, NULL, tmp);
        continue;
