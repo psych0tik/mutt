@@ -437,6 +437,20 @@ mutt (1.5.10-1) unstable; urgency=low
 
  -- Adeodato Simó <asp16@alu.ua.es>  Mon, 15 Aug 2005 15:51:55 +0200
 
+mutt (1.5.9-2sarge2) stable-security; urgency=high
+
+  * Fix buffer overflow in IMAP parsing code 
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Wed, 28 Jun 2006 17:12:05 +0000
+
+mutt (1.5.9-2sarge1) stable; urgency=low
+
+  * For attachments marked for deletion after the message is sent, don't
+    remove them if the message is finally cancelled, or if the attachments
+    are dropped from the message prior to sending. (Closes: #332972)
+
+ -- Adeodato Simó <dato@net.com.org.es>  Tue, 31 Jan 2006 01:23:28 +0100
+
 mutt (1.5.9-2) unstable; urgency=high
 
   * Added a missing Build-Depend on mawk. (Closes: #310039)
