@@ -1,3 +1,9 @@
+mutt (1.5.16-4) UNRELEASED; urgency=low
+
+  * Move the packaging back to Bazaar, adjust X-VCS-* accordingly.
+
+ -- Adeodato Simó <dato@net.com.org.es>  Sat, 08 Sep 2007 19:56:20 +0200
+
 mutt (1.5.16-3) unstable; urgency=medium
 
   * Fix the maildir-mtime patch change in 1.5.14+cvs20070403-1 that broke
