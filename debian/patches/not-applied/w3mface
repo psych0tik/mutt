@@ -11,12 +11,6 @@ Needs w3m-img, compface, and netpbm installed.
     hardcode /usr/lib/w3m/w3mimgdisplay.
 
 == END PATCH
-Index: xface/PATCHES
-===================================================================
---- xface/PATCHES.orig	2007-02-15 20:29:41.458478760 +0100
-+++ xface/PATCHES	2007-02-15 20:29:41.458478760 +0100
-@@ -0,0 +1 @@
-+patch-1.5.13.tamo.w3mface.2
 Index: xface/globals.h
 ===================================================================
 --- xface.orig/globals.h	2007-02-15 20:28:46.961763520 +0100
@@ -308,3 +302,7 @@ Index: xface/sendlib.c
    if (mode == 0 && !privacy && option (OPTXMAILER) && !has_agent)
    {
      /* Add a vanity header */
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
++patch-1.5.13.tamo.w3mface.2

@@ -156,6 +156,9 @@ clean: unpatch
 	rm -f configure config.h.in
 	rm -f Makefile.in contrib/Makefile.in imap/Makefile.in doc/Makefile.in m4/Makefile.in
 	
+	# clean PATCHES hunks (blame quilt refresh)
+	for p in `grep -rl PATCHES debian/patches` ; do perl -wi debian/fix-PATCHES.pl $$p ; done
+	
 	dh_clean
 
 .PHONY: configure build build-arch build-indep clean install binary binary-arch binary-indep patch

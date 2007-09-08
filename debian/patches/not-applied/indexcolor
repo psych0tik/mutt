@@ -594,12 +594,6 @@ Index: mutt/mutt.h
  #define M_THREAD_COLLAPSE	(1<<0)
  #define M_THREAD_UNCOLLAPSE	(1<<1)
  #define M_THREAD_GET_HIDDEN	(1<<2)
-Index: mutt/PATCHES
-===================================================================
---- mutt/PATCHES.orig	2007-02-15 21:26:15.901444992 +0100
-+++ mutt/PATCHES	2007-02-15 21:26:15.901444992 +0100
-@@ -0,0 +1 @@
-+patch-1.5.13.greek0.indexcolor-3+cb
 Index: mutt/doc/manual.xml.head
 ===================================================================
 --- mutt.orig/doc/manual.xml.head	2007-02-15 21:26:09.446426304 +0100
@@ -670,3 +664,7 @@ Index: mutt/doc/manual.xml.head
  indicator (arrow or bar used to indicate the current item in a menu)
  </para>
  </listitem>
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
++patch-1.5.13.greek0.indexcolor-3+cb

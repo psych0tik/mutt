@@ -1052,13 +1052,6 @@ The home page for this patch is:
  };
  
  WHERE short DefaultMagic INITVAL (M_MBOX);
---- a/PATCHES
-+++ b/PATCHES
-@@ -4,3 +4,4 @@ patch-1.5.13.cd.purge_message.3.4
- patch-1.5.13.nt+ab.xtitles.4
- patch-1.5.13.cd.ifdef.2
- patch-1.5.8.hr.sensible_browser_position.3
-+patch-1.5.16.rr.compressed.1
 --- a/po/de.po
 +++ b/po/de.po
 @@ -3,7 +3,7 @@ msgstr ""
@@ -1176,3 +1169,7 @@ The home page for this patch is:
        if (Context && Context->path)
        {
  	strfcpy (tmp, Context->path, sizeof (tmp));
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
++patch-1.5.16.rr.compressed.1

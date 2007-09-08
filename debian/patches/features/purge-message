@@ -225,10 +225,7 @@ Index: trash/pattern.c
  	    mutt_set_flag (Context, Context->hdrs[Context->v2r[i]], M_DELETE, 
  			  (op == M_DELETE));
  	    break;
-Index: trash/PATCHES
-===================================================================
---- trash.orig/PATCHES	2007-02-15 19:38:00.437905544 +0100
-+++ trash/PATCHES	2007-02-15 19:41:01.724345816 +0100
-@@ -1 +1,2 @@
- patch-1.5.13.cd.trash_folder.3.4
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
 +patch-1.5.13.cd.purge_message.3.4

@@ -104,8 +104,5 @@ This is the sensible browser position patch by Haakon Riiser.
     * In dialog mode menubar is hidden and prompt keys are checked before
 --- a/PATCHES
 +++ b/PATCHES
-@@ -3,3 +3,4 @@ patch-1.5.13.cd.purge_message.3.4
- patch-1.5.13.nt+ab.xtitles.4
- patch-1.5.6.dw.maildir-mtime.1
- patch-1.5.13.cd.ifdef.2
+@@ -0,0 +1 @@
 +patch-1.5.8.hr.sensible_browser_position.3

@@ -1,8 +1,3 @@
-diff -ruN mutt.orig/PATCHES mutt/PATCHES
---- mutt.orig/PATCHES	2003-09-13 16:23:24.000000000 +0200
-+++ mutt/PATCHES	2003-09-13 16:21:53.000000000 +0200
-@@ -1,0 +1 @@
-+patch-1.5.4.vk.pgp_verbose_mime
 diff -ruN mutt.orig/globals.h mutt/globals.h
 --- mutt.orig/globals.h	2003-09-13 16:23:24.000000000 +0200
 +++ mutt/globals.h	2003-09-13 16:23:18.000000000 +0200
@@ -49,3 +44,7 @@ diff -ruN mutt.orig/pgp.c mutt/pgp.c
  
    return (a);
  }
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
++patch-1.5.4.vk.pgp_verbose_mime
