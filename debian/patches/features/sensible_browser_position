@@ -5,10 +5,8 @@ This is the sensible browser position patch by Haakon Riiser.
     http://lists.df7cb.de/mutt/message/20050309.162127.a244a894.en.html
 
 == END PATCH
-Index: debian-mutt/menu.c
-===================================================================
---- debian-mutt.orig/menu.c	2007-03-24 18:45:30.000000000 +0100
-+++ debian-mutt/menu.c	2007-06-28 21:48:47.000000000 +0200
+--- a/menu.c
++++ b/menu.c
 @@ -840,8 +840,12 @@ int menu_redraw (MUTTMENU *menu)
  
  int mutt_menuLoop (MUTTMENU *menu)
@@ -31,10 +29,8 @@ Index: debian-mutt/menu.c
  	return (i);
      }
    }
-Index: debian-mutt/browser.c
-===================================================================
---- debian-mutt.orig/browser.c	2007-06-28 21:41:27.000000000 +0200
-+++ debian-mutt/browser.c	2007-06-28 21:48:47.000000000 +0200
+--- a/browser.c
++++ b/browser.c
 @@ -56,6 +56,7 @@ typedef struct folder_t
    int num;
  } FOLDER;
@@ -43,7 +39,7 @@ Index: debian-mutt/browser.c
  static char LastDir[_POSIX_PATH_MAX] = "";
  static char LastDirBackup[_POSIX_PATH_MAX] = "";
  
-@@ -510,19 +511,38 @@ static void init_menu (struct browser_st
+@@ -506,19 +507,38 @@ static void init_menu (struct browser_st
    menu->tagged = 0;
    
    if (buffy)
@@ -88,7 +84,7 @@ Index: debian-mutt/browser.c
    }
    menu->redraw = REDRAW_FULL;
  }
-@@ -706,7 +726,6 @@ void _mutt_select_file (char *f, size_t 
+@@ -694,7 +714,6 @@ void _mutt_select_file (char *f, size_t 
  #endif
  	    )
  	  {
@@ -96,10 +92,8 @@ Index: debian-mutt/browser.c
  
  	    /* save the old directory */
  	    strfcpy (OldLastDir, LastDir, sizeof (OldLastDir));
-Index: debian-mutt/mutt_menu.h
-===================================================================
---- debian-mutt.orig/mutt_menu.h	2007-03-20 20:42:04.000000000 +0100
-+++ debian-mutt/mutt_menu.h	2007-06-28 21:48:47.000000000 +0200
+--- a/mutt_menu.h
++++ b/mutt_menu.h
 @@ -49,6 +49,7 @@ typedef struct menu_t
    int offset;	/* which screen row to start the index */
    int pagelen;	/* number of entries per screen */
@@ -108,12 +102,10 @@ Index: debian-mutt/mutt_menu.h
  
    /* Setting dialog != NULL overrides normal menu behaviour. 
     * In dialog mode menubar is hidden and prompt keys are checked before
-Index: debian-mutt/PATCHES
-===================================================================
---- debian-mutt.orig/PATCHES	2007-06-28 21:49:06.000000000 +0200
-+++ debian-mutt/PATCHES	2007-06-28 21:49:20.000000000 +0200
-@@ -4,3 +4,4 @@ patch-1.5.13.nt+ab.xtitles.4
+--- a/PATCHES
++++ b/PATCHES
+@@ -3,3 +3,4 @@ patch-1.5.13.cd.purge_message.3.4
+ patch-1.5.13.nt+ab.xtitles.4
  patch-1.5.6.dw.maildir-mtime.1
  patch-1.5.13.cd.ifdef.2
- patch-1.5.16.rr.compressed.1
 +patch-1.5.8.hr.sensible_browser_position.3

@@ -75,12 +75,7 @@ configure: $(objdir)/configure-stamp
 $(objdir)/configure-stamp: $(QUILT_STAMPFN)
 	dh_testdir
 	
-	#ln -sf /usr/share/misc/config.sub .
-	#ln -sf /usr/share/misc/config.guess .
-	
-	# do not rebuild these files
-	touch configure.ac aclocal.m4 Makefile.in configure config.h.in
-	
+	autoreconf --install --include=m4
 	-mkdir $(objdir)
 	cd $(objdir) && \
 	env CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" \
@@ -152,11 +147,14 @@ clean: unpatch
 	
 	# please dpkg-source
 	rm -f po/*.gmo
-	#rm -f config.guess config.sub
 	touch PATCHES
 	
 	# remove build tree
 	rm -rf $(objdir)
+	
+	# remove autotool-generated files so they don't show up in the diff.gz
+	rm -f configure config.h.in
+	rm -f Makefile.in contrib/Makefile.in imap/Makefile.in doc/Makefile.in m4/Makefile.in
 	
 	dh_clean
 

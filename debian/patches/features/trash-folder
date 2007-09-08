@@ -46,10 +46,8 @@ To sum up, it's more integrated and transparent to the user.
   - Fixed indentation of "appended" in mutt.h.
 
 == END PATCH
-Index: debian-mutt/commands.c
-===================================================================
---- debian-mutt.orig/commands.c	2007-04-12 19:06:45.000000000 +0200
-+++ debian-mutt/commands.c	2007-05-16 23:09:20.000000000 +0200
+--- a/commands.c
++++ b/commands.c
 @@ -688,6 +688,7 @@ int _mutt_save_message (HEADER *h, CONTE
      if (option (OPTDELETEUNTAG))
        mutt_set_flag (Context, h, M_TAG, 0);
@@ -58,14 +56,12 @@ Index: debian-mutt/commands.c
    
    return 0;
  }
-Index: debian-mutt/flags.c
-===================================================================
---- debian-mutt.orig/flags.c	2007-05-16 23:08:46.000000000 +0200
-+++ debian-mutt/flags.c	2007-05-16 23:43:45.000000000 +0200
-@@ -69,7 +69,13 @@ void _mutt_set_flag (CONTEXT *ctx, HEADE
+--- a/flags.c
++++ b/flags.c
+@@ -66,7 +66,13 @@ void _mutt_set_flag (CONTEXT *ctx, HEADE
+       else if (h->deleted)
        {
  	h->deleted = 0;
-         update = 1;
 -	if (upd_ctx) ctx->deleted--;
 +	if (upd_ctx)
 +	{
@@ -77,7 +73,7 @@ Index: debian-mutt/flags.c
  #ifdef USE_IMAP
          /* see my comment above */
  	if (ctx->magic == M_IMAP) 
-@@ -91,6 +97,17 @@ void _mutt_set_flag (CONTEXT *ctx, HEADE
+@@ -88,6 +94,17 @@ void _mutt_set_flag (CONTEXT *ctx, HEADE
        }
        break;
  
@@ -95,10 +91,8 @@ Index: debian-mutt/flags.c
      case M_NEW:
  
        if (!mutt_bit_isset(ctx->rights,M_ACL_SEEN))
-Index: debian-mutt/globals.h
-===================================================================
---- debian-mutt.orig/globals.h	2007-05-16 23:09:10.000000000 +0200
-+++ debian-mutt/globals.h	2007-05-16 23:09:20.000000000 +0200
+--- a/globals.h
++++ b/globals.h
 @@ -142,6 +142,7 @@ WHERE char *StChars;
  WHERE char *Status;
  WHERE char *Tempdir;
@@ -107,11 +101,9 @@ Index: debian-mutt/globals.h
  WHERE char *Username;
  WHERE char *Visual;
  WHERE char *XtermTitle;
-Index: debian-mutt/imap/message.c
-===================================================================
---- debian-mutt.orig/imap/message.c	2007-05-16 23:08:46.000000000 +0200
-+++ debian-mutt/imap/message.c	2007-05-16 23:09:20.000000000 +0200
-@@ -816,6 +816,7 @@ int imap_copy_messages (CONTEXT* ctx, HE
+--- a/imap/message.c
++++ b/imap/message.c
+@@ -820,6 +820,7 @@ int imap_copy_messages (CONTEXT* ctx, HE
          if (ctx->hdrs[n]->tagged)
          {
            mutt_set_flag (ctx, ctx->hdrs[n], M_DELETE, 1);
@@ -119,7 +111,7 @@ Index: debian-mutt/imap/message.c
            if (option (OPTDELETEUNTAG))
              mutt_set_flag (ctx, ctx->hdrs[n], M_TAG, 0);
          }
-@@ -823,6 +824,7 @@ int imap_copy_messages (CONTEXT* ctx, HE
+@@ -827,6 +828,7 @@ int imap_copy_messages (CONTEXT* ctx, HE
      else
      {
        mutt_set_flag (ctx, h, M_DELETE, 1);
@@ -127,11 +119,9 @@ Index: debian-mutt/imap/message.c
        if (option (OPTDELETEUNTAG))
          mutt_set_flag (ctx, h, M_TAG, 0);
      }
-Index: debian-mutt/init.h
-===================================================================
---- debian-mutt.orig/init.h	2007-05-16 23:09:10.000000000 +0200
-+++ debian-mutt/init.h	2007-05-16 23:09:20.000000000 +0200
-@@ -2873,6 +2873,16 @@ struct option_t MuttVars[] = {
+--- a/init.h
++++ b/init.h
+@@ -2862,6 +2862,16 @@ struct option_t MuttVars[] = {
    ** by \fIyou\fP.  The sixth character is used to indicate when a mail
    ** was sent to a mailing-list you subscribe to (default: L).
    */
@@ -148,11 +138,9 @@ Index: debian-mutt/init.h
  #ifdef USE_SOCKET
    { "tunnel",            DT_STR, R_NONE, UL &Tunnel, UL 0 },
    /*
-Index: debian-mutt/mutt.h
-===================================================================
---- debian-mutt.orig/mutt.h	2007-05-16 23:09:10.000000000 +0200
-+++ debian-mutt/mutt.h	2007-05-16 23:09:20.000000000 +0200
-@@ -206,6 +206,7 @@ enum
+--- a/mutt.h
++++ b/mutt.h
+@@ -201,6 +201,7 @@ enum
    M_DELETE,
    M_UNDELETE,
    M_DELETED,
@@ -160,7 +148,7 @@ Index: debian-mutt/mutt.h
    M_FLAG,
    M_TAG,
    M_UNTAG,
-@@ -718,6 +719,7 @@ typedef struct header
+@@ -710,6 +711,7 @@ typedef struct header
    unsigned int mime : 1;    		/* has a MIME-Version header? */
    unsigned int flagged : 1; 		/* marked important? */
    unsigned int tagged : 1;
@@ -168,7 +156,7 @@ Index: debian-mutt/mutt.h
    unsigned int deleted : 1;
    unsigned int changed : 1;
    unsigned int attach_del : 1; 		/* has an attachment marked for deletion */
-@@ -889,6 +891,7 @@ typedef struct _context
+@@ -881,6 +883,7 @@ typedef struct _context
    int new;			/* how many new messages? */
    int unread;			/* how many unread messages? */
    int deleted;			/* how many deleted messages */
@@ -176,11 +164,9 @@ Index: debian-mutt/mutt.h
    int flagged;			/* how many flagged messages */
    int msgnotreadyet;		/* which msg "new" in pager, -1 if none */
  
-Index: debian-mutt/muttlib.c
-===================================================================
---- debian-mutt.orig/muttlib.c	2007-05-16 23:08:47.000000000 +0200
-+++ debian-mutt/muttlib.c	2007-05-16 23:09:20.000000000 +0200
-@@ -1384,7 +1384,9 @@ int mutt_save_confirm (const char *s, st
+--- a/muttlib.c
++++ b/muttlib.c
+@@ -1380,7 +1380,9 @@ int mutt_save_confirm (const char *s, st
  
    if (magic > 0 && !mx_access (s, W_OK))
    {
@@ -191,11 +177,9 @@ Index: debian-mutt/muttlib.c
      {
        snprintf (tmp, sizeof (tmp), _("Append messages to %s?"), s);
        if ((rc = mutt_yesorno (tmp, M_YES)) == M_NO)
-Index: debian-mutt/mx.c
-===================================================================
---- debian-mutt.orig/mx.c	2007-05-16 23:09:10.000000000 +0200
-+++ debian-mutt/mx.c	2007-05-16 23:09:20.000000000 +0200
-@@ -838,6 +838,53 @@ static int sync_mailbox (CONTEXT *ctx, i
+--- a/mx.c
++++ b/mx.c
+@@ -808,6 +808,53 @@ static int sync_mailbox (CONTEXT *ctx, i
    return rc;
  }
  
@@ -249,7 +233,7 @@ Index: debian-mutt/mx.c
  /* save changes and close mailbox */
  int mx_close_mailbox (CONTEXT *ctx, int *index_hint)
  {
-@@ -973,6 +1020,7 @@ int mx_close_mailbox (CONTEXT *ctx, int 
+@@ -943,6 +990,7 @@ int mx_close_mailbox (CONTEXT *ctx, int 
  	  if (mutt_append_message (&f, ctx, ctx->hdrs[i], 0, CH_UPDATE_LEN) == 0)
  	  {
  	    mutt_set_flag (ctx, ctx->hdrs[i], M_DELETE, 1);
@@ -257,7 +241,7 @@ Index: debian-mutt/mx.c
  	  }
  	  else
  	  {
-@@ -994,6 +1042,14 @@ int mx_close_mailbox (CONTEXT *ctx, int 
+@@ -964,6 +1012,14 @@ int mx_close_mailbox (CONTEXT *ctx, int 
      return 0;
    }
    
@@ -272,7 +256,7 @@ Index: debian-mutt/mx.c
  #ifdef USE_IMAP
    /* allow IMAP to preserve the deleted flag across sessions */
    if (ctx->magic == M_IMAP)
-@@ -1194,6 +1250,12 @@ int mx_sync_mailbox (CONTEXT *ctx, int *
+@@ -1159,6 +1215,12 @@ int mx_sync_mailbox (CONTEXT *ctx, int *
    msgcount = ctx->msgcount;
    deleted = ctx->deleted;
  
@@ -285,10 +269,8 @@ Index: debian-mutt/mx.c
  #ifdef USE_IMAP
    if (ctx->magic == M_IMAP)
      rc = imap_sync_mailbox (ctx, purge, index_hint);
-Index: debian-mutt/postpone.c
-===================================================================
---- debian-mutt.orig/postpone.c	2007-04-12 19:06:45.000000000 +0200
-+++ debian-mutt/postpone.c	2007-05-16 23:09:20.000000000 +0200
+--- a/postpone.c
++++ b/postpone.c
 @@ -279,6 +279,9 @@ int mutt_get_postponed (CONTEXT *ctx, HE
    /* finished with this message, so delete it. */
    mutt_set_flag (PostContext, h, M_DELETE, 1);
@@ -299,10 +281,8 @@ Index: debian-mutt/postpone.c
    /* update the count for the status display */
    PostCount = PostContext->msgcount - PostContext->deleted;
  
-Index: debian-mutt/PATCHES
-===================================================================
---- debian-mutt.orig/PATCHES	2007-05-16 23:09:10.000000000 +0200
-+++ debian-mutt/PATCHES	2007-05-16 23:09:20.000000000 +0200
+--- a/PATCHES
++++ b/PATCHES
 @@ -1,3 +1,4 @@
 +patch-1.5.13.cd.trash_folder.3.4
  patch-1.5.13.nt+ab.xtitles.4

@@ -1,12 +1,6 @@
-# compressed folders need an autotools rerun
-features/compressed-folders
-features/compressed-folders.debian
-
 # build system patches
-misc/autotools-update.diff
-debian-specific/Md.sasl2_needs_md5.diff -p0
-debian-specific/dont_rebuild_po_files.diff -p0
-debian-specific/build_doc_adjustments.diff -p0
+misc/am-maintainer-mode
+debian-specific/build_doc_adjustments.diff 
 debian-specific/sort-patchlist
 
 # features
@@ -17,6 +11,8 @@ features/trash-folder
 features/purge-message
 features/sensible_browser_position
 features-old/patch-1.5.4.vk.pgp_verbose_mime
+features/compressed-folders
+features/compressed-folders.debian
 
 # Debian config
 debian-specific/Muttrc
@@ -30,7 +26,6 @@ misc/define-pgp_getkeys_command.diff -p0
 misc/gpg.rc-paths
 
 # unapplied patches for custom packages
-# not-applied/patch-1.5.8.hr.sensible_browser_position.3
 # not-applied/chdir
 # not-applied/indexcolor
 # not-applied/w3mface

@@ -16,10 +16,8 @@ The home page for this patch is:
   - 2007-04-03 myon: resolved conflict in browser.c
 
 == END PATCH
-Index: debian-mutt/buffy.c
-===================================================================
---- debian-mutt.orig/buffy.c	2007-04-03 19:17:22.000000000 +0200
-+++ debian-mutt/buffy.c	2007-04-03 19:20:31.000000000 +0200
+--- a/buffy.c
++++ b/buffy.c
 @@ -226,6 +226,7 @@ int mutt_parse_mailboxes (BUFFER *path, 
      (*tmp)->new = 0;
      (*tmp)->notified = 1;
@@ -69,10 +67,8 @@ Index: debian-mutt/buffy.c
  	  }
  	}
  	closedir (dirp);
-Index: debian-mutt/init.h
-===================================================================
---- debian-mutt.orig/init.h	2007-04-03 19:20:27.000000000 +0200
-+++ debian-mutt/init.h	2007-04-03 19:20:31.000000000 +0200
+--- a/init.h
++++ b/init.h
 @@ -1086,6 +1086,16 @@ struct option_t MuttVars[] = {
    ** \fBDON'T CHANGE THIS SETTING UNLESS YOU ARE REALLY SURE WHAT YOU ARE
    ** DOING!\fP
@@ -90,11 +86,9 @@ Index: debian-mutt/init.h
  #ifdef USE_HCACHE
    { "header_cache", DT_PATH, R_NONE, UL &HeaderCache, 0 },
    /*
-Index: debian-mutt/mutt.h
-===================================================================
---- debian-mutt.orig/mutt.h	2007-04-03 19:20:27.000000000 +0200
-+++ debian-mutt/mutt.h	2007-04-03 19:20:31.000000000 +0200
-@@ -400,6 +400,7 @@ enum
+--- a/mutt.h
++++ b/mutt.h
+@@ -395,6 +395,7 @@ enum
    OPTINCLUDEONLYFIRST,
    OPTKEEPFLAGGED,
    OPTMAILCAPSANITIZE,
@@ -102,18 +96,13 @@ Index: debian-mutt/mutt.h
    OPTMAILDIRTRASH,
    OPTMARKERS,
    OPTMARKOLD,
-Index: debian-mutt/PATCHES
-===================================================================
---- debian-mutt.orig/PATCHES	2007-04-03 19:20:27.000000000 +0200
-+++ debian-mutt/PATCHES	2007-04-03 19:20:31.000000000 +0200
-@@ -1,2 +1,3 @@
+--- a/PATCHES
++++ b/PATCHES
+@@ -1 +1,2 @@
 +patch-1.5.6.dw.maildir-mtime.1
  patch-1.5.13.cd.ifdef.2
- patch-1.5.14.rr.compressed.1
-Index: debian-mutt/browser.c
-===================================================================
---- debian-mutt.orig/browser.c	2007-04-03 19:20:17.000000000 +0200
-+++ debian-mutt/browser.c	2007-04-03 19:24:32.000000000 +0200
+--- a/browser.c
++++ b/browser.c
 @@ -32,6 +32,7 @@
  #ifdef USE_IMAP
  #include "imap.h"
@@ -153,11 +142,11 @@ Index: debian-mutt/browser.c
    }
    closedir (dp);  
    browser_sort (state);
-@@ -442,14 +448,15 @@ static int examine_mailboxes (MUTTMENU *
+@@ -438,14 +444,15 @@ static int examine_mailboxes (MUTTMENU *
+ #ifdef USE_IMAP
      if (mx_is_imap (tmp->path))
      {
-       imap_mailbox_state (tmp->path, &mbox);
--      add_folder (menu, state, tmp->path, NULL, mbox.new);
+-      add_folder (menu, state, tmp->path, NULL, tmp->new);
 +      tmp->new = mbox.new;
 +      add_folder (menu, state, tmp->path, NULL, tmp);
        continue;
@@ -171,7 +160,7 @@ Index: debian-mutt/browser.c
        continue;
      }
  #endif
-@@ -463,7 +469,7 @@ static int examine_mailboxes (MUTTMENU *
+@@ -459,7 +466,7 @@ static int examine_mailboxes (MUTTMENU *
      strfcpy (buffer, NONULL(tmp->path), sizeof (buffer));
      mutt_pretty_mailbox (buffer);
  
@@ -180,10 +169,8 @@ Index: debian-mutt/browser.c
    }
    while ((tmp = tmp->next));
    browser_sort (state);
-Index: debian-mutt/buffy.h
-===================================================================
---- debian-mutt.orig/buffy.h	2007-04-03 19:17:22.000000000 +0200
-+++ debian-mutt/buffy.h	2007-04-03 19:20:31.000000000 +0200
+--- a/buffy.h
++++ b/buffy.h
 @@ -25,6 +25,7 @@ typedef struct buffy_t
    char *path;
    long size;

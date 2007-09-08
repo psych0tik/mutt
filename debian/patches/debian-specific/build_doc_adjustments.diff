@@ -1,16 +1,12 @@
-Index: doc/Makefile.in
-===================================================================
---- doc/Makefile.in.orig	2007-05-17 14:47:01.000000000 +0200
-+++ doc/Makefile.in	2007-05-17 14:58:34.000000000 +0200
-@@ -435,15 +435,16 @@ uninstall-local:
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -81,13 +81,14 @@ uninstall-local:
  
  check:
  manual.txt: manual.html
--	-lynx -dump -nolist -with_backspaces $^ > $@ || \
-+	/usr/bin/links.main -dump $^ > $@ || links -dump $^ > $@ || \
-+	lynx -dump -nolist -with_backspaces $^ > $@ || \
- 	w3m -dump $^ > $@ || \
- 	elinks -dump -no-numbering -no-references $^ > $@
+-	-lynx -dump -nolist -with_backspaces $^ > $@ || w3m -dump $^ > $@
++	links.main -dump $^ > $@ || links -dump $^ > $@ || \
++	lynx -dump -nolist -with_backspaces $^ > $@ || w3m -dump $^ > $@
  
  manual.html: $(srcdir)/html.xsl stamp-doc-xml
 -	-xsltproc --nonet -o $@ $(srcdir)/html.xsl manual.xml
