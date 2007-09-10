@@ -12,6 +12,8 @@ mutt (1.5.16-4) UNRELEASED; urgency=low
       (Closes: #420598)
     + properly render subject headers with encoded linefeeds.
       (Closes: #264014)
+    + only calls gnutls_error_is_fatal when gnutls_record_recv returns a
+      negative value. (Closes: #439775)
 
  -- Christoph Berg <myon@debian.org>  Sat, 08 Sep 2007 21:43:39 +0200
 
