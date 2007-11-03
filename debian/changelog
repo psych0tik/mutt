@@ -1,4 +1,4 @@
-mutt (1.5.16-4) UNRELEASED; urgency=low
+mutt (1.5.17-1) unstable; urgency=low
 
   [ Adeodato Simó ]
   * Move the packaging back to Bazaar, adjust X-VCS-* accordingly.
@@ -7,15 +7,17 @@ mutt (1.5.16-4) UNRELEASED; urgency=low
   * Call autoreconf at build time, drop the autotools-update patch.
   * Refresh patches.
 
-  * New upstream snapshot:
+  * New upstream version:
     + fix segfaults with single byte 8-bit characters in index_format.
-      (Closes: #420598)
+      (Closes: #420598, Mutt: #2882)
     + properly render subject headers with encoded linefeeds.
-      (Closes: #264014)
+      (Closes: #264014, Mutt: #1810)
     + only calls gnutls_error_is_fatal when gnutls_record_recv returns a
-      negative value. (Closes: #439775)
+      negative value. (Closes: #439775, Mutt: #2954)
+    + Large file support for mutt_pretty_size().
+      (Closes: #352478, #416555, Mutt: #2191)
 
- -- Christoph Berg <myon@debian.org>  Sat, 08 Sep 2007 21:43:39 +0200
+ -- Christoph Berg <myon@debian.org>  Sat, 03 Nov 2007 19:19:12 +0100
 
 mutt (1.5.16-3) unstable; urgency=medium
 
