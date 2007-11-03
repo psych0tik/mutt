@@ -6,6 +6,7 @@ mutt (1.5.17-1) unstable; urgency=low
   [ Christoph Berg ]
   * Mention libsasl2-modules-gssapi-mit in README.Debian. (Closes: #433425)
   * Call autoreconf at build time, drop the autotools-update patch.
+  * Update menu file, add lintian override file.
   * Refresh patches.
 
   * New upstream version:
@@ -20,7 +21,7 @@ mutt (1.5.17-1) unstable; urgency=low
     + Do not consider empty pipes for filtering in format strings.
       (Closes: #447340)
 
- -- Christoph Berg <myon@debian.org>  Sat, 03 Nov 2007 22:39:34 +0100
+ -- Christoph Berg <myon@debian.org>  Sat, 03 Nov 2007 23:00:04 +0100
 
 mutt (1.5.16-3) unstable; urgency=medium
 

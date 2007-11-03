@@ -1,5 +1,5 @@
 ?package(mutt): title="Mutt" \
-	section="Apps/Net" hints="Mail" \
+	section="Applications/Network/Communication" hints="Mail" \
 	needs="text" \
 	icon="/usr/share/pixmaps/mutt.xpm" \
 	command="/usr/bin/mutt"
