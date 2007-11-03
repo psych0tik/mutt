@@ -16,8 +16,10 @@ mutt (1.5.17-1) unstable; urgency=low
       negative value. (Closes: #439775, Mutt: #2954)
     + Large file support for mutt_pretty_size().
       (Closes: #352478, #416555, Mutt: #2191)
+    + Do not consider empty pipes for filtering in format strings.
+      (Closes: #447340)
 
- -- Christoph Berg <myon@debian.org>  Sat, 03 Nov 2007 19:19:12 +0100
+ -- Christoph Berg <myon@debian.org>  Sat, 03 Nov 2007 21:02:26 +0100
 
 mutt (1.5.16-3) unstable; urgency=medium
 
