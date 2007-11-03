@@ -548,7 +548,7 @@ The home page for this patch is:
 +void mutt_fast_close_compressed (CONTEXT *);
 --- a/configure.ac
 +++ b/configure.ac
-@@ -791,6 +791,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
+@@ -792,6 +792,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
  
@@ -576,7 +576,7 @@ The home page for this patch is:
  
 --- a/doc/manual.xml.head
 +++ b/doc/manual.xml.head
-@@ -5010,6 +5010,205 @@ becomes an issue as mutt will silently f
+@@ -4676,6 +4676,205 @@ macro pager \cb |urlview\n
  
  </chapter>
  
@@ -841,7 +841,7 @@ The home page for this patch is:
        )
 --- a/init.h
 +++ b/init.h
-@@ -3193,6 +3193,11 @@ struct command_t Commands[] = {
+@@ -3210,6 +3210,11 @@ struct command_t Commands[] = {
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
@@ -855,7 +855,7 @@ The home page for this patch is:
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
 --- a/main.c
 +++ b/main.c
-@@ -401,6 +401,12 @@ static void show_version (void)
+@@ -409,6 +409,12 @@ static void show_version (void)
  #else
  	"-LOCALES_HACK  "
  #endif
@@ -928,7 +928,7 @@ The home page for this patch is:
  
  /* tree characters for linearize_tree and print_enriched_string */
  #define M_TREE_LLCORNER		1
-@@ -891,6 +896,11 @@ typedef struct _context
+@@ -892,6 +897,11 @@ typedef struct _context
    int flagged;			/* how many flagged messages */
    int msgnotreadyet;		/* which msg "new" in pager, -1 if none */
  
@@ -1054,15 +1054,6 @@ The home page for this patch is:
  WHERE short DefaultMagic INITVAL (M_MBOX);
 --- a/po/de.po
 +++ b/po/de.po
-@@ -3,7 +3,7 @@ msgstr ""
- "Project-Id-Version: 1.5.16\n"
- "Report-Msgid-Bugs-To: \n"
- "POT-Creation-Date: 2007-06-09 20:30-0700\n"
--"PO-Revision-Date: 2007-06-10 17:18+0200\n"
-+"PO-Revision-Date: 2007-09-08 22:04+0200\n"
- "Last-Translator: Roland Rosenfeld <roland@spinnaker.de>\n"
- "Language-Team: German <mutt-po@mutt.org>\n"
- "MIME-Version: 1.0\n"
 @@ -1279,6 +1279,48 @@ msgstr "Prüfung des Absenders fehlgeschl
  msgid "Failed to figure out sender"
  msgstr "Kann Absender nicht ermitteln"
@@ -1123,7 +1114,7 @@ The home page for this patch is:
  #: hook.c:251
  #, c-format
  msgid "unhook: Can't do unhook * from within a hook."
-@@ -3452,18 +3498,10 @@ msgstr "Lese %s..."
+@@ -3463,18 +3509,10 @@ msgstr "Lese %s..."
  msgid "Mailbox is corrupt!"
  msgstr "Mailbox fehlerhaft!"
  
@@ -1169,7 +1160,3 @@ The home page for this patch is:
        if (Context && Context->path)
        {
  	strfcpy (tmp, Context->path, sizeof (tmp));
---- a/PATCHES
-+++ b/PATCHES
-@@ -0,0 +1 @@
-+patch-1.5.16.rr.compressed.1
