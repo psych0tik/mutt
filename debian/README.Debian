@@ -19,12 +19,6 @@ You do not need any of the example files in /usr/share/doc/mutt/
 unless you plan to send signed+encrypted messages to pgp2 users.
 
 
-BUFFY_SIZE support
-~~~~~~~~~~~~~~~~~~
-Please do not ask for this to be enabled, it annoys too many people.
-See #179970 for details.
-
-
 gpg-2comp
 ~~~~~~~~~
 /usr/share/doc/mutt/examples/gpg.rc uses a wrapper program called
@@ -84,3 +78,10 @@ directives.
 The directory is processed last in /etc/Muttrc, so that settings there
 may override the defaults from the file.
 
+
+Kerberos support
+~~~~~~~~~~~~~~~~
+To use kerberos GSSAPI authentication, install the libsasl2-modules-gssapi-mit
+package.
+
+ -- Christoph Berg <myon@debian.org>  Sat, 03 Nov 2007 21:02:26 +0100
