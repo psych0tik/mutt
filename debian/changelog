@@ -1,3 +1,9 @@
+mutt (1.5.17-2) experimental; urgency=low
+
+  * Build a mutt-dbg package, and bump DH level to 5.
+
+ -- Christoph Berg <myon@debian.org>  Sun, 04 Nov 2007 13:32:44 +0100
+
 mutt (1.5.17-1) unstable; urgency=low
 
   [ Adeodato Simó ]

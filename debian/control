@@ -3,7 +3,7 @@ Section: mail
 Priority: standard
 Maintainer: Adeodato Simó <dato@net.com.org.es>
 Uploaders: Christoph Berg <myon@debian.org>
-Build-Depends: debhelper, quilt (>= 0.40-1), automake, gawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libgdbm-dev
+Build-Depends: debhelper (>> 5), quilt (>= 0.40-1), automake, gawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libgdbm-dev
 Standards-Version: 3.7.2
 XS-Vcs-Bzr: http://bzr.debian.org/pkg-mutt/unstable
 
@@ -32,3 +32,11 @@ Description: text-based mailreader supporting MIME, GPG, PGP and threading
   * Messages may be (indefinitely) postponed.
   * Colour support.
   * Highly configurable through easy but powerful rc file.
+
+Package: mutt-dbg
+Architecture: any
+Priority: extra
+Depends: ${shlibs:Depends}, mutt (= ${binary:Version})
+Description: debugging symbols for mutt
+ Mutt is a sophisticated text-based Mail User Agent.
+ This package contains the debugging symbols.

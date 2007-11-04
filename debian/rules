@@ -129,8 +129,9 @@ binary binary-arch: build install
 	dh_installchangelogs ChangeLog
 	install -m644 debian/mutt.lintian $(CURDIR)/debian/mutt/usr/share/lintian/overrides/mutt
 	
+	dh_strip --dbg-package=mutt-dbg
+	rm -rf $(CURDIR)/debian/mutt-dbg/usr/share/doc/mutt-dbg
 	dh_link
-	dh_strip
 	dh_compress --exclude usr/share/doc/mutt/README.Patches
 	dh_fixperms --exclude usr/bin/mutt_dotlock
 	dh_installdeb
