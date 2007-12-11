@@ -1,7 +1,7 @@
-Index: debian-mutt/Muttrc.head
+Index: debian-mutt/doc/Muttrc.head
 ===================================================================
---- debian-mutt.orig/Muttrc.head	2007-06-08 13:19:22.000000000 +0200
-+++ debian-mutt/Muttrc.head	2007-06-08 13:20:36.000000000 +0200
+--- debian-mutt.orig/doc/Muttrc.head	2007-06-08 13:19:22.000000000 +0200
++++ debian-mutt/doc/Muttrc.head	2007-06-08 13:20:36.000000000 +0200
 @@ -6,6 +6,36 @@
  #
  ignore "from " received content- mime-version status x-status message-id

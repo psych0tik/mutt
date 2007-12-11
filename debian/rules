@@ -107,7 +107,7 @@ debian/tmp/install-stamp: $(objdir)/build-stamp
 	chmod +x debian/header.awk
 	debian/header.awk debian/patches/features/* >debian/tmp/README.Patches
 	
-	( sed -e '/## More settings/,$$d' $(objdir)/Muttrc || exit 1 ; \
+	( sed -e '/## More settings/,$$d' $(objdir)/doc/Muttrc || exit 1 ; \
 	  cat debian/extra/rc/Muttrc.foot ) > debian/tmp/Muttrc
 	
 	( echo "# GnuPG configuration"; \

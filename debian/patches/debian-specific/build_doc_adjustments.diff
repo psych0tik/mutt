@@ -1,14 +1,19 @@
 --- a/doc/Makefile.am
 +++ b/doc/Makefile.am
-@@ -81,15 +81,16 @@ uninstall-local:
+@@ -100,8 +100,9 @@ uninstall-local:
  
  check:
- manual.txt: manual.html
--	-lynx -dump -nolist -with_backspaces $^ > $@ || \
+ manual.txt: manual.html db-cleanup.xsl
+-	-xsltproc --nonet -o manual-txt.html $(srcdir)/db-cleanup.xsl manual.html || cp manual.html manual-txt.html
+-	-lynx -dump -nolist -with_backspaces manual-txt.html > $@ || \
++	xsltproc --nonet -o manual-txt.html $(srcdir)/db-cleanup.xsl manual.html || cp manual.html manual-txt.html
 +	links.main -dump $^ > $@ || links -dump $^ > $@ || \
-+	lynx -dump -nolist -with_backspaces $^ > $@ || \
- 	w3m -dump $^ > $@ || \
- 	elinks -dump -no-numbering -no-references $^ > $@
++	lynx -dump -nolist -with_backspaces manual-txt.html > $@ || \
+ 	w3m -dump manual-txt.html > $@ || \
+ 	elinks -dump -no-numbering -no-references manual-txt.html > $@
+ 
+@@ -115,10 +116,10 @@ stamp-doc-rc: $(top_srcdir)/init.h maked
+ 	touch stamp-doc-rc
  
  manual.html: $(srcdir)/html.xsl stamp-doc-xml
 -	-xsltproc --nonet -o $@ $(srcdir)/html.xsl manual.xml
