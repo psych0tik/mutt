@@ -1,8 +1,17 @@
-mutt (1.5.17-2) experimental; urgency=low
+mutt (1.5.17-2) unstable; urgency=low
 
+  * Build a mutt-patched package to apply the sidebar patch. Thanks to Dato
+    who had the right idea for the necessary debian/rules magic during the
+    recent debian-qa meeting in Extremadura. (Closes: #277637)
   * Build a mutt-dbg package, and bump DH level to 5.
+  * Grab current hg tip from upstream.
+    + Fixes "mailto:" URL parsing.
+      (Closes: #426148, #426158, #446016, Mutt: #2968, #2980)
+    + 'set folder= =' won't segfault. (Closes: #448728)
+    + Improve DSN docs. (Closes: #436228)
+  * Bump Standards-Version, add Homepage field.
 
- -- Christoph Berg <myon@debian.org>  Sun, 04 Nov 2007 13:32:44 +0100
+ -- Christoph Berg <myon@debian.org>  Tue, 01 Jan 2008 20:00:33 +0100
 
 mutt (1.5.17-1) unstable; urgency=low
 

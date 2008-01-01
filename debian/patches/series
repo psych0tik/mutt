@@ -25,6 +25,10 @@ debian-specific/assumed_charset-compat
 misc/define-pgp_getkeys_command.diff -p0
 misc/gpg.rc-paths
 
+mutt.org
+# extra patches for mutt-patched
+mutt-patched/sidebar
+
 # unapplied patches for custom packages
 # not-applied/chdir
 # not-applied/indexcolor

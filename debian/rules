@@ -71,9 +71,28 @@ endif
 # Directory to make the build on
 objdir = $(CURDIR)/obj-$(DEB_HOST_GNU_TYPE)
 
-configure: $(objdir)/configure-stamp
-$(objdir)/configure-stamp: $(QUILT_STAMPFN)
+$(objdir)-patched/build-stamp: $(QUILT_STAMPFN)
 	dh_testdir
+	dh_clean
+	
+	###################### building mutt-patched ######################
+	autoreconf --install --include=m4
+	-mkdir $(objdir)-patched
+	cd $(objdir)-patched && \
+	env CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" \
+	../configure $(confflags)
+	
+	echo '#include "config-debian.h"' >> $(objdir)-patched/config.h
+	
+	# we should just "make mutt" here, but that doesn't work yet
+	cd $(objdir)-patched && $(MAKE) CFLAGS="$(CFLAGS)"
+	
+	touch $@
+
+build build-arch: $(objdir)/build-stamp
+$(objdir)/build-stamp: $(objdir)-patched/build-stamp
+	###################### building mutt ######################
+	QUILT_PATCHES=$(QUILT_PATCH_DIR) quilt --quiltrc /dev/null pop mutt.org
 	
 	autoreconf --install --include=m4
 	-mkdir $(objdir)
@@ -83,18 +102,13 @@ $(objdir)/configure-stamp: $(QUILT_STAMPFN)
 	
 	echo '#include "config-debian.h"' >>$(objdir)/config.h
 	
-	touch $@
-
-build build-arch: $(objdir)/build-stamp
-$(objdir)/build-stamp: $(objdir)/configure-stamp
 	cd $(objdir) && $(MAKE) CFLAGS="$(CFLAGS)"
+	
 	touch $@
 
-install: debian/tmp/install-stamp
-debian/tmp/install-stamp: $(objdir)/build-stamp
-	dh_testdir
-	dh_testroot
-	dh_clean
+install: build
+	###################### install ######################
+	dh_clean -k
 	cd $(objdir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	
 	cd debian/tmp/usr/share/doc && \
@@ -105,7 +119,8 @@ debian/tmp/install-stamp: $(objdir)/build-stamp
 	
 	chmod +x debian/extra/lib/*
 	chmod +x debian/header.awk
-	debian/header.awk debian/patches/features/* >debian/tmp/README.Patches
+	debian/header.awk debian/patches/features/* \
+		debian/patches/mutt-patched/* > debian/tmp/README.Patches
 	
 	( sed -e '/## More settings/,$$d' $(objdir)/doc/Muttrc || exit 1 ; \
 	  cat debian/extra/rc/Muttrc.foot ) > debian/tmp/Muttrc
@@ -114,9 +129,11 @@ debian/tmp/install-stamp: $(objdir)/build-stamp
 	  grep '^set' contrib/gpg.rc; \
 	  echo ) > debian/tmp/gpg.rc
 	
-	touch $@
+	# temporarily call the binary mutt-patched so dh_strip gets the debug file name right
+	install -D $(objdir)-patched/mutt debian/mutt-patched/usr/bin/mutt-patched
 
-binary binary-arch: build install
+binary binary-arch: install
+	###################### binary ######################
 	dh_testdir
 	dh_testroot
 	
@@ -130,7 +147,10 @@ binary binary-arch: build install
 	install -m644 debian/mutt.lintian $(CURDIR)/debian/mutt/usr/share/lintian/overrides/mutt
 	
 	dh_strip --dbg-package=mutt-dbg
-	rm -rf $(CURDIR)/debian/mutt-dbg/usr/share/doc/mutt-dbg
+	rm -rf $(CURDIR)/debian/mutt-dbg/usr/share/doc/mutt-dbg \
+		$(CURDIR)/debian/mutt-patched/usr/share/doc/mutt-patched
+	mv debian/mutt-patched/usr/bin/mutt-patched debian/mutt-patched/usr/bin/mutt
+	
 	dh_link
 	dh_compress --exclude usr/share/doc/mutt/README.Patches
 	dh_fixperms --exclude usr/bin/mutt_dotlock
@@ -140,10 +160,11 @@ binary binary-arch: build install
 	dh_md5sums
 	dh_builddeb
 
-binary-indep:
+build-indep binary-indep:
 	@echo "Nothing to do."
 
 clean: unpatch
+	###################### clean ######################
 	dh_testdir
 	dh_testroot
 	
@@ -151,8 +172,8 @@ clean: unpatch
 	rm -f po/*.gmo
 	touch PATCHES
 	
-	# remove build tree
-	rm -rf $(objdir)
+	# remove build trees
+	rm -rf $(objdir) $(objdir)-patched
 	
 	# remove autotool-generated files so they don't show up in the diff.gz
 	rm -f configure config.h.in

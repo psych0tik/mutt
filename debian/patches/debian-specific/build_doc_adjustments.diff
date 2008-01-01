@@ -7,7 +7,7 @@
 -	-xsltproc --nonet -o manual-txt.html $(srcdir)/db-cleanup.xsl manual.html || cp manual.html manual-txt.html
 -	-lynx -dump -nolist -with_backspaces manual-txt.html > $@ || \
 +	xsltproc --nonet -o manual-txt.html $(srcdir)/db-cleanup.xsl manual.html || cp manual.html manual-txt.html
-+	links.main -dump $^ > $@ || links -dump $^ > $@ || \
++	links.main -dump $< > $@ || links -dump $< > $@ || \
 +	lynx -dump -nolist -with_backspaces manual-txt.html > $@ || \
  	w3m -dump manual-txt.html > $@ || \
  	elinks -dump -no-numbering -no-references manual-txt.html > $@
