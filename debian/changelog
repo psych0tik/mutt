@@ -4,7 +4,7 @@ mutt (1.5.17-2) unstable; urgency=low
     who had the right idea for the necessary debian/rules magic during the
     recent debian-qa meeting in Extremadura. (Closes: #277637)
   * Build a mutt-dbg package, and bump DH level to 5.
-  * Grab current hg tip from upstream.
+  * Grab current hg tip from upstream (68a9c3e74f9a).
     + Fixes "mailto:" URL parsing.
       (Closes: #426148, #426158, #446016, Mutt: #2968, #2980)
     + 'set folder= =' won't segfault. (Closes: #448728)
