@@ -7,11 +7,11 @@ The home page for this patch is:
   http://www.spinnaker.de/mutt/compressed/
 
 * Patch last synced with upstream:
-  - Date: 2007-06-14
-  - File: http://www.spinnaker.de/mutt/compressed/patch-1.5.16.rr.compressed.1.gz
+  - Date: 2008-05-20
+  - File: http://www.spinnaker.de/mutt/compressed/patch-1.5.18.rr.compressed.1.gz
 
 * Changes made:
-  - 2007-06-14 myon: remove hunks for Muttrc*
+  - 2008-05-20 myon: refreshed to remove hunks in auto* files
 
 == END PATCH
 --- /dev/null
@@ -548,7 +548,7 @@ The home page for this patch is:
 +void mutt_fast_close_compressed (CONTEXT *);
 --- a/configure.ac
 +++ b/configure.ac
-@@ -792,6 +792,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
+@@ -787,6 +787,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
  
@@ -562,7 +562,7 @@ The home page for this patch is:
                  AC_DEFINE_UNQUOTED(EXECSHELL, "$withval",
 --- a/curs_main.c
 +++ b/curs_main.c
-@@ -1131,6 +1131,11 @@ int mutt_index_menu (void)
+@@ -1132,6 +1132,11 @@ int mutt_index_menu (void)
          {
  	  int check;
  
@@ -576,7 +576,7 @@ The home page for this patch is:
  
 --- a/doc/manual.xml.head
 +++ b/doc/manual.xml.head
-@@ -4676,6 +4676,205 @@ macro pager \cb |urlview\n
+@@ -4799,6 +4799,205 @@ macro pager \cb |urlview\n
  
  </chapter>
  
@@ -782,6 +782,34 @@ The home page for this patch is:
  <chapter id="mimesupport">
  <title>Mutt's MIME Support</title>
  
+--- a/doc/Muttrc
++++ b/doc/Muttrc
+@@ -24,6 +24,11 @@ macro generic,pager <F1> "<shell-escape>
+ macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
+ bind browser y exit
+ 
++# Use folders which match on \\.gz$ as gzipped folders:
++# open-hook \\.gz$ "gzip -cd %f > %t"
++# close-hook \\.gz$ "gzip -c %t > %f"
++# append-hook \\.gz$ "gzip -c %t >> %f"
++
+ # If Mutt is unable to determine your site's domain name correctly, you can
+ # set the default here.
+ #
+--- a/doc/Muttrc.head
++++ b/doc/Muttrc.head
+@@ -24,6 +24,11 @@ macro generic,pager <F1> "<shell-escape>
+ macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
+ bind browser y exit
+ 
++# Use folders which match on \\.gz$ as gzipped folders:
++# open-hook \\.gz$ "gzip -cd %f > %t"
++# close-hook \\.gz$ "gzip -c %t > %f"
++# append-hook \\.gz$ "gzip -c %t >> %f"
++
+ # If Mutt is unable to determine your site's domain name correctly, you can
+ # set the default here.
+ #
 --- a/doc/muttrc.man.head
 +++ b/doc/muttrc.man.head
 @@ -345,6 +345,24 @@ specify the ID of the public key to be u
@@ -841,7 +869,7 @@ The home page for this patch is:
        )
 --- a/init.h
 +++ b/init.h
-@@ -3210,6 +3210,11 @@ struct command_t Commands[] = {
+@@ -3272,6 +3272,11 @@ struct command_t Commands[] = {
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
@@ -855,7 +883,7 @@ The home page for this patch is:
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
 --- a/main.c
 +++ b/main.c
-@@ -409,6 +409,12 @@ static void show_version (void)
+@@ -403,6 +403,12 @@ static void show_version (void)
  #else
  	"-LOCALES_HACK  "
  #endif
@@ -872,14 +900,14 @@ The home page for this patch is:
 +++ b/Makefile.am
 @@ -18,7 +18,7 @@ BUILT_SOURCES = keymap_defs.h patchlist.
  bin_PROGRAMS = mutt @DOTLOCK_TARGET@ @PGPAUX_TARGET@
- mutt_SOURCES = $(BUILT_SOURCES) \
+ mutt_SOURCES = \
  	addrbook.c alias.c attach.c base64.c browser.c buffy.c color.c \
 -	crypt.c cryptglue.c \
 +	crypt.c cryptglue.c compress.c \
  	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
  	edit.c enter.c flags.c init.c filter.c from.c \
  	getdomain.c group.c \
-@@ -66,7 +66,7 @@ EXTRA_mutt_SOURCES = account.c md5.c mut
+@@ -57,7 +57,7 @@ EXTRA_mutt_SOURCES = account.c md5.c mut
  	utf8.c wcwidth.c 
  
  EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO UPDATING \
@@ -901,7 +929,7 @@ The home page for this patch is:
  #include <sys/stat.h>
  #include <dirent.h>
  #include <string.h>
-@@ -1026,6 +1030,12 @@ bail:  /* Come here in case of disaster 
+@@ -1037,6 +1041,12 @@ bail:  /* Come here in case of disaster 
  int mbox_close_mailbox (CONTEXT *ctx)
  {
    mx_unlock_file (ctx->path, fileno (ctx->fp), 1);
@@ -1054,7 +1082,7 @@ The home page for this patch is:
  WHERE short DefaultMagic INITVAL (M_MBOX);
 --- a/po/de.po
 +++ b/po/de.po
-@@ -1279,6 +1279,48 @@ msgstr "Prüfung des Absenders fehlgeschl
+@@ -1289,6 +1289,48 @@ msgstr "Prüfung des Absenders fehlgeschl
  msgid "Failed to figure out sender"
  msgstr "Kann Absender nicht ermitteln"
  
@@ -1103,7 +1131,7 @@ The home page for this patch is:
  #: crypt.c:69
  #, c-format
  msgid " (current time: %c)"
-@@ -1948,6 +1990,10 @@ msgstr "Hilfe für %s"
+@@ -1958,6 +2000,10 @@ msgstr "Hilfe für %s"
  msgid "Bad history file format (line %d)"
  msgstr "Falsches Format der Datei früherer Eingaben (Zeile %d)"
  
@@ -1114,19 +1142,19 @@ The home page for this patch is:
  #: hook.c:251
  #, c-format
  msgid "unhook: Can't do unhook * from within a hook."
-@@ -3463,18 +3509,10 @@ msgstr "Lese %s..."
+@@ -2687,18 +2733,10 @@ msgstr "Lese %s..."
  msgid "Mailbox is corrupt!"
  msgstr "Mailbox fehlerhaft!"
  
--#: mbox.c:670
+-#: mbox.c:678
 -msgid "Mailbox was corrupted!"
 -msgstr "Mailbox wurde zerstört!"
 -
- #: mbox.c:711 mbox.c:964
+ #: mbox.c:719 mbox.c:975
  msgid "Fatal error!  Could not reopen mailbox!"
  msgstr "Fataler Fehler, konnte Mailbox nicht erneut öffnen!"
  
--#: mbox.c:720
+-#: mbox.c:728
 -msgid "Unable to lock mailbox!"
 -msgstr "Kann Mailbox nicht für exklusiven Zugriff sperren!"
 -
@@ -1145,7 +1173,7 @@ The home page for this patch is:
  cryptglue.c
 --- a/status.c
 +++ b/status.c
-@@ -99,6 +99,14 @@ status_format_str (char *buf, size_t buf
+@@ -96,6 +96,14 @@ status_format_str (char *buf, size_t buf
  
      case 'f':
        snprintf (fmt, sizeof(fmt), "%%%ss", prefix);
