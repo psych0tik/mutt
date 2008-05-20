@@ -23,7 +23,7 @@ in the "mutt-patched" package.
     The width of the sidebar.
 
 * Patch source:
-  - provided by dann frazier in #277637
+  - http://lunar-linux.org/~tchan/mutt/patch-1.5.18.sidebar.20080517.txt
 
 * Changes made:
   - Fixed conflict with maildir-mtime patch [myon]
