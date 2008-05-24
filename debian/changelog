@@ -7,8 +7,9 @@ mutt (1.5.18-1) unstable; urgency=low
     + Mention that References: and Date: cannot be changed in editor.
       (Closes: #191850, Mutt: #1234).
   * Refreshing patches from upstream: compressed-folders, sidebar.
+  * Update doc-base section.
 
- -- Christoph Berg <myon@debian.org>  Tue, 20 May 2008 16:04:37 +0200
+ -- Christoph Berg <myon@debian.org>  Sat, 24 May 2008 19:36:44 +0200
 
 mutt (1.5.17+20080114-1) unstable; urgency=low
 

@@ -3,7 +3,7 @@ Title: The Mutt E-Mail Client Manual
 Author: Various
 Abstract: The documentation for Mutt, a sophisticated text oriented mail
  user agent ("mail reader").
-Section: Apps/Net
+Section: Network/Communication
 
 Format: text
 Files: /usr/share/doc/mutt/manual.txt.gz
