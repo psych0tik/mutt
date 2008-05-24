@@ -23,6 +23,7 @@ in the "mutt-patched" package.
     The width of the sidebar.
 
 * Patch source:
+  - http://www.lunar-linux.org/index.php?page=mutt-sidebar
   - http://lunar-linux.org/~tchan/mutt/patch-1.5.18.sidebar.20080517.txt
 
 * Changes made:
