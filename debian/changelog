@@ -2,8 +2,9 @@ mutt (1.5.18-2) unstable; urgency=low
 
   * Install reportbug script to inform us about the status of installed
     mutt packages.
+  * Use dh_lintian (prefix with '-' so we do not need to bump the DH level).
 
- -- Christoph Berg <myon@debian.org>  Mon, 26 May 2008 22:17:05 +0200
+ -- Christoph Berg <myon@debian.org>  Mon, 26 May 2008 22:25:48 +0200
 
 mutt (1.5.18-1) unstable; urgency=low
 
