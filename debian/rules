@@ -108,6 +108,8 @@ $(objdir)/build-stamp: $(objdir)-patched/build-stamp
 
 install: build
 	###################### install ######################
+	dh_testdir
+	dh_testroot
 	dh_clean -k
 	cd $(objdir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	
@@ -131,13 +133,14 @@ install: build
 	
 	# temporarily call the binary mutt-patched so dh_strip gets the debug file name right
 	install -D $(objdir)-patched/mutt debian/mutt-patched/usr/bin/mutt-patched
+	
+	# reportbug driver
+	dh_installdirs
+	install -m644 debian/bug/control $(CURDIR)/debian/mutt/usr/share/bug/mutt
+	install       debian/bug/script  $(CURDIR)/debian/mutt/usr/share/bug/mutt
 
 binary binary-arch: install
 	###################### binary ######################
-	dh_testdir
-	dh_testroot
-	
-	dh_installdirs
 	dh_install
 	dh_installman
 	dh_installmenu

@@ -1,2 +1,3 @@
 etc/Muttrc.d
+usr/share/bug/mutt
 usr/share/lintian/overrides
