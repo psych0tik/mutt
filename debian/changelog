@@ -3,6 +3,8 @@ mutt (1.5.18-2) unstable; urgency=low
   * Install reportbug script to inform us about the status of installed
     mutt packages.
   * Use dh_lintian (prefix with '-' so we do not need to bump the DH level).
+  * Register mutt as message/rfc822 application in /etc/mailcap.
+    (Closes: #474539)
 
  -- Christoph Berg <myon@debian.org>  Mon, 26 May 2008 22:25:48 +0200
 
