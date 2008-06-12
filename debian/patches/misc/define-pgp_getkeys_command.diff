@@ -1,8 +1,6 @@
-Index: contrib/gpg.rc
-===================================================================
---- contrib/gpg.rc.orig	2007-03-01 23:14:09.076973224 +0100
-+++ contrib/gpg.rc	2007-03-01 23:32:04.172533856 +0100
-@@ -72,6 +72,8 @@ set pgp_list_secring_command="/usr/bin/g
+--- a/contrib/gpg.rc
++++ b/contrib/gpg.rc
+@@ -72,6 +72,8 @@ set pgp_list_secring_command="gpg --no-v
  
  # fetch keys
  # set pgp_getkeys_command="pkspxycwrap %r"

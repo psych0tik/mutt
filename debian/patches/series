@@ -16,13 +16,13 @@ features/compressed-folders.debian
 
 # Debian config
 debian-specific/Muttrc
-debian-specific/Md.etc_mailname_gethostbyname.diff -p0
-debian-specific/use_usr_bin_editor.diff -p0
-debian-specific/correct_docdir_in_man_page.diff -p0
+debian-specific/Md.etc_mailname_gethostbyname.diff 
+debian-specific/use_usr_bin_editor.diff 
+debian-specific/correct_docdir_in_man_page.diff 
 debian-specific/dont_document_not_present_features.diff 
 debian-specific/document_debian_defaults
 debian-specific/assumed_charset-compat
-misc/define-pgp_getkeys_command.diff -p0
+misc/define-pgp_getkeys_command.diff 
 misc/gpg.rc-paths
 
 mutt.org

@@ -6,10 +6,11 @@ mutt (1.5.18-2) unstable; urgency=low
   * Use dh_lintian (prefix with '-' so we do not need to bump the DH level).
   * Register mutt as message/rfc822 application in /etc/mailcap.
     (Closes: #474539)
+  * Refresh some patches to get rid of -p0 in series file.
   * Bump Standards-Version; add debian/README.source.
   * Switch Maintainer and Uploader as suggested by Dato.
 
- -- Christoph Berg <myon@debian.org>  Thu, 12 Jun 2008 23:45:33 +0200
+ -- Christoph Berg <myon@debian.org>  Thu, 12 Jun 2008 23:53:46 +0200
 
 mutt (1.5.18-1) unstable; urgency=low
 

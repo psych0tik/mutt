@@ -1,6 +1,6 @@
---- init.c.orig
-+++ init.c
-@@ -2929,7 +2929,7 @@
+--- a/init.c
++++ b/init.c
+@@ -3070,7 +3070,7 @@ void mutt_init (int skip_sys_rc, LIST *c
    {
      p = getenv ("EDITOR");
      if (!p)
@@ -9,9 +9,9 @@
    }
    Editor = safe_strdup (p);
    Visual = safe_strdup (p);
---- init.h.orig
-+++ init.h
-@@ -551,7 +551,7 @@
+--- a/init.h
++++ b/init.h
+@@ -552,7 +552,7 @@ struct option_t MuttVars[] = {
    ** .pp
    ** This variable specifies which editor is used by mutt.
    ** It defaults to the value of the VISUAL, or EDITOR, environment
