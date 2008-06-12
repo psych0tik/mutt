@@ -24,7 +24,7 @@ in the "mutt-patched" package.
 
 * Patch source:
   - http://www.lunar-linux.org/index.php?page=mutt-sidebar
-  - http://lunar-linux.org/~tchan/mutt/patch-1.5.18.sidebar.20080517.txt
+  - http://lunar-linux.org/~tchan/mutt/patch-1.5.18.sidebar.20080611.txt
 
 * Changes made:
   - Fixed conflict with maildir-mtime patch [myon]
@@ -50,7 +50,7 @@ in the "mutt-patched" package.
  #ifdef USE_IMAP
      if (tmp->magic != M_IMAP)
  #endif
-@@ -353,30 +355,51 @@ int mutt_buffy_check (int force)
+@@ -353,10 +355,27 @@ int mutt_buffy_check (int force)
        case M_MBOX:
        case M_MMDF:
  
@@ -81,19 +81,13 @@ in the "mutt-patched" package.
  	}
  	else if (option(OPTCHECKMBOXSIZE))
  	{
- 	  /* some other program has deleted mail from the folder */
- 	  tmp->size = (long) sb.st_size;
- 	}
--	if (tmp->newly_created &&
--	    (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
--	  tmp->newly_created = 0;
+@@ -366,17 +385,21 @@ int mutt_buffy_check (int force)
+ 	if (tmp->newly_created &&
+ 	    (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
+ 	  tmp->newly_created = 0;
 -
--	break;
-+        if (tmp->newly_created &&
-+            (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
-+          tmp->newly_created = 0;
 +        }
-+        break;
+ 	break;
  
        case M_MAILDIR:
  
@@ -944,7 +938,7 @@ in the "mutt-patched" package.
  	break;
 --- /dev/null
 +++ b/sidebar.c
-@@ -0,0 +1,328 @@
+@@ -0,0 +1,333 @@
 +/*
 + * Copyright (C) ????-2004 Justin Hibbits <jrh29@po.cwru.edu>
 + * Copyright (C) 2004 Thomer M. Gil <mutt@thomer.com>
@@ -1084,8 +1078,6 @@ in the "mutt-patched" package.
 +int draw_sidebar(int menu) {
 +
 +	int lines = option(OPTHELP) ? 1 : 0;
-+	int sidebar_folder_depth;
-+	char *sidebar_folder_name;
 +	BUFFY *tmp;
 +#ifndef USE_SLANG_CURSES
 +        attr_t attrs;
@@ -1190,28 +1182,35 @@ in the "mutt-patched" package.
 +			tmp->msgcount = Context->msgcount;
 +			tmp->msg_flagged = Context->flagged;
 +		}
-+	sidebar_folder_depth = 0;
-+	sidebar_folder_name = "<null>"; // ... just in case
-+	if ( strlen(tmp->path) > strlen(Maildir) ) {
-+		int i;
-+		char *tmp_folder_name;
-+		tmp_folder_name = tmp->path + strlen(Maildir);
-+		for (i = 0; i < strlen(tmp->path) - strlen(Maildir); i++) {
-+			if (tmp_folder_name[i] == '/') sidebar_folder_depth++;
++		// check whether Maildir is a prefix of the current folder's path
++		short maildir_is_prefix = 0;
++		if ( (strlen(tmp->path) > strlen(Maildir)) &&
++			(strncmp(Maildir, tmp->path, strlen(Maildir)) == 0) )
++        		maildir_is_prefix = 1;
++		// calculate depth of current folder and generate its display name with indented spaces
++		int sidebar_folder_depth = 0;
++		char *sidebar_folder_name;
++		sidebar_folder_name = basename(tmp->path);
++		if ( maildir_is_prefix ) {
++			char *tmp_folder_name;
++			int i;
++			tmp_folder_name = tmp->path + strlen(Maildir);
++			for (i = 0; i < strlen(tmp->path) - strlen(Maildir); i++) {
++				if (tmp_folder_name[i] == '/') sidebar_folder_depth++;
++			}   
++			if (sidebar_folder_depth > 0) {
++				sidebar_folder_name = malloc(strlen(basename(tmp->path)) + sidebar_folder_depth + 1);
++				for (i=0; i < sidebar_folder_depth; i++)
++					sidebar_folder_name[i]=' ';
++				sidebar_folder_name[i]=0;
++				strncat(sidebar_folder_name, basename(tmp->path), strlen(basename(tmp->path)) + sidebar_folder_depth);
++			}
 +		}
-+		if (sidebar_folder_depth > 0) {
-+			sidebar_folder_name = malloc(strlen(basename(tmp->path)) + sidebar_folder_depth + 1);
-+			for (i=0; i < sidebar_folder_depth; i++)
-+				sidebar_folder_name[i]=' ';
-+			sidebar_folder_name[i]=0;
-+			strncat(sidebar_folder_name, basename(tmp->path), strlen(basename(tmp->path)) + sidebar_folder_depth);
-+		}
-+	} else sidebar_folder_name = "INBOX";
-+                printw( "%.*s", SidebarWidth - delim_len + 1,
-+                       make_sidebar_entry(sidebar_folder_name, tmp->msgcount,
-+                       tmp->msg_unread, tmp->msg_flagged));
-+	if (sidebar_folder_depth > 0)
-+		free(sidebar_folder_name);
++		printw( "%.*s", SidebarWidth - delim_len + 1,
++			make_sidebar_entry(sidebar_folder_name, tmp->msgcount,
++			tmp->msg_unread, tmp->msg_flagged));
++		if (sidebar_folder_depth > 0)
++		        free(sidebar_folder_name);
 +		lines++;
 +	}
 +	SETCOLOR(MT_COLOR_NORMAL);
@@ -1314,7 +1313,7 @@ in the "mutt-patched" package.
 +#endif /* SIDEBAR_H */
 --- a/doc/Muttrc
 +++ b/doc/Muttrc
-@@ -2085,6 +2085,26 @@ attachments   -I message/external-body
+@@ -2090,6 +2090,26 @@ attachments   -I message/external-body
  # function.
  # 
  # 
