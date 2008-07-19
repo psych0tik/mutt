@@ -78,10 +78,4 @@ directives.
 The directory is processed last in /etc/Muttrc, so that settings there
 may override the defaults from the file.
 
-
-Kerberos support
-~~~~~~~~~~~~~~~~
-To use kerberos GSSAPI authentication, install the libsasl2-modules-gssapi-mit
-package.
-
  -- Christoph Berg <myon@debian.org>  Sat, 03 Nov 2007 21:02:26 +0100

@@ -3,7 +3,9 @@ Section: mail
 Priority: standard
 Maintainer: Christoph Berg <myon@debian.org>
 Uploaders: Adeodato Simó <dato@net.com.org.es>
-Build-Depends: debhelper (>> 5), quilt, automake, gawk, gettext, xsltproc, docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev, libidn11-dev, zlib1g-dev, libncursesw5-dev, libgdbm-dev
+Build-Depends: debhelper (>> 5), quilt, automake, gawk, gettext, xsltproc,
+ docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev,
+ libidn11-dev, zlib1g-dev, libncursesw5-dev, libgdbm-dev, libkrb5-dev
 Standards-Version: 3.8.0
 XS-Vcs-Bzr: http://bzr.debian.org/pkg-mutt/unstable
 Homepage: http://www.mutt.org/

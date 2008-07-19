@@ -45,6 +45,7 @@ confflags =	--prefix=/usr			\
 						\
 		--with-curses			\
 		--with-gnutls			\
+		--with-gss			\
 		--with-idn			\
 		--with-mixmaster		\
 		--with-sasl			\
