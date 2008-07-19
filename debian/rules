@@ -2,6 +2,11 @@
 
 include /usr/share/quilt/quilt.make
 
+###################### user serviceable parts ######################
+
+###
+# build a separate mutt-patched package?
+BUILD_PATCHED := yes
 ###
 # header cache backend
 # HCACHE_DB := bdb
@@ -11,6 +16,12 @@ HCACHE_DB := gdbm
 # GPGME backend
 # GPGME := --enable-gpgme
 ###
+
+###################### variables ######################
+
+ifneq ($(BUILD_PATCHED),yes)
+export DH_OPTIONS := -Nmutt-patched
+endif
 
 # Configure arguments
 
@@ -72,13 +83,16 @@ endif
 # Directory to make the build on
 objdir = $(CURDIR)/obj-$(DEB_HOST_GNU_TYPE)
 
+###################### main ######################
+
 $(objdir)-patched/build-stamp: $(QUILT_STAMPFN)
 	dh_testdir
 	dh_clean
+	-mkdir $(objdir)-patched
 	
+ifeq ($(BUILD_PATCHED),yes)
 	###################### building mutt-patched ######################
 	autoreconf --install --include=m4
-	-mkdir $(objdir)-patched
 	cd $(objdir)-patched && \
 	env CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" \
 	../configure $(confflags)
@@ -87,6 +101,7 @@ $(objdir)-patched/build-stamp: $(QUILT_STAMPFN)
 	
 	# we should just "make mutt" here, but that doesn't work yet
 	cd $(objdir)-patched && $(MAKE) CFLAGS="$(CFLAGS)"
+endif
 	
 	touch $@
 
@@ -132,8 +147,10 @@ install: build
 	  grep '^set' contrib/gpg.rc; \
 	  echo ) > debian/tmp/gpg.rc
 	
+ifeq ($(BUILD_PATCHED),yes)
 	# temporarily call the binary mutt-patched so dh_strip gets the debug file name right
 	install -D $(objdir)-patched/mutt debian/mutt-patched/usr/bin/mutt-patched
+endif
 	
 	# reportbug driver
 	dh_installdirs
@@ -154,7 +171,9 @@ binary binary-arch: install
 	dh_strip --dbg-package=mutt-dbg
 	rm -rf $(CURDIR)/debian/mutt-dbg/usr/share/doc/mutt-dbg \
 		$(CURDIR)/debian/mutt-patched/usr/share/doc/mutt-patched
+ifeq ($(BUILD_PATCHED),yes)
 	mv debian/mutt-patched/usr/bin/mutt-patched debian/mutt-patched/usr/bin/mutt
+endif
 	
 	dh_link
 	dh_compress --exclude usr/share/doc/mutt/README.Patches

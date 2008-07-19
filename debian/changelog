@@ -3,8 +3,9 @@ mutt (1.5.18-3) unstable; urgency=low
   * Pull patch from upstream to fix multipart decoding. (Closes: #489283)
   * Add example sidebar config, thanks Stefano Zacchiroli. (Closes: #460452)
   * (Finally) compile with native Kerberos GSSAPI support. (Closes: #469483)
+  * Add a switch in debian/rules to make building mutt-patched configurable.
 
- -- Christoph Berg <myon@debian.org>  Sun, 20 Jul 2008 01:06:46 +0200
+ -- Christoph Berg <myon@debian.org>  Sun, 20 Jul 2008 01:35:03 +0200
 
 mutt (1.5.18-2) unstable; urgency=low
 
