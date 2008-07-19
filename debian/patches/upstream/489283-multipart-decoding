@@ -1,0 +1,57 @@
+changeset:   5421:f5fe657f0633
+branch:      HEAD
+user:        Brendan Cully <brendan@kublai.com>
+date:        Tue Jun 24 23:12:02 2008 -0700
+summary:     Make multipart decoding a little more forgiving.
+
+#diff -r a2e8f6fab8d3 -r f5fe657f0633 ChangeLog
+#--- a/ChangeLog	Thu Jan 01 00:00:00 1970 +0000
+#+++ b/ChangeLog	Tue Jun 24 23:12:02 2008 -0700
+#@@ -1,3 +1,13 @@
+#+1970-01-01 00:00 +0000  Brendan Cully  <brendan@kublai.com>  (a2e8f6fab8d3)
+#+
+#+	* smtp.c: Test that envelope from or from is set before attempting
+#+	SMTP delivery. Closes #3079.
+#+
+#+2008-06-14 18:23 -0700  Christoph Berg  <cb@df7cb.de>  (4b790909a037)
+#+
+#+	* doc/mbox.man: Document that From_ lines use asctime-style dates,
+#+	not RFC2822 dates. Closes #3077.
+#+
+# 2008-06-11 22:45 -0700  Alexey I. Froloff  <raorn@altlinux.org>  (1e8ca708a52f)
+# 
+# 	* attach.c: Do not attempt to close invalid descriptors. Closes #3075
+diff -r a2e8f6fab8d3 -r f5fe657f0633 handler.c
+--- a/handler.c	Thu Jan 01 00:00:00 1970 +0000
++++ b/handler.c	Tue Jun 24 23:12:02 2008 -0700
+@@ -1199,11 +1199,12 @@
+     
+     if (rc)
+     {
++      mutt_error ("One or more parts of this message could not be displayed");
+       dprint (1, (debugfile, "Failed on attachment #%d, type %s/%s.\n", count, TYPE(p), NONULL (p->subtype)));
+     }
+     
+-    if (rc || ((s->flags & M_REPLYING)
+-               && (option (OPTINCLUDEONLYFIRST)) && (s->flags & M_FIRSTDONE)))
++    if ((s->flags & M_REPLYING)
++        && (option (OPTINCLUDEONLYFIRST)) && (s->flags & M_FIRSTDONE))
+       break;
+   }
+ 
+@@ -1564,6 +1565,14 @@
+ 
+     if (!handler)
+       handler = multipart_handler;
++    
++    if (b->encoding != ENC7BIT && b->encoding != ENC8BIT
++        && b->encoding != ENCBINARY)
++    {
++      dprint (1, (debugfile, "Bad encoding type %d for multipart entity, "
++                  "assuming 7 bit\n", b->encoding));
++      b->encoding = ENC7BIT;
++    }
+   }
+   else if (WithCrypto && b->type == TYPEAPPLICATION)
+   {
+
