@@ -2,8 +2,14 @@ mutt (1.5.18-4) unstable; urgency=low
 
   * In order to evade a conflict with the sidebar patch, move the set_xterm_*
     prototypes from pager.c to mutt_menu.h. No functional change.
+  * Introduce two new patches that revert the conflicting part of the
+    maildir-mtime patch before applying the sidebar patch, and afterwards
+    re-apply the relevant bits. This mitigates the chance of bugs being
+    introduced when manually resolving conflicts with new versions of the
+    sidebar patch. This fixes new mail detection in the mutt-patched package.
+    (Closes: #484537, #484538)
 
- -- Christoph Berg <myon@debian.org>  Sun, 03 Aug 2008 00:28:59 +0200
+ -- Christoph Berg <myon@debian.org>  Sun, 03 Aug 2008 00:51:58 +0200
 
 mutt (1.5.18-3) unstable; urgency=low
 

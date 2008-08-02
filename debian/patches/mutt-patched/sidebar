@@ -27,7 +27,8 @@ in the "mutt-patched" package.
   - http://lunar-linux.org/~tchan/mutt/patch-1.5.18.sidebar.20080611.txt
 
 * Changes made:
-  - Fixed conflict with maildir-mtime patch [myon]
+  - 2008-08-02 myon: Refreshed patch using quilt push -f to remove hunks we do
+    not need (Makefile.in).
 
 == END PATCH
 --- a/buffy.c
@@ -50,7 +51,7 @@ in the "mutt-patched" package.
  #ifdef USE_IMAP
      if (tmp->magic != M_IMAP)
  #endif
-@@ -353,10 +355,27 @@ int mutt_buffy_check (int force)
+@@ -353,48 +355,112 @@ int mutt_buffy_check (int force)
        case M_MBOX:
        case M_MMDF:
  
@@ -81,13 +82,19 @@ in the "mutt-patched" package.
  	}
  	else if (option(OPTCHECKMBOXSIZE))
  	{
-@@ -366,17 +385,21 @@ int mutt_buffy_check (int force)
- 	if (tmp->newly_created &&
- 	    (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
- 	  tmp->newly_created = 0;
+ 	  /* some other program has deleted mail from the folder */
+ 	  tmp->size = (long) sb.st_size;
+ 	}
+-	if (tmp->newly_created &&
+-	    (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
+-	  tmp->newly_created = 0;
 -
+-	break;
++        if (tmp->newly_created &&
++            (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
++          tmp->newly_created = 0;
 +        }
- 	break;
++        break;
  
        case M_MAILDIR:
  
@@ -104,16 +111,13 @@ in the "mutt-patched" package.
  	while ((de = readdir (dirp)) != NULL)
  	{
  	  char *p;
-@@ -385,12 +408,36 @@ int mutt_buffy_check (int force)
+ 	  if (*de->d_name != '.' && 
+ 	      (!(p = strstr (de->d_name, ":2,")) || !strchr (p + 3, 'T')))
  	  {
- 	    if (!tmp->new)
- 	    {
--	      /* one new and undeleted message is enough */
--	      BuffyCount++;
--	      tmp->new = 1;
--
--	      if (! option (OPTMAILDIRMTIME)) /* prevent stat calls */
--		break;
+-	    /* one new and undeleted message is enough */
+-	    BuffyCount++;
+-	    tmp->new = 1;
+-	    break;
 + 	    tmp->has_new = tmp->new = 1;
 +            tmp->msgcount++;
 +            tmp->msg_unread++;
@@ -144,10 +148,9 @@ in the "mutt-patched" package.
 +             if (p && strchr(p + 3, 'F')) {
 +               tmp->msg_flagged++;
 +             }
- 	    }
- 	    snprintf (path, sizeof (path), "%s/new/%s", tmp->path, de->d_name);
- 	    if (!stat (path, &smd) && smd.st_mtime > tmp->mtime)
-@@ -403,8 +450,25 @@ int mutt_buffy_check (int force)
+ 	  }
+ 	}
+ 	closedir (dirp);
  	break;
  
        case M_MH:
@@ -177,12 +180,11 @@ in the "mutt-patched" package.
      }
 --- a/buffy.h
 +++ b/buffy.h
-@@ -25,8 +25,13 @@ typedef struct buffy_t
+@@ -25,7 +25,12 @@ typedef struct buffy_t
    char *path;
    long size;
    struct buffy_t *next;
 +  struct buffy_t *prev;
-   time_t mtime;			/* for maildirs...time of newest entry */
    short new;			/* mailbox has new mail */
 +  short has_new;		/* set it new if new and not read */
 +  int msgcount;			/* total number of messages */
@@ -832,10 +834,10 @@ in the "mutt-patched" package.
  #include "attach.h"
  #include "mbyte.h"
 +#include "sidebar.h"
- void set_xterm_title_bar(char *title);
- void set_xterm_icon_name(char *name);
  
-@@ -1069,6 +1070,8 @@ static int format_line (struct line_t **
+ #include "mx.h"
+ 
+@@ -1067,6 +1068,8 @@ static int format_line (struct line_t **
    mbstate_t mbstate;
  
    int wrap_cols = mutt_term_width ((flags & M_PAGER_NOWRAP) ? 0 : Wrap);
@@ -844,7 +846,7 @@ in the "mutt-patched" package.
    
    /* FIXME: this should come from lineInfo */
    memset(&mbstate, 0, sizeof(mbstate));
-@@ -1702,7 +1705,7 @@ mutt_pager (const char *banner, const ch
+@@ -1700,7 +1703,7 @@ mutt_pager (const char *banner, const ch
      if ((redraw & REDRAW_BODY) || topline != oldtopline)
      {
        do {
@@ -853,7 +855,7 @@ in the "mutt-patched" package.
  	curline = oldtopline = topline;
  	lines = 0;
  	force_redraw = 0;
-@@ -1715,6 +1718,7 @@ mutt_pager (const char *banner, const ch
+@@ -1713,6 +1716,7 @@ mutt_pager (const char *banner, const ch
  			    &QuoteList, &q_level, &force_redraw, &SearchRE) > 0)
  	    lines++;
  	  curline++;
@@ -861,7 +863,7 @@ in the "mutt-patched" package.
  	}
  	last_offset = lineInfo[curline].offset;
        } while (force_redraw);
-@@ -1728,6 +1732,7 @@ mutt_pager (const char *banner, const ch
+@@ -1726,6 +1730,7 @@ mutt_pager (const char *banner, const ch
  	  addch ('~');
  	addch ('\n');
  	lines++;
@@ -869,7 +871,7 @@ in the "mutt-patched" package.
        }
        /* We are going to update the pager status bar, so it isn't
         * necessary to reset to normal color now. */
-@@ -1751,22 +1756,22 @@ mutt_pager (const char *banner, const ch
+@@ -1749,22 +1754,22 @@ mutt_pager (const char *banner, const ch
        /* print out the pager status bar */
        SETCOLOR (MT_COLOR_STATUS);
        BKGDSET (MT_COLOR_STATUS);
@@ -896,7 +898,7 @@ in the "mutt-patched" package.
        BKGDSET (MT_COLOR_NORMAL);
        SETCOLOR (MT_COLOR_NORMAL);
        if (option(OPTXTERMSETTITLES))
-@@ -1783,18 +1788,23 @@ mutt_pager (const char *banner, const ch
+@@ -1781,18 +1786,23 @@ mutt_pager (const char *banner, const ch
        /* redraw the pager_index indicator, because the
         * flags for this message might have changed. */
        menu_redraw_current (index);
@@ -922,7 +924,7 @@ in the "mutt-patched" package.
      redraw = 0;
  
      if (option(OPTBRAILLEFRIENDLY)) {
-@@ -2673,6 +2683,13 @@ search_next:
+@@ -2671,6 +2681,13 @@ search_next:
          redraw = REDRAW_FULL;
          break;
  
@@ -1370,4 +1372,4 @@ in the "mutt-patched" package.
 --- a/PATCHES
 +++ b/PATCHES
 @@ -0,0 +1 @@
-+patch-1.5.18.sidebar.20080517.txt
++patch-1.5.18.sidebar.20080611.txt
