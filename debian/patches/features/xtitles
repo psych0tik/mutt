@@ -6,13 +6,13 @@ This is the xterm title patch as found on the mutt mailing lists.
     menu==NULL.
   - 2007-02-20 myon: make the note about the xterm_set_titles defaults a
     comment.
+  - 2008-08-02 myon: move set_xterm_* prototypes into the proper header file
+    (cleaner code, no functional change, evades conflict with sidebar patch)
 
 == END PATCH
-Index: mutt/curs_main.c
-===================================================================
---- mutt.orig/curs_main.c	2006-12-12 14:15:02.000000000 +0100
-+++ mutt/curs_main.c	2007-02-20 16:53:27.211126488 +0100
-@@ -110,6 +110,19 @@ static const char *No_visible = N_("No v
+--- a/curs_main.c
++++ b/curs_main.c
+@@ -112,6 +112,19 @@ static const char *No_visible = N_("No v
  
  extern size_t UngetCount;
  
@@ -32,7 +32,7 @@ Index: mutt/curs_main.c
  void index_make_entry (char *s, size_t l, MUTTMENU *menu, int num)
  {
    format_flag flag = M_FORMAT_MAKEPRINT | M_FORMAT_ARROWCURSOR | M_FORMAT_INDEX;
-@@ -568,6 +581,13 @@ int mutt_index_menu (void)
+@@ -574,6 +587,13 @@ int mutt_index_menu (void)
  	SETCOLOR (MT_COLOR_NORMAL);
          BKGDSET (MT_COLOR_NORMAL);
  	menu->redraw &= ~REDRAW_STATUS;
@@ -46,11 +46,9 @@ Index: mutt/curs_main.c
        }
  
        menu->redraw = 0;
-Index: mutt/globals.h
-===================================================================
---- mutt.orig/globals.h	2007-01-04 15:23:49.000000000 +0100
-+++ mutt/globals.h	2007-01-27 19:33:32.000000000 +0100
-@@ -137,6 +137,8 @@ WHERE char *Tempdir;
+--- a/globals.h
++++ b/globals.h
+@@ -145,6 +145,8 @@ WHERE char *Tempdir;
  WHERE char *Tochars;
  WHERE char *Username;
  WHERE char *Visual;
@@ -59,11 +57,9 @@ Index: mutt/globals.h
  
  WHERE char *CurrentFolder;
  WHERE char *LastFolder;
-Index: mutt/init.c
-===================================================================
---- mutt.orig/init.c	2006-12-12 14:15:03.000000000 +0100
-+++ mutt/init.c	2007-01-27 19:33:32.000000000 +0100
-@@ -1747,6 +1747,26 @@ static int parse_set (BUFFER *tmp, BUFFE
+--- a/init.c
++++ b/init.c
+@@ -1870,6 +1870,26 @@ static int parse_set (BUFFER *tmp, BUFFE
  	toggle_option (MuttVars[idx].data);
        else
  	set_option (MuttVars[idx].data);
@@ -90,13 +86,11 @@ Index: mutt/init.c
      }
      else if (myvar || DTYPE (MuttVars[idx].type) == DT_STR ||
  	     DTYPE (MuttVars[idx].type) == DT_PATH ||
-Index: mutt/init.h
-===================================================================
---- mutt.orig/init.h	2006-12-12 14:15:03.000000000 +0100
-+++ mutt/init.h	2007-02-20 16:47:02.718578240 +0100
-@@ -2941,6 +2941,27 @@ struct option_t MuttVars[] = {
-   ** Controls whether mutt writes out the Bcc header when preparing
-   ** messages to be sent.  Exim users may wish to unset this.
+--- a/init.h
++++ b/init.h
+@@ -3104,6 +3104,27 @@ struct option_t MuttVars[] = {
+   ** option does nothing: mutt will never write out the BCC header
+   ** in this case.
    */
 +  {"xterm_icon",       DT_STR,   R_BOTH, UL &XtermIcon,  UL "M%?n?AIL&ail?"},
 +  /*
@@ -122,33 +116,20 @@ Index: mutt/init.h
    /*--*/
    { NULL }
  };
-Index: mutt/mutt.h
-===================================================================
---- mutt.orig/mutt.h	2007-01-04 15:23:49.000000000 +0100
-+++ mutt/mutt.h	2007-01-27 19:33:32.000000000 +0100
-@@ -451,6 +451,7 @@ enum
+--- a/mutt.h
++++ b/mutt.h
+@@ -458,6 +458,7 @@ enum
    OPTWRAPSEARCH,
    OPTWRITEBCC,		/* write out a bcc header? */
    OPTXMAILER,
 +  OPTXTERMSETTITLES,
  
    OPTCRYPTUSEGPGME,
- 
-Index: mutt/pager.c
-===================================================================
---- mutt.orig/pager.c	2006-12-12 14:15:03.000000000 +0100
-+++ mutt/pager.c	2007-01-27 19:33:32.000000000 +0100
-@@ -30,6 +30,8 @@
- #include "pager.h"
- #include "attach.h"
- #include "mbyte.h"
-+void set_xterm_title_bar(char *title);
-+void set_xterm_icon_name(char *name);
- 
- #include "mx.h"
- 
-@@ -1765,6 +1767,13 @@ mutt_pager (const char *banner, const ch
- 	addstr (topline == 0 ? "all)" : "end)");
+   OPTCRYPTUSEPKA,
+--- a/pager.c
++++ b/pager.c
+@@ -1767,6 +1767,13 @@ mutt_pager (const char *banner, const ch
+       mutt_paddstr (COLS, IsHeader (extra) || IsMsgAttach (extra) ?  buffer : banner);
        BKGDSET (MT_COLOR_NORMAL);
        SETCOLOR (MT_COLOR_NORMAL);
 +      if (option(OPTXTERMSETTITLES))
@@ -161,11 +142,9 @@ Index: mutt/pager.c
      }
  
      if ((redraw & REDRAW_INDEX) && index)
-Index: mutt/status.c
-===================================================================
---- mutt.orig/status.c	2007-01-27 19:33:36.000000000 +0100
-+++ mutt/status.c	2007-01-27 19:34:11.000000000 +0100
-@@ -191,6 +191,8 @@ status_format_str (char *buf, size_t buf
+--- a/status.c
++++ b/status.c
+@@ -195,6 +195,8 @@ status_format_str (char *buf, size_t buf
        break;
  
      case 'P':
@@ -174,6 +153,17 @@ Index: mutt/status.c
        if (menu->top + menu->pagelen >= menu->max)
  	cp = menu->top ? "end" : "all";
        else
+--- a/mutt_menu.h
++++ b/mutt_menu.h
+@@ -103,6 +103,8 @@ void menu_current_middle (MUTTMENU *);
+ void menu_current_bottom (MUTTMENU *);
+ void menu_check_recenter (MUTTMENU *);
+ void menu_status_line (char *, size_t, MUTTMENU *, const char *);
++void set_xterm_title_bar (char *title);
++void set_xterm_icon_name (char *name);
+ 
+ MUTTMENU *mutt_new_menu (void);
+ void mutt_menuDestroy (MUTTMENU **);
 --- a/PATCHES
 +++ b/PATCHES
 @@ -0,0 +1 @@
