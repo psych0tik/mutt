@@ -7,5 +7,4 @@ debian/tmp/usr/share/doc/README
 debian/tmp/usr/share/doc/README.SSL
 debian/tmp/usr/share/doc/README.SECURITY
 debian/tmp/usr/share/doc/PGP-Notes.txt
-debian/tmp/usr/share/doc/changelog.old
 debian/tmp/usr/share/doc/manual.txt

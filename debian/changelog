@@ -4,10 +4,11 @@ mutt (1.5.19-1) experimental; urgency=low
     + Header weeding changed in default config; now we ignore * and unignore
       from: subject to cc date x-mailer x-url user-agent. (Mutt: #286)
     + $move now defaults to "no" instead of "ask-no".
+  * Upstream dropped changelog.old, so do we.
   * Temporarily disable building mutt-patched until an updated sidebar patch
     is available.
 
- -- Christoph Berg <myon@debian.org>  Thu, 15 Jan 2009 23:23:56 +0100
+ -- Christoph Berg <myon@debian.org>  Thu, 15 Jan 2009 23:47:29 +0100
 
 mutt (1.5.18-4) unstable; urgency=low
 

@@ -132,7 +132,6 @@ install: build
 	cd debian/tmp/usr/share/doc && \
 	rm -rf samples/iconv samples/ca-bundle.crt && \
 	mv NEWS NEWS.old && \
-	mv ChangeLog.old changelog.old && \
 	cp $(CURDIR)/UPDATING NEWS
 	
 	chmod +x debian/extra/lib/*
