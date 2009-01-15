@@ -3,11 +3,12 @@ This is the sensible browser position patch by Haakon Riiser.
 
   * Found in: <20050309162127.GA5656@s>
     http://lists.df7cb.de/mutt/message/20050309.162127.a244a894.en.html
+  * myon 2009-01-15: refreshed for mutt-1.5.19
 
 == END PATCH
 --- a/menu.c
 +++ b/menu.c
-@@ -840,8 +840,12 @@ int menu_redraw (MUTTMENU *menu)
+@@ -859,8 +859,12 @@ int menu_redraw (MUTTMENU *menu)
  
  int mutt_menuLoop (MUTTMENU *menu)
  {
@@ -20,7 +21,7 @@ This is the sensible browser position patch by Haakon Riiser.
    FOREVER
    {
      if (option (OPTMENUCALLER))
-@@ -1073,6 +1077,8 @@ int mutt_menuLoop (MUTTMENU *menu)
+@@ -1088,6 +1092,8 @@ int mutt_menuLoop (MUTTMENU *menu)
  	break;
  
        default:
@@ -39,7 +40,7 @@ This is the sensible browser position patch by Haakon Riiser.
  static char LastDir[_POSIX_PATH_MAX] = "";
  static char LastDirBackup[_POSIX_PATH_MAX] = "";
  
-@@ -506,19 +507,38 @@ static void init_menu (struct browser_st
+@@ -511,9 +512,13 @@ static void init_menu (struct browser_st
    menu->tagged = 0;
    
    if (buffy)
@@ -51,16 +52,11 @@ This is the sensible browser position patch by Haakon Riiser.
    {
 +    menu->is_mailbox_list = 0;
      strfcpy (path, LastDir, sizeof (path));
-     mutt_pretty_mailbox (path);
+     mutt_pretty_mailbox (path, sizeof (path));
  #ifdef USE_IMAP
--  if (state->imap_browse && option (OPTIMAPLSUB))
--    snprintf (title, titlelen, _("Subscribed [%s], File mask: %s"),
--	      path, NONULL (Mask.pattern));
--  else
-+    if (state->imap_browse && option (OPTIMAPLSUB))
-+      snprintf (title, titlelen, _("Subscribed [%s], File mask: %s"),
-+		path, NONULL (Mask.pattern));
-+    else
+@@ -522,8 +527,23 @@ static void init_menu (struct browser_st
+ 	      path, NONULL (Mask.pattern));
+   else
  #endif
 -    snprintf (title, titlelen, _("Directory [%s], File mask: %s"),
 -	      path, NONULL(Mask.pattern));
@@ -84,7 +80,7 @@ This is the sensible browser position patch by Haakon Riiser.
    }
    menu->redraw = REDRAW_FULL;
  }
-@@ -694,7 +714,6 @@ void _mutt_select_file (char *f, size_t 
+@@ -706,7 +726,6 @@ void _mutt_select_file (char *f, size_t 
  #endif
  	    )
  	  {
@@ -102,7 +98,3 @@ This is the sensible browser position patch by Haakon Riiser.
  
    /* Setting dialog != NULL overrides normal menu behaviour. 
     * In dialog mode menubar is hidden and prompt keys are checked before
---- a/PATCHES
-+++ b/PATCHES
-@@ -0,0 +1 @@
-+patch-1.5.8.hr.sensible_browser_position.3

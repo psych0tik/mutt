@@ -1,3 +1,12 @@
+mutt (1.5.19-1) experimental; urgency=low
+
+  * New upstream version.
+    + Header weeding changed in default config; now we ignore * and unignore
+      from: subject to cc date x-mailer x-url user-agent. (Mutt: #286)
+    + $move now defaults to "no" instead of "ask-no".
+
+ -- Christoph Berg <myon@debian.org>  Thu, 15 Jan 2009 22:44:09 +0100
+
 mutt (1.5.18-4) unstable; urgency=low
 
   * In order to evade a conflict with the sidebar patch, move the set_xterm_*

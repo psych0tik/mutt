@@ -1,25 +1,23 @@
 --- a/doc/Makefile.am
 +++ b/doc/Makefile.am
-@@ -100,8 +100,9 @@ uninstall-local:
+@@ -98,7 +98,8 @@ uninstall-local:
  
  check:
- manual.txt: manual.html db-cleanup.xsl
--	-xsltproc --nonet -o manual-txt.html $(srcdir)/db-cleanup.xsl manual.html || cp manual.html manual-txt.html
--	-lynx -dump -nolist -with_backspaces manual-txt.html > $@ || \
-+	xsltproc --nonet -o manual-txt.html $(srcdir)/db-cleanup.xsl manual.html || cp manual.html manual-txt.html
+ manual.txt: manual.html
+-	-LC_ALL=C lynx -dump -nolist -with_backspaces manual.html > $@ || \
 +	links.main -dump $< > $@ || links -dump $< > $@ || \
-+	lynx -dump -nolist -with_backspaces manual-txt.html > $@ || \
- 	w3m -dump manual-txt.html > $@ || \
- 	elinks -dump -no-numbering -no-references manual-txt.html > $@
++	LC_ALL=C lynx -dump -nolist -with_backspaces manual.html > $@ || \
+ 	LC_ALL=C w3m -dump manual.html > $@ || \
+ 	LC_ALL=C elinks -dump -no-numbering -no-references manual.html | sed -e 's,\\001, ,g' > $@
  
-@@ -115,10 +116,10 @@ stamp-doc-rc: $(top_srcdir)/init.h maked
+@@ -112,10 +113,10 @@ stamp-doc-rc: $(top_srcdir)/init.h maked
  	touch stamp-doc-rc
  
- manual.html: $(srcdir)/html.xsl stamp-doc-xml
+ manual.html: $(srcdir)/html.xsl $(srcdir)/mutt.xsl stamp-doc-xml $(srcdir)/mutt.css
 -	-xsltproc --nonet -o $@ $(srcdir)/html.xsl manual.xml
 +	xsltproc --nonet -o $@ $(srcdir)/html.xsl manual.xml
  
- stamp-doc-chunked: $(srcdir)/chunk.xsl stamp-doc-xml
+ stamp-doc-chunked: $(srcdir)/chunk.xsl $(srcdir)/mutt.xsl stamp-doc-xml $(srcdir)/mutt.css
 -	-xsltproc --nonet $(srcdir)/chunk.xsl manual.xml
 +	xsltproc --nonet $(srcdir)/chunk.xsl manual.xml
  	touch stamp-doc-chunked

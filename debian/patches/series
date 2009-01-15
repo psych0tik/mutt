@@ -25,14 +25,11 @@ debian-specific/assumed_charset-compat
 misc/define-pgp_getkeys_command.diff 
 misc/gpg.rc-paths
 
-# bug fixes
-upstream/489283-multipart-decoding
-
 mutt.org
 # extra patches for mutt-patched
 mutt-patched/sidebar-compat-revert.debian
-mutt-patched/sidebar
-mutt-patched/sidebar-compat-apply.debian
+#mutt-patched/sidebar
+#mutt-patched/sidebar-compat-apply.debian
 
 # unapplied patches for custom packages
 # not-applied/chdir

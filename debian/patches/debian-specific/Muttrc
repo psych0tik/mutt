@@ -1,14 +1,14 @@
+# vim:ft=diff
+
+ * 2009-01-15 myon: refreshed for mutt-1.5.19; drop our list of ignored headers
+   in favor of upstream's new unignore list
+
 --- a/doc/Muttrc.head
 +++ b/doc/Muttrc.head
-@@ -6,6 +6,36 @@
- #
- ignore "from " received content- mime-version status x-status message-id
- ignore sender references return-path lines
-+ignore date delivered-to precedence errors-to in-reply-to user-agent
-+ignore x-loop x-sender x-mailer x-msmail-priority x-mimeole x-ms- x-priority
-+ignore x-accept-language x-authentication-warning thread- priority importance
-+ignore x-original-to domainkey-signature dkim-signature
-+
+@@ -12,6 +12,32 @@ unignore from: subject to cc date x-mail
+ # Display the fields in this order
+ hdr_order date from to cc subject
+ 
 +# emacs-like bindings
 +bind editor    "\e<delete>"    kill-word
 +bind editor    "\e<backspace>" kill-word
@@ -34,10 +34,11 @@
 +
 +# System-wide CA file managed by the ca-certificates package
 +set ssl_ca_certificates_file="/etc/ssl/certs/ca-certificates.crt"
- 
++
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
-@@ -18,7 +48,7 @@ macro index,pager,attach,compose \cb "\
+ 
+@@ -23,7 +49,7 @@ macro index,pager,attach,compose \cb "\
  "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
@@ -46,7 +47,7 @@
  
  # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
-@@ -30,7 +60,7 @@ bind browser y exit
+@@ -35,7 +61,7 @@ bind browser y exit
  # append-hook \\.gz$ "gzip -c %t >> %f"
  
  # If Mutt is unable to determine your site's domain name correctly, you can
@@ -55,7 +56,7 @@
  #
  # set hostname=cs.hmc.edu
  
-@@ -92,6 +122,9 @@ attachments   +I text/plain
+@@ -101,6 +127,9 @@ attachments   +I text/plain
  attachments   -A message/external-body
  attachments   -I message/external-body
  

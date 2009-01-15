@@ -12,6 +12,8 @@ The home page for this patch is:
 
 * Changes made:
   - 2008-05-20 myon: refreshed to remove hunks in auto* files
+  - 2009-09-15 myon: refreshed for mutt-1.5.19
+                     status.c:103: add sizeof (tmp) to mutt_pretty_mailbox
 
 == END PATCH
 --- /dev/null
@@ -548,7 +550,7 @@ The home page for this patch is:
 +void mutt_fast_close_compressed (CONTEXT *);
 --- a/configure.ac
 +++ b/configure.ac
-@@ -787,6 +787,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
+@@ -795,6 +795,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
  
@@ -562,7 +564,7 @@ The home page for this patch is:
                  AC_DEFINE_UNQUOTED(EXECSHELL, "$withval",
 --- a/curs_main.c
 +++ b/curs_main.c
-@@ -1132,6 +1132,11 @@ int mutt_index_menu (void)
+@@ -1128,6 +1128,11 @@ int mutt_index_menu (void)
          {
  	  int check;
  
@@ -576,7 +578,7 @@ The home page for this patch is:
  
 --- a/doc/manual.xml.head
 +++ b/doc/manual.xml.head
-@@ -4799,6 +4799,205 @@ macro pager \cb |urlview\n
+@@ -5160,6 +5160,205 @@ macro pager \cb |urlview\n
  
  </chapter>
  
@@ -784,7 +786,7 @@ The home page for this patch is:
  
 --- a/doc/Muttrc
 +++ b/doc/Muttrc
-@@ -24,6 +24,11 @@ macro generic,pager <F1> "<shell-escape>
+@@ -29,6 +29,11 @@ macro generic,pager <F1> "<shell-escape>
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
  bind browser y exit
  
@@ -798,7 +800,7 @@ The home page for this patch is:
  #
 --- a/doc/Muttrc.head
 +++ b/doc/Muttrc.head
-@@ -24,6 +24,11 @@ macro generic,pager <F1> "<shell-escape>
+@@ -29,6 +29,11 @@ macro generic,pager <F1> "<shell-escape>
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
  bind browser y exit
  
@@ -869,7 +871,7 @@ The home page for this patch is:
        )
 --- a/init.h
 +++ b/init.h
-@@ -3272,6 +3272,11 @@ struct command_t Commands[] = {
+@@ -3452,6 +3452,11 @@ struct command_t Commands[] = {
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
@@ -883,7 +885,7 @@ The home page for this patch is:
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
 --- a/main.c
 +++ b/main.c
-@@ -403,6 +403,12 @@ static void show_version (void)
+@@ -402,6 +402,12 @@ static void show_version (void)
  #else
  	"-LOCALES_HACK  "
  #endif
@@ -907,8 +909,8 @@ The home page for this patch is:
  	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
  	edit.c enter.c flags.c init.c filter.c from.c \
  	getdomain.c group.c \
-@@ -57,7 +57,7 @@ EXTRA_mutt_SOURCES = account.c md5.c mut
- 	utf8.c wcwidth.c 
+@@ -57,7 +57,7 @@ EXTRA_mutt_SOURCES = account.c bcache.c 
+ 	bcache.h browser.h hcache.h mbyte.h mutt_idna.h remailer.h url.h
  
  EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO UPDATING \
 -	configure account.h \
@@ -929,7 +931,7 @@ The home page for this patch is:
  #include <sys/stat.h>
  #include <dirent.h>
  #include <string.h>
-@@ -1037,6 +1041,12 @@ bail:  /* Come here in case of disaster 
+@@ -1038,6 +1042,12 @@ bail:  /* Come here in case of disaster 
  int mbox_close_mailbox (CONTEXT *ctx)
  {
    mx_unlock_file (ctx->path, fileno (ctx->fp), 1);
@@ -944,7 +946,7 @@ The home page for this patch is:
    return 0;
 --- a/mutt.h
 +++ b/mutt.h
-@@ -160,6 +160,11 @@ typedef enum
+@@ -140,6 +140,11 @@ typedef enum
  #define M_ACCOUNTHOOK	(1<<9)
  #define M_REPLYHOOK	(1<<10)
  #define M_SEND2HOOK     (1<<11)
@@ -956,7 +958,7 @@ The home page for this patch is:
  
  /* tree characters for linearize_tree and print_enriched_string */
  #define M_TREE_LLCORNER		1
-@@ -892,6 +897,11 @@ typedef struct _context
+@@ -872,6 +877,11 @@ typedef struct _context
    int flagged;			/* how many flagged messages */
    int msgnotreadyet;		/* which msg "new" in pager, -1 if none */
  
@@ -1082,10 +1084,50 @@ The home page for this patch is:
  WHERE short DefaultMagic INITVAL (M_MBOX);
 --- a/po/de.po
 +++ b/po/de.po
-@@ -1289,6 +1289,48 @@ msgstr "Prüfung des Absenders fehlgeschl
- msgid "Failed to figure out sender"
- msgstr "Kann Absender nicht ermitteln"
+@@ -3,7 +3,7 @@ msgstr ""
+ "Project-Id-Version: 1.5.18\n"
+ "Report-Msgid-Bugs-To: \n"
+ "POT-Creation-Date: 2009-01-05 16:36-0800\n"
+-"PO-Revision-Date: 2008-05-18 10:28+0200\n"
++"PO-Revision-Date: 2009-01-15 23:09+0100\n"
+ "Last-Translator: Roland Rosenfeld <roland@spinnaker.de>\n"
+ "Language-Team: German <mutt-po@mutt.org>\n"
+ "MIME-Version: 1.0\n"
+@@ -1975,6 +1975,10 @@ msgstr "Hilfe für %s"
+ msgid "Bad history file format (line %d)"
+ msgstr "Falsches Format der Datei früherer Eingaben (Zeile %d)"
  
++#: hook.c:96
++msgid "badly formatted command string"
++msgstr "Hook enthält nicht die Muster %f und %t"
++
+ #: hook.c:251
+ #, c-format
+ msgid "unhook: Can't do unhook * from within a hook."
+@@ -2718,18 +2722,10 @@ msgstr "Lese %s..."
+ msgid "Mailbox is corrupt!"
+ msgstr "Mailbox fehlerhaft!"
+ 
+-#: mbox.c:678
+-msgid "Mailbox was corrupted!"
+-msgstr "Mailbox wurde zerstört!"
+-
+ #: mbox.c:719 mbox.c:976
+ msgid "Fatal error!  Could not reopen mailbox!"
+ msgstr "Fataler Fehler, konnte Mailbox nicht erneut öffnen!"
+ 
+-#: mbox.c:728
+-msgid "Unable to lock mailbox!"
+-msgstr "Kann Mailbox nicht für exklusiven Zugriff sperren!"
+-
+ #. this means ctx->changed or ctx->deleted was set, but no
+ #. * messages were found to be changed or deleted.  This should
+ #. * never happen, is we presume it is a bug in mutt.
+@@ -5298,3 +5294,45 @@ msgstr "Zeige S/MIME Optionen"
+ 
+ #~ msgid "Authentication method is unknown."
+ #~ msgstr "Authentifizierungsmethode unbekannt."
++
 +#: compress.c:203 mbox.c:661
 +msgid "Mailbox was corrupted!"
 +msgstr "Mailbox wurde zerstört!"
@@ -1127,40 +1169,6 @@ The home page for this patch is:
 +#, c-format
 +msgid " %s: Error compressing mailbox!  Uncompressed one kept!\n"
 +msgstr " %s: Fehler beim packen der Mailbox! Entpackte Mailbox gespeichert!\n"
-+
- #: crypt.c:69
- #, c-format
- msgid " (current time: %c)"
-@@ -1958,6 +2000,10 @@ msgstr "Hilfe für %s"
- msgid "Bad history file format (line %d)"
- msgstr "Falsches Format der Datei früherer Eingaben (Zeile %d)"
- 
-+#: hook.c:96
-+msgid "badly formatted command string"
-+msgstr "Hook enthält nicht die Muster %f und %t"
-+
- #: hook.c:251
- #, c-format
- msgid "unhook: Can't do unhook * from within a hook."
-@@ -2687,18 +2733,10 @@ msgstr "Lese %s..."
- msgid "Mailbox is corrupt!"
- msgstr "Mailbox fehlerhaft!"
- 
--#: mbox.c:678
--msgid "Mailbox was corrupted!"
--msgstr "Mailbox wurde zerstört!"
--
- #: mbox.c:719 mbox.c:975
- msgid "Fatal error!  Could not reopen mailbox!"
- msgstr "Fataler Fehler, konnte Mailbox nicht erneut öffnen!"
- 
--#: mbox.c:728
--msgid "Unable to lock mailbox!"
--msgstr "Kann Mailbox nicht für exklusiven Zugriff sperren!"
--
- #. this means ctx->changed or ctx->deleted was set, but no
- #. * messages were found to be changed or deleted.  This should
- #. * never happen, is we presume it is a bug in mutt.
 --- a/po/POTFILES.in
 +++ b/po/POTFILES.in
 @@ -8,6 +8,7 @@ charset.c
@@ -1181,10 +1189,14 @@ The home page for this patch is:
 +      if (Context && Context->compressinfo && Context->realpath)
 +      {
 +	 strfcpy (tmp, Context->realpath, sizeof (tmp));
-+	 mutt_pretty_mailbox (tmp);
++	 mutt_pretty_mailbox (tmp, sizeof (tmp));
 +      }
 +      else
 +#endif
        if (Context && Context->path)
        {
  	strfcpy (tmp, Context->path, sizeof (tmp));
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
++patch-1.5.18.rr.compressed.1
