@@ -61,5 +61,5 @@ debian/tmp/
 
 .mutt.org
 .pc/
-obj-x86_64-linux-gnu*
+obj-*/
 .*.swp
