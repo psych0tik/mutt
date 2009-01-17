@@ -22,35 +22,43 @@ persons who have been contributing to this program.  Please see the
 manual for a (probably still non complete) list of the persons who
 have been helpful with the development of this program.
 
-Main authors:
-    Copyright (C) 1996-2006 Michael R. Elkins <me@cs.hmc.edu>
-    Copyright (C) 1996-2001 Brandon Long <blong@fiction.net>
-    Copyright (C) 1997-2007 Thomas Roessler <roessler@guug.de>
-    Copyright (C) 1998-2003 Werner Koch <wk@isil.d.shuttle.de>
-    Copyright (C) 1999-2007 Brendan Cully <brendan@kublai.com>
-
-Contributors:
-    Copyright (C) 2001 Marco d'Itri
-    Copyright (C) 2001-2002 Oliver Ehli
-    Copyright (C) 2000-2001 Edmund Grimley Evans <edmundo@rano.org>
-    Copyright (C) 2004 Brian Fundakowski Feldman
-    Copyright (C) 2004 g10 Code GmbH
-    Copyright (C) 2004 Thomas Glanzmann
-    Copyright (C) 2003 Bjoern Jacke
-    Copyright (C) 2000 Manoj Kasichainula
-    Copyright (C) 1999-2001 Tommi Komulainen <Tommi.Komulainen@iki.fi>
-    Copyright (C) 2001-2004 Andrew McDonald
-    Copyright (C) 2001 Mike Schiraldi
-    Copyright (C) 2005-2007 Rocco Rutte
-    Copyright (C) 2000-2003 Vsevolod Volkov
-    Copyright (C) 2004 Tobias Werth
-    Copyright (C) 2005 Andreas Krennmair <ak@synflood.at>
-    Copyright (C) 2005 Peter J. Holzer <hjp@hjp.net>
+Copyright (C) 1996-2007 Michael R. Elkins <me@cs.hmc.edu>
+Copyright (C) 1996-2002 Brandon Long <blong@fiction.net>
+Copyright (C) 1997-2008 Thomas Roessler <roessler@does-not-exist.org>
+Copyright (C) 1998-2005 Werner Koch <wk@isil.d.shuttle.de>
+Copyright (C) 1999-2009 Brendan Cully <brendan@kublai.com>
+Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>
+Copyright (C) 2000-2004 Edmund Grimley Evans <edmundo@rano.org>
+Copyright (C) 2006-2008 Rocco Rutte <pdmef@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+Contributors:
+    Copyright (C) 2001 Marco d'Itri
+    Copyright (C) 2001-2002 Oliver Ehli
+    Copyright (C) 2004 Brian Fundakowski Feldman
+    Copyright (C) 2004 g10 Code GmbH
+    Copyright (C) 2004 Thomas Glanzmann
+    Copyright (C) 2003 Bjoern Jacke
+    Copyright (C) 2000 Manoj Kasichainula
+    Copyright (C) 2001-2004 Andrew McDonald
+    Copyright (C) 2001 Mike Schiraldi
+    Copyright (C) 2000-2003 Vsevolod Volkov
+    Copyright (C) 2004 Tobias Werth
+    Copyright (C) 2005 Andreas Krennmair <ak@synflood.at>
+    Copyright (C) 2005 Peter J. Holzer <hjp@hjp.net>
 
 intl subdirectory:
     Copyright (C) 1995-2001 Free Software Foundation, Inc.
