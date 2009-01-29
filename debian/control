@@ -15,7 +15,7 @@ Package: mutt
 Architecture: any
 Priority: standard
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: exim4 | mail-transport-agent, locales, mime-support
+Recommends: exim4 | mail-transport-agent, locales, mime-support, libsasl2-modules
 Suggests: urlview, aspell | ispell, gnupg, mixmaster, openssl, ca-certificates
 Provides: mail-reader, imap-client
 Conflicts: mutt-utf8
