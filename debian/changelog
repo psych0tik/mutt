@@ -3,8 +3,10 @@ mutt (1.5.19-2) experimental; urgency=low
   * Recommends: libsasl2-modules. Technically, we depend on libsasl2-2 which
     already recommends this package, but not having it installed just confuses
     too many users.
+  * Use upstream's smime.rc file, hereby fixing S/MIME encryption.
+    (Closes: #315319)
 
- -- Christoph Berg <myon@debian.org>  Fri, 30 Jan 2009 00:10:25 +0100
+ -- Christoph Berg <myon@debian.org>  Tue, 03 Feb 2009 22:08:02 +0100
 
 mutt (1.5.19-1) experimental; urgency=low
 

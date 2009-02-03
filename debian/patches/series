@@ -25,6 +25,7 @@ debian-specific/assumed_charset-compat
 misc/define-pgp_getkeys_command.diff 
 misc/gpg.rc-paths
 
+misc/smime.rc
 mutt.org
 # extra patches for mutt-patched
 mutt-patched/sidebar-compat-revert.debian
