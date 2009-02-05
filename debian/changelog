@@ -5,8 +5,12 @@ mutt (1.5.19-2) experimental; urgency=low
     too many users.
   * Use upstream's smime.rc file, hereby fixing S/MIME encryption.
     (Closes: #315319)
+  * Grab two patches from upstream that should also go into lenny:
+    + Always sort inode list for accessing header cache. (Closes: #508988)
+    + Delete partially downloaded files in message cache. (Closes: #500016)
+  * Add Antonio Radici to Uploaders. Thanks for the BTS triaging!
 
- -- Christoph Berg <myon@debian.org>  Tue, 03 Feb 2009 22:08:02 +0100
+ -- Christoph Berg <myon@debian.org>  Thu, 05 Feb 2009 23:26:41 +0100
 
 mutt (1.5.19-1) experimental; urgency=low
 

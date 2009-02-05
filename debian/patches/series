@@ -24,8 +24,11 @@ debian-specific/document_debian_defaults
 debian-specific/assumed_charset-compat
 misc/define-pgp_getkeys_command.diff 
 misc/gpg.rc-paths
-
 misc/smime.rc
+
+upstream/500016-temp-cache-fix.patch
+upstream/508988-inode-sort.patch
+
 mutt.org
 # extra patches for mutt-patched
 mutt-patched/sidebar-compat-revert.debian
