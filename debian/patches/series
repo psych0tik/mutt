@@ -32,8 +32,8 @@ upstream/508988-inode-sort.patch
 mutt.org
 # extra patches for mutt-patched
 mutt-patched/sidebar-compat-revert.debian
-#mutt-patched/sidebar
-#mutt-patched/sidebar-compat-apply.debian
+mutt-patched/sidebar
+mutt-patched/sidebar-compat-apply.debian
 
 # unapplied patches for custom packages
 # not-applied/chdir

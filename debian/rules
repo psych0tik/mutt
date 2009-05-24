@@ -6,7 +6,7 @@ include /usr/share/quilt/quilt.make
 
 ###
 # build a separate mutt-patched package?
-#BUILD_PATCHED := yes -- disabled until there is a sidebar patch for 1.5.19
+BUILD_PATCHED := yes
 ###
 # header cache backend
 # HCACHE_DB := bdb

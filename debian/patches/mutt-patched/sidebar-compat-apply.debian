@@ -6,7 +6,7 @@ the maildir-mtime patch. The hunk is considerably shorter as we are always
 counting messages; the if..break part has been dropped.
 --- a/buffy.c
 +++ b/buffy.c
-@@ -409,6 +409,11 @@ int mutt_buffy_check (int force)
+@@ -409,6 +409,11 @@
   	    tmp->has_new = tmp->new = 1;
              tmp->msgcount++;
              tmp->msg_unread++;
@@ -20,8 +20,8 @@ counting messages; the if..break part has been dropped.
          if(tmp->msg_unread)
 --- a/buffy.h
 +++ b/buffy.h
-@@ -26,6 +26,7 @@ typedef struct buffy_t
-   long size;
+@@ -26,6 +26,7 @@
+   off_t size;
    struct buffy_t *next;
    struct buffy_t *prev;
 +  time_t mtime;			/* for maildirs...time of newest entry */
