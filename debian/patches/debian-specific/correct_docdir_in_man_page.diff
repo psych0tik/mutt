@@ -1,6 +1,6 @@
 --- a/doc/mutt.man
 +++ b/doc/mutt.man
-@@ -167,7 +167,7 @@ User's personal mapping between MIME typ
+@@ -185,7 +185,7 @@
  System mapping between MIME types and file extensions.
  .IP "@bindir@/mutt_dotlock"
  The privileged dotlocking program.

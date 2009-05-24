@@ -18,7 +18,7 @@ The home page for this patch is:
 == END PATCH
 --- a/buffy.c
 +++ b/buffy.c
-@@ -226,6 +226,7 @@ int mutt_parse_mailboxes (BUFFER *path, 
+@@ -226,6 +226,7 @@
      (*tmp)->new = 0;
      (*tmp)->notified = 1;
      (*tmp)->newly_created = 0;
@@ -26,7 +26,7 @@ The home page for this patch is:
  
      /* for check_mbox_size, it is important that if the folder is new (tested by
       * reading it), the size is set to 0 so that later when we check we see
-@@ -254,6 +255,7 @@ int mutt_buffy_check (int force)
+@@ -254,6 +255,7 @@
  {
    BUFFY *tmp;
    struct stat sb;
@@ -34,7 +34,7 @@ The home page for this patch is:
    struct dirent *de;
    DIR *dirp;
    char path[_POSIX_PATH_MAX];
-@@ -298,6 +300,7 @@ int mutt_buffy_check (int force)
+@@ -298,6 +300,7 @@
      if (tmp->magic != M_IMAP)
  #endif
      tmp->new = 0;
@@ -42,7 +42,7 @@ The home page for this patch is:
  
  #ifdef USE_IMAP
      if (tmp->magic != M_IMAP)
-@@ -380,10 +383,20 @@ int mutt_buffy_check (int force)
+@@ -380,10 +383,20 @@
  	  if (*de->d_name != '.' && 
  	      (!(p = strstr (de->d_name, ":2,")) || !strchr (p + 3, 'T')))
  	  {
@@ -69,7 +69,7 @@ The home page for this patch is:
  	closedir (dirp);
 --- a/init.h
 +++ b/init.h
-@@ -1086,6 +1086,16 @@ struct option_t MuttVars[] = {
+@@ -1185,6 +1185,16 @@
    ** \fBDON'T CHANGE THIS SETTING UNLESS YOU ARE REALLY SURE WHAT YOU ARE
    ** DOING!\fP
    */
@@ -88,7 +88,7 @@ The home page for this patch is:
    /*
 --- a/mutt.h
 +++ b/mutt.h
-@@ -395,6 +395,7 @@ enum
+@@ -375,6 +375,7 @@
    OPTINCLUDEONLYFIRST,
    OPTKEEPFLAGGED,
    OPTMAILCAPSANITIZE,
@@ -106,7 +106,7 @@ The home page for this patch is:
  
  #include <stdlib.h>
  #include <dirent.h>
-@@ -307,8 +308,10 @@ folder_format_str (char *dest, size_t de
+@@ -308,8 +309,10 @@
  }
  
  static void add_folder (MUTTMENU *m, struct browser_state *state,
@@ -118,7 +118,7 @@ The home page for this patch is:
    if (state->entrylen == state->entrymax)
    {
      /* need to allocate more space */
-@@ -320,6 +323,9 @@ static void add_folder (MUTTMENU *m, str
+@@ -321,6 +324,9 @@
        m->data = state->entry;
    }
  
@@ -128,7 +128,7 @@ The home page for this patch is:
    if (s != NULL)
    {
      (state->entry)[state->entrylen].mode = s->st_mode;
-@@ -414,7 +420,7 @@ static int examine_directory (MUTTMENU *
+@@ -415,7 +421,7 @@
      tmp = Incoming;
      while (tmp && mutt_strcmp (buffer, tmp->path))
        tmp = tmp->next;
@@ -137,7 +137,7 @@ The home page for this patch is:
    }
    closedir (dp);  
    browser_sort (state);
-@@ -438,14 +444,15 @@ static int examine_mailboxes (MUTTMENU *
+@@ -443,14 +449,15 @@
      if (mx_is_imap (tmp->path))
      {
        imap_mailbox_state (tmp->path, &mbox);
@@ -155,9 +155,9 @@ The home page for this patch is:
        continue;
      }
  #endif
-@@ -459,7 +466,7 @@ static int examine_mailboxes (MUTTMENU *
+@@ -464,7 +471,7 @@
      strfcpy (buffer, NONULL(tmp->path), sizeof (buffer));
-     mutt_pretty_mailbox (buffer);
+     mutt_pretty_mailbox (buffer, sizeof (buffer));
  
 -    add_folder (menu, state, buffer, &s, tmp->new);
 +    add_folder (menu, state, buffer, &s, tmp);
@@ -166,9 +166,9 @@ The home page for this patch is:
    browser_sort (state);
 --- a/buffy.h
 +++ b/buffy.h
-@@ -25,6 +25,7 @@ typedef struct buffy_t
+@@ -25,6 +25,7 @@
    char *path;
-   long size;
+   off_t size;
    struct buffy_t *next;
 +  time_t mtime;			/* for maildirs...time of newest entry */
    short new;			/* mailbox has new mail */
@@ -176,5 +176,6 @@ The home page for this patch is:
    short magic;			/* mailbox type */
 --- a/PATCHES
 +++ b/PATCHES
-@@ -0,0 +1 @@
+@@ -1 +1,2 @@
 +patch-1.5.6.dw.maildir-mtime.1
+ patch-1.5.13.cd.ifdef.2

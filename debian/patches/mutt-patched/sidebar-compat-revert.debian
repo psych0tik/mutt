@@ -11,7 +11,7 @@ new sidebar patch version which turned out to be too error-prone.
 [see sidebar-compat-apply for part 2]
 --- a/buffy.c
 +++ b/buffy.c
-@@ -383,20 +383,10 @@ int mutt_buffy_check (int force)
+@@ -383,20 +383,10 @@
  	  if (*de->d_name != '.' && 
  	      (!(p = strstr (de->d_name, ":2,")) || !strchr (p + 3, 'T')))
  	  {
@@ -38,9 +38,9 @@ new sidebar patch version which turned out to be too error-prone.
  	closedir (dirp);
 --- a/buffy.h
 +++ b/buffy.h
-@@ -25,7 +25,6 @@ typedef struct buffy_t
+@@ -25,7 +25,6 @@
    char *path;
-   long size;
+   off_t size;
    struct buffy_t *next;
 -  time_t mtime;			/* for maildirs...time of newest entry */
    short new;			/* mailbox has new mail */
