@@ -1,0 +1,11 @@
+--- a/doc/mutt.man
++++ b/doc/mutt.man
+@@ -167,7 +167,7 @@ User's personal mapping between MIME typ
+ System mapping between MIME types and file extensions.
+ .IP "@bindir@/mutt_dotlock"
+ The privileged dotlocking program.
+-.IP "@docdir@/manual.txt"
++.IP "/usr/share/doc/mutt/manual.txt.gz"
+ The Mutt manual.
+ .SH BUGS
+ .PP

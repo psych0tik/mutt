@@ -1,0 +1,41 @@
+# build system patches
+misc/am-maintainer-mode
+debian-specific/build_doc_adjustments.diff 
+debian-specific/sort-patchlist
+
+# features
+features/ifdef
+features/maildir-mtime
+features/xtitles
+features/trash-folder
+features/purge-message
+features/sensible_browser_position
+features-old/patch-1.5.4.vk.pgp_verbose_mime
+features/compressed-folders
+features/compressed-folders.debian
+
+# Debian config
+debian-specific/Muttrc
+debian-specific/Md.etc_mailname_gethostbyname.diff 
+debian-specific/use_usr_bin_editor.diff 
+debian-specific/correct_docdir_in_man_page.diff 
+debian-specific/dont_document_not_present_features.diff 
+debian-specific/document_debian_defaults
+debian-specific/assumed_charset-compat
+misc/define-pgp_getkeys_command.diff 
+misc/gpg.rc-paths
+misc/smime.rc
+
+upstream/500016-temp-cache-fix.patch
+upstream/508988-inode-sort.patch
+
+mutt.org
+# extra patches for mutt-patched
+mutt-patched/sidebar-compat-revert.debian
+#mutt-patched/sidebar
+#mutt-patched/sidebar-compat-apply.debian
+
+# unapplied patches for custom packages
+# not-applied/chdir
+# not-applied/indexcolor
+# not-applied/w3mface

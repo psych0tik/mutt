@@ -1,0 +1,4 @@
+--- /dev/null
++++ b/.mutt.org
+@@ -0,0 +1 @@
++# dummy patch to serve as marker separating patches for mutt-patched

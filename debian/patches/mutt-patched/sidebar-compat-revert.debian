@@ -1,0 +1,48 @@
+# vim:ft=diff:
+The sidebar and maildir-mtime patches touch the same part of buffy.c and
+generate a non-trivial conflict. This patch reverts the affected hunk from the
+maildir-mtime patch so we can cleanly apply the sidebar patch from the patch
+upstream site. While we are at it, we also revert the trivial buffy.h change.
+
+Previously, the mutt maintainer would manually re-resolve the conflict for each
+new sidebar patch version which turned out to be too error-prone.
+(cf. #484537, #484538)
+
+[see sidebar-compat-apply for part 2]
+--- a/buffy.c
++++ b/buffy.c
+@@ -383,20 +383,10 @@ int mutt_buffy_check (int force)
+ 	  if (*de->d_name != '.' && 
+ 	      (!(p = strstr (de->d_name, ":2,")) || !strchr (p + 3, 'T')))
+ 	  {
+-	    if (!tmp->new)
+-	    {
+-	      /* one new and undeleted message is enough */
+-	      BuffyCount++;
+-	      tmp->new = 1;
+-
+-	      if (! option (OPTMAILDIRMTIME)) /* prevent stat calls */
+-		break;
+-	    }
+-	    snprintf (path, sizeof (path), "%s/new/%s", tmp->path, de->d_name);
+-	    if (!stat (path, &smd) && smd.st_mtime > tmp->mtime)
+-	    {
+-	      tmp->mtime = smd.st_mtime;
+-	    }
++	    /* one new and undeleted message is enough */
++	    BuffyCount++;
++	    tmp->new = 1;
++	    break;
+ 	  }
+ 	}
+ 	closedir (dirp);
+--- a/buffy.h
++++ b/buffy.h
+@@ -25,7 +25,6 @@ typedef struct buffy_t
+   char *path;
+   long size;
+   struct buffy_t *next;
+-  time_t mtime;			/* for maildirs...time of newest entry */
+   short new;			/* mailbox has new mail */
+   short notified;		/* user has been notified */
+   short magic;			/* mailbox type */
