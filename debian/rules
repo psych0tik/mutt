@@ -126,7 +126,7 @@ install: build
 	###################### install ######################
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	cd $(objdir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	
 	cd debian/tmp/usr/share/doc && \

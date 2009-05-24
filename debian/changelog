@@ -20,7 +20,9 @@ mutt (1.5.19-3) unstable; urgency=low
     + misc/hyphen-as-minus: sub hyphen with minus in the mutt manpages 
       to make lintian happy
     + misc/smime_keys-manpage.patch: add a missing manpage (Closes: 528672)
-  * debian/rules: re-enabled building of mutt-patched for 1.5.19
+  * debian/rules
+    + re-enabled building of mutt-patched for 1.5.19
+    + replacing the deprecated "dh_clean -k" with dh_prep
   * debian/mutt-patched.lintian-overrides: mutt can be w/out manpage
   * debian/mutt.lintian-overrides: excluding arch-dep-package-has-big-usr-share
     because there are many locales
