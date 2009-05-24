@@ -54,4 +54,6 @@ Depends: ${shlibs:Depends}, mutt (= ${binary:Version})
 Description: debugging symbols for mutt
  Mutt is a sophisticated text-based Mail User Agent.
  .
- This package contains the debugging symbols for mutt and mutt-patched.
+ This package contains the debugging symbols for mutt and mutt-patched; this
+ is supposed to be used when there is a core file which should be analyzed
+ using gdb.

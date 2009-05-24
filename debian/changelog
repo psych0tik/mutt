@@ -6,16 +6,26 @@ mutt (1.5.19-3) unstable; urgency=low
     + Section: debug for mutt-dbg
     + debhelper dependency updated to support dh_lintian
     + Standards-Version bumped to 3.8.1
+    + widened mutt-dbg extended description
   * debian/patches
     + added a small description to all patches missing it
     + the following patches were refreshed against upstream/1.5.19:
       * features/{ifdef,maildir-mtime,xtitles,trash-folder,purge-message}
       * features-old/patch-1.5.4.vk.pgp_verbose_mime
-      * debian-specific/{Md.etc_mailname_gethostbyname.diff,correct_docdir_in_manpage.diff,
-        assumed_charset-compat}
+      * debian-specific/{Md.etc_mailname_gethostbyname.diff
+        debian/specific/{correct_docdir_in_manpage.diff,assumed_charset-compat}
       * mutt-patched/*
     + mutt-patched/sidebar: added the new sidebar patch for 1.5.19
+    + misc/hyphen-as-minus: sub hyphen with minus in the mutt manpages 
+      to make lintian happy
+    + misc/smime_keys-manpage.patch: add a missing manpage (Closes: 528672)
   * debian/rules: re-enabled building of mutt-patched for 1.5.19
+  * debian/mutt-patched.lintian-overrides: mutt can be w/out manpage
+  * debian/mutt.lintian-overrides: excluding arch-dep-package-has-big-usr-share
+    because there are many locales
+  * debian/mutt.preinst: added "set -e" to abort if there are errors
+  * debian/clean: remove aclocal.m4 and doc/Muttrc so they won't appear 
+    into the .diff.gz
 
  -- Antonio Radici <antonio@dyne.org>  Sun, 24 May 2009 17:24:18 +0100
 

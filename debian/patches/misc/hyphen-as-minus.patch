@@ -1,0 +1,186 @@
+patch to escape all hyphen so they will be interpreted as minus
+signs and lintian will not complain
+
+--- a/doc/mbox.man
++++ b/doc/mbox.man
+@@ -60,15 +60,15 @@
+ lines by prepending a '>' (i.e. ">From ", ">>From ", ...). The later
+ has the advantage that lines like
+ .IP "" 1
+->From the command line you can use the '-p' option
++>From the command line you can use the '\-p' option
+ .PP
+ aren't dequoted wrongly as a \fBMBOXRD\fP-MDA would turn the line
+ into
+ .IP "" 1
+->>From the command line you can use the '-p' option
++>>From the command line you can use the '\-p' option
+ .PP
+ before storing it. Besides \fBMBOXO\fP and \fBMBOXRD\fP there is also
+-\fBMBOXCL\fP which is \fBMBOXO\fP with a "Content-Length:"-field with the
++\fBMBOXCL\fP which is \fBMBOXO\fP with a "Content-Length:"\-field with the
+ number of bytes in the message body; some MUAs (like
+ .BR mutt (1))
+ do automatically transform \fBMBOXO\fP mailboxes into \fBMBOXCL\fP ones when
+--- a/doc/mmdf.man
++++ b/doc/mmdf.man
+@@ -42,7 +42,6 @@
+ .br
+ >From what I learned about the MMDF-format:
+ .br
+-...
+ .br
+ ^A^A^A^A
+ .br
+@@ -65,7 +64,7 @@
+ In contrast to most other single file mailbox formats like
+ MBOXO and MBOXRD (see
+ .BR mbox (5))
+-there is no need to quote/dequote "From "-lines in
++there is no need to quote/dequote "From "\-lines in
+ .B MMDF
+ mailboxes as such lines have no special meaning in this format.
+ .PP
+--- a/doc/mutt.man
++++ b/doc/mutt.man
+@@ -23,48 +23,48 @@
+ .SH SYNOPSIS
+ .PP
+ .B mutt
+-[-nRyzZ] 
+-[-e \fIcmd\fP] [-F \fIfile\fP] [-m \fItype\fP] [-f \fIfile\fP]
++[\-nRyzZ]
++[\-e \fIcmd\fP] [\-F \fIfile\fP] [\-m \fItype\fP] [\-f \fIfile\fP]
+ .PP
+ .B mutt 
+-[-nx] 
+-[-e \fIcmd\fP] 
+-[-F \fIfile\fP]
+-[-H \fIfile\fP]
+-[-i \fIfile\fP]
+-[-s \fIsubj\fP]
+-[-b \fIaddr\fP]
+-[-c \fIaddr\fP]
++[\-nx]
++[\-e \fIcmd\fP]
++[\-F \fIfile\fP]
++[\-H \fIfile\fP]
++[\-i \fIfile\fP]
++[\-s \fIsubj\fP]
++[\-b \fIaddr\fP]
++[\-c \fIaddr\fP]
+ [\-a \fIfile\fP [...]]
+ [\-\-]
+ \fIaddr\fP [...]
+ .PP
+ .B mutt 
+-[-nx] 
+-[-e \fIcmd\fP] 
+-[-F \fIfile\fP]
+-[-s \fIsubj\fP]
+-[-b \fIaddr\fP]
+-[-c \fIaddr\fP]
++[\-nx]
++[\-e \fIcmd\fP]
++[\-F \fIfile\fP]
++[\-s \fIsubj\fP]
++[\-b \fIaddr\fP]
++[\-c \fIaddr\fP]
+ [\-a \fIfile\fP [...]]
+ [\-\-]
+ \fIaddr\fP [...]
+ < message
+ .PP
+ .B mutt
+-[-n] [-e \fIcmd\fP] [-F \fIfile\fP] -p
++[\-n] [\-e \fIcmd\fP] [\-F \fIfile\fP] \-p
+ .PP
+ .B mutt
+-[-n] [-e \fIcmd\fP] [-F \fIfile\fP] -A \fIalias\fP
++[\-n] [\-e \fIcmd\fP] [\-F \fIfile\fP] \-A \fIalias\fP
+ .PP
+ .B mutt
+-[-n] [-e \fIcmd\fP] [-F \fIfile\fP] -Q \fIquery\fP
++[\-n] [\-e \fIcmd\fP] [\-F \fIfile\fP] \-Q \fIquery\fP
+ .PP
+ .B mutt 
+--v[v]
++\-v[v]
+ .PP
+ .B mutt 
+--D
++\-D
+ .SH DESCRIPTION
+ .PP
+ Mutt is a small but very powerful text based program for reading and sending electronic
+@@ -132,12 +132,12 @@
+ Start Mutt with a listing of all mailboxes specified by the \fImailboxes\fP
+ command.
+ .IP "-z"
+-When used with -f, causes Mutt not to start if there are no messages in the
++When used with \-f, causes Mutt not to start if there are no messages in the
+ mailbox.
+ .IP "-Z"
+ Causes Mutt to open the first mailbox specified by the \fImailboxes\fP
+ command which contains new mail.
+-.IP "\-\-"
++.IP "--"
+ Treat remaining arguments as \fIaddr\fP even if they start with a dash.
+ See also "\-a" above.
+ .SH ENVIRONMENT
+--- a/doc/dotlock.man
++++ b/doc/dotlock.man
+@@ -24,7 +24,7 @@
+ .SH SYNOPSIS
+ .PP
+ .B mutt_dotlock 
+-[-t|-f|-u|-d] [-p] [-r \fIretries\fP] \fIfile\fP
++[\-t|\-f|\-u|\-d] [\-p] [\-r \fIretries\fP] \fIfile\fP
+ .SH DESCRIPTION
+ .PP
+ .B mutt_dotlock
+--- a/init.h
++++ b/init.h
+@@ -2867,7 +2867,7 @@
+   ** smtp[s]://[user[:pass]@]host[:port]/
+   ** .te
+   ** .pp
+-  ** ... where ``[...]'' denotes an optional part.
++  ** \.\.\. where ``[...]'' denotes an optional part.
+   ** Setting this variable overrides the value of the $$sendmail
+   ** variable.
+   */
+--- a/doc/makedoc.c
++++ b/doc/makedoc.c
+@@ -576,6 +576,8 @@
+       fputs ("\\(rq", out);
+     else if (*v == '\\')
+       fputs ("\\\\", out);
++    else if (*v == '-')
++      fputs ("\\-", out);
+     else
+       fputc (*v, out);
+   }
+@@ -697,8 +699,11 @@
+ 	man_print_strval (val, out);
+ 	fputs ("\\(rq\n", out);
+       }
+-      else
+-	fprintf (out, "Default: %s\n", val);
++      else {
++	fputs ("Default: ", out);
++	man_print_strval (val, out);
++	fputs ("\n", out);
++      }
+ 
+       fputs (".fi", out);
+ 
+@@ -1040,6 +1045,8 @@
+ 		fputs ("\\(rq", out);
+ 	      else if (*str == '\\')
+ 		fputs ("\\\\", out);
++              else if (*str == '-')
++                fputs ("\\-", out);
+ 	      else if (!strncmp (str, "``", 2))
+ 	      {
+ 		fputs ("\\(lq", out);
