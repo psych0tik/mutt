@@ -6,13 +6,15 @@ mutt (1.5.19-3) unstable; urgency=low
     + Section: debug for mutt-dbg
     + debhelper dependency updated to support dh_lintian
     + Standards-Version bumped to 3.8.1
-  * debian/patches, the following patches were refreshed against upstream/1.5.19:
-    + features/{ifdef,maildir-mtime,xtitles,trash-folder,purge-message}
-    + features-old/patch-1.5.4.vk.pgp_verbose_mime
-    + debian-specific/{Md.etc_mailname_gethostbyname.diff,correct_docdir_in_manpage.diff,
-      assumed_charset-compat}
-    + mutt-patched/*
-  * debian/patches/mutt-patched/sidebar: added the new sidebar patch for 1.5.19
+  * debian/patches
+    + added a small description to all patches missing it
+    + the following patches were refreshed against upstream/1.5.19:
+      * features/{ifdef,maildir-mtime,xtitles,trash-folder,purge-message}
+      * features-old/patch-1.5.4.vk.pgp_verbose_mime
+      * debian-specific/{Md.etc_mailname_gethostbyname.diff,correct_docdir_in_manpage.diff,
+        assumed_charset-compat}
+      * mutt-patched/*
+    + mutt-patched/sidebar: added the new sidebar patch for 1.5.19
   * debian/rules: re-enabled building of mutt-patched for 1.5.19
 
  -- Antonio Radici <antonio@dyne.org>  Sun, 24 May 2009 17:24:18 +0100

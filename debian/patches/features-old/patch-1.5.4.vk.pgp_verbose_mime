@@ -1,3 +1,5 @@
+Enable pgp_mime_signature_filename and pgp_mime_signature_description
+
 --- a/globals.h
 +++ b/globals.h
 @@ -241,6 +241,8 @@

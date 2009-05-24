@@ -1,3 +1,5 @@
+Use links(1) to generate the HTML manual page
+
 --- a/doc/Makefile.am
 +++ b/doc/Makefile.am
 @@ -98,7 +98,8 @@ uninstall-local:

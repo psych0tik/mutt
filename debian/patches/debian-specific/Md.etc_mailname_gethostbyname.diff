@@ -1,3 +1,6 @@
+If /etc/mailname is present, the hostname inside the file will be
+used, rather than calling gethostbyname() on the actual hostname
+
 --- a/init.c
 +++ b/init.c
 @@ -47,6 +47,7 @@

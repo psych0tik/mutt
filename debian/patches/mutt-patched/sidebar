@@ -1,3 +1,34 @@
+This is the sidebar patch.
+
+When enabled, mutt will show a list of mailboxes with (new) message counts in a
+separate column on the left side of the screen.
+
+As this feature is still considered to be unstable, this patch is only applied
+in the "mutt-patched" package.
+
+* Configuration variables:
+
+  sidebar_delim (string, default "|")
+
+    This specifies the delimiter between the sidebar (if visible) and 
+    other screens.
+
+  sidebar_visible (boolean, default no)
+
+    This specifies whether or not to show sidebar (left-side list of folders).
+
+  sidebar_width (integer, default 0)
+-
+    The width of the sidebar.
+
+* Patch source:
+  - http://www.lunar-linux.org/index.php?page=mutt-sidebar
+  - http://lunar-linux.org/~tchan/mutt/patch-1.5.19.sidebar.20090522.txt
+
+* Changes made:
+  - 2008-08-02 myon: Refreshed patch using quilt push -f to remove hunks we do
+    not need (Makefile.in).
+
 --- a/buffy.c
 +++ b/buffy.c
 @@ -261,7 +261,7 @@

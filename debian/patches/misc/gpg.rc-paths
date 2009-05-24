@@ -1,3 +1,5 @@
+use the correct path of pgpewrap
+
 Index: debian-mutt/contrib/gpg.rc
 ===================================================================
 --- debian-mutt.orig/contrib/gpg.rc	2007-03-20 22:20:31.000000000 +0100

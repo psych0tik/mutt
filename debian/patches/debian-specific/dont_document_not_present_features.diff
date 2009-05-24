@@ -1,3 +1,6 @@
+As the patch says, this will add an include so only documented options
+for Debian will be used
+
 --- a/init.h
 +++ b/init.h
 @@ -19,7 +19,7 @@

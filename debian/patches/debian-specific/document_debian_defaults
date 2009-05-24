@@ -1,3 +1,6 @@
+Some customization of the option which are straying from the default
+only on Debian systems
+
 --- a/init.h
 +++ b/init.h
 @@ -304,6 +304,9 @@ struct option_t MuttVars[] = {

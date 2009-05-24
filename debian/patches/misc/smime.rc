@@ -1,3 +1,6 @@
+add CA's provided by ca-certificates to the ones distributed by
+the default installation of mutt
+
 --- a/contrib/smime.rc
 +++ b/contrib/smime.rc
 @@ -4,33 +4,34 @@

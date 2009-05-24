@@ -1,3 +1,5 @@
+Fix the link so it points to the correct docdir and gzipped manuall
+
 --- a/doc/mutt.man
 +++ b/doc/mutt.man
 @@ -185,7 +185,7 @@

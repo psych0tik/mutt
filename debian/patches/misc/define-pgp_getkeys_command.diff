@@ -1,3 +1,5 @@
+disabling pgp_getkeys_command until upstream fixes it
+
 --- a/contrib/gpg.rc
 +++ b/contrib/gpg.rc
 @@ -72,6 +72,8 @@ set pgp_list_secring_command="gpg --no-v

@@ -1,3 +1,6 @@
+Adds AM_MAINTAINER_MODE to configure.ac so the timestamp of the
+automake files won't be updated
+
 Index: debian-mutt-sidebar/configure.ac
 ===================================================================
 --- debian-mutt-sidebar.orig/configure.ac	2007-08-11 16:42:36.000000000 +0200

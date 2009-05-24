@@ -1,3 +1,6 @@
+Even if EDITOR is not set, mutt will always use /usr/bin/editor (which 
+is set by update-alternatives), rather than falling back to vi
+
 --- a/init.c
 +++ b/init.c
 @@ -3114,7 +3114,7 @@ void mutt_init (int skip_sys_rc, LIST *c
