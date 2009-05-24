@@ -7,6 +7,7 @@ mutt (1.5.19-3) unstable; urgency=low
     + debhelper dependency updated to support dh_lintian
     + Standards-Version bumped to 3.8.1
     + widened mutt-dbg extended description
+  * debian/compat: bumped to 7
   * debian/patches
     + added a small description to all patches missing it
     + the following patches were refreshed against upstream/1.5.19:
@@ -24,8 +25,7 @@ mutt (1.5.19-3) unstable; urgency=low
   * debian/mutt.lintian-overrides: excluding arch-dep-package-has-big-usr-share
     because there are many locales
   * debian/mutt.preinst: added "set -e" to abort if there are errors
-  * debian/clean: remove aclocal.m4 and doc/Muttrc so they won't appear 
-    into the .diff.gz
+  * debian/clean: remove aclocal.m4 it will not appear in the .diff.gz
 
  -- Antonio Radici <antonio@dyne.org>  Sun, 24 May 2009 17:24:18 +0100
 
