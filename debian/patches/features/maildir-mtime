@@ -174,8 +174,3 @@ The home page for this patch is:
    short new;			/* mailbox has new mail */
    short notified;		/* user has been notified */
    short magic;			/* mailbox type */
---- a/PATCHES
-+++ b/PATCHES
-@@ -1 +1,2 @@
-+patch-1.5.6.dw.maildir-mtime.1
- patch-1.5.13.cd.ifdef.2

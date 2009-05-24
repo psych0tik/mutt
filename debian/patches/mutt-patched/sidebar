@@ -508,36 +508,6 @@
  
  nodist_mutt_SOURCES = $(BUILT_SOURCES)
  
---- a/Makefile.in
-+++ b/Makefile.in
-@@ -84,7 +84,7 @@
- 	thread.$(OBJEXT) charset.$(OBJEXT) history.$(OBJEXT) \
- 	lib.$(OBJEXT) muttlib.$(OBJEXT) editmsg.$(OBJEXT) \
- 	mbyte.$(OBJEXT) url.$(OBJEXT) ascii.$(OBJEXT) \
--	crypt-mod.$(OBJEXT)
-+	crypt-mod.$(OBJEXT) sidebar.$(OBJEXT)
- am__objects_1 = patchlist.$(OBJEXT)
- nodist_mutt_OBJECTS = $(am__objects_1)
- mutt_OBJECTS = $(am_mutt_OBJECTS) $(nodist_mutt_OBJECTS)
-@@ -310,7 +310,8 @@
- 	score.c send.c sendlib.c signal.c sort.c \
- 	status.c system.c thread.c charset.c history.c lib.c \
- 	muttlib.c editmsg.c mbyte.c \
--	url.c ascii.c crypt-mod.c crypt-mod.h
-+	url.c ascii.c crypt-mod.c crypt-mod.h \
-+	sidebar.c
- 
- nodist_mutt_SOURCES = $(BUILT_SOURCES)
- mutt_LDADD = @MUTT_LIB_OBJECTS@ @LIBOBJS@ $(LIBIMAP) $(MUTTLIBS) \
-@@ -342,7 +343,7 @@
- 	README.SSL smime.h \
- 	muttbug pgppacket.h depcomp ascii.h BEWARE PATCHES patchlist.sh \
- 	ChangeLog mkchangelog.sh mutt_idna.h \
--	snprintf.c regex.c crypt-gpgme.h hcachever.sh.in
-+	snprintf.c regex.c crypt-gpgme.h sidebar.h hcachever.sh.in
- 
- EXTRA_SCRIPTS = smime_keys
- mutt_dotlock_SOURCES = mutt_dotlock.c
 --- a/mbox.c
 +++ b/mbox.c
 @@ -104,6 +104,7 @@
@@ -933,13 +903,6 @@
        default:
  	ch = -1;
  	break;
---- a/PATCHES
-+++ b/PATCHES
-@@ -1,3 +1,4 @@
-+patch-1.5.19.sidebar.20090522.txt
- patch-1.5.18.rr.compressed.1
- patch-1.5.4.vk.pgp_verbose_mime
- patch-1.5.13.cd.purge_message.3.4
 --- /dev/null
 +++ b/sidebar.c
 @@ -0,0 +1,333 @@
@@ -1371,3 +1334,7 @@
          FREE (&value);
          return;
        }
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
++patch-1.5.19.sidebar.20090522.txt
