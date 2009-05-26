@@ -26,13 +26,13 @@ endif
 # Configure arguments
 
 ifeq ($(HCACHE_DB),bdb)
-    hcache_db := --without-gdbm --without-qdbm
+    hcache_db := --without-gdbm --without-qdbm --without-tokyocabinet
 endif
 ifeq ($(HCACHE_DB),gdbm)
-    hcache_db := --without-qdbm --without-bdb
+    hcache_db := --without-qdbm --without-bdb --without-tokyocabinet
 endif
 ifeq ($(HCACHE_DB),qdbm)
-    hcache_db := --without-gdbm --without-bdb
+    hcache_db := --without-gdbm --without-bdb --without-tokyocabinet
 endif
 
 confflags =	--prefix=/usr			\

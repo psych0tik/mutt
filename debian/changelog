@@ -1,3 +1,11 @@
+mutt (1.5.19-4) unstable; urgency=low
+
+  * debian/rules:
+    + disable tokyocabinet as backend so it won't be accidentally compiled
+      (Closes: 530670)
+
+ -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
+
 mutt (1.5.19-3) unstable; urgency=low
 
   * debian/control:
