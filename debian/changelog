@@ -26,6 +26,8 @@ mutt (1.5.19-4) unstable; urgency=low
     + display bcc for postponed message if there is no To (Closes: 350957)
   * patches/upstream/502628-attach_charset-doc.patch
     + doc update: clarify what attach_charset does (Closes: 502628)
+  * patches/upstream/504530-stunnel-account_hook-doc.patch 
+    + doc update: mention account-hook in the docs for $tunnel (Closes: 504530)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 

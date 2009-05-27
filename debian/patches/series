@@ -36,6 +36,7 @@ upstream/514960-certificate-insecure-algorithm.patch
 upstream/524420-segfault-reconnect-sasl.patch
 upstream/350957-postponed-to-bcc.patch
 upstream/502628-attach_charset-doc.patch
+upstream/504530-stunnel-account_hook-doc.patch
 
 misc/hyphen-as-minus.patch
 misc/manpage-typos.patch
