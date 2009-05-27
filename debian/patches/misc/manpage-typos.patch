@@ -1,3 +1,5 @@
+Fixes some errors in the manpage, see http://bugs.debian.org/428017
+
 --- a/init.h
 +++ b/init.h
 @@ -760,7 +760,7 @@
