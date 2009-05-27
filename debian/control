@@ -5,7 +5,8 @@ Maintainer: Christoph Berg <myon@debian.org>
 Uploaders: Adeodato Simó <dato@net.com.org.es>, Antonio Radici <antonio@dyne.org>
 Build-Depends: debhelper (>> 7), quilt, automake, gawk, gettext, xsltproc,
  docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev,
- libidn11-dev, zlib1g-dev, libncursesw5-dev, libgdbm-dev, libkrb5-dev, pkg-config
+ libidn11-dev, zlib1g-dev, libncursesw5-dev, libgdbm-dev, libkrb5-dev, pkg-config,
+ libgpgme11-dev
 Standards-Version: 3.8.1
 Vcs-Git: git://git.debian.org/git/pkg-mutt/mutt.git
 Vcs-Browser: http://git.debian.org/?p=pkg-mutt/mutt.git
@@ -14,7 +15,8 @@ Homepage: http://www.mutt.org/
 Package: mutt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: exim4 | mail-transport-agent, locales, mime-support, libsasl2-modules
+Recommends: exim4 | mail-transport-agent, locales, mime-support, libsasl2-modules, 
+ libgpgme11
 Suggests: urlview, aspell | ispell, gnupg, mixmaster, openssl, ca-certificates
 Provides: mail-reader, imap-client
 Conflicts: mutt-utf8

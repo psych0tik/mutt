@@ -5,6 +5,7 @@ mutt (1.5.19-4) unstable; urgency=low
     + enable gpgme support (Closes: 263443)
   * debian/control:
     + added pkg-config to Build-Depends
+    + add libgpgme11-dev to Build-Depends and libgpgme11 to Depends
   * patches/debian-specific/529838-gnutls-autoconf.patch:
     + pkg-config to detect gnutls rather than libgnutls-config (Closes: 529838)
   * patches/upstream/530661-mandatory-doubledash.patch
