@@ -31,6 +31,7 @@ upstream/500016-temp-cache-fix.patch
 upstream/508988-inode-sort.patch
 upstream/530661-mandatory-doubledash.patch
 upstream/375530-index-weirdness.patch
+upstream/493719-segfault-imap-close.patch
 
 misc/hyphen-as-minus.patch
 misc/smime_keys-manpage.patch

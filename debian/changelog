@@ -1,8 +1,7 @@
 mutt (1.5.19-4) unstable; urgency=low
 
   * debian/rules:
-    + disable tokyocabinet as backend so it won't be accidentally compiled
-      (Closes: 530670)
+    + disable tokyocabinet as backend so it won't be used (Closes: 530670)
   * debian/control:
     + added pkg-config to Build-Depends
   * patches/debian-specific/529838-gnutls-autoconf.patch:
@@ -13,6 +12,8 @@ mutt (1.5.19-4) unstable; urgency=low
     + mutt does not segfault when the last mailbox is removed (Closes: 439387)
   * patches/upstream/375530-index-weirdness.patch
     + fix index weirdness if mailbox is emptied (Closes: 375530)
+  * patches/upstream/493719-segfault-imap-close.patch
+    + IMAP: only close socket when not already disconnected (Closes: 493719)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 
