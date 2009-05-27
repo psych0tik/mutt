@@ -2,6 +2,7 @@ mutt (1.5.19-4) unstable; urgency=low
 
   * debian/rules:
     + disable tokyocabinet as backend so it won't be used (Closes: 530670)
+    + enable gpgme support (Closes: 263443)
   * debian/control:
     + added pkg-config to Build-Depends
   * patches/debian-specific/529838-gnutls-autoconf.patch:

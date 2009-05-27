@@ -14,7 +14,7 @@ HCACHE_DB := gdbm
 # HCACHE_DB := qdbm
 ###
 # GPGME backend
-# GPGME := --enable-gpgme
+GPGME := --enable-gpgme
 ###
 
 ###################### variables ######################
