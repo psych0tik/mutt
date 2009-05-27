@@ -14,6 +14,9 @@ mutt (1.5.19-4) unstable; urgency=low
     + fix index weirdness if mailbox is emptied (Closes: 375530)
   * patches/upstream/493719-segfault-imap-close.patch
     + IMAP: only close socket when not already disconnected (Closes: 493719)
+  * patches/upstream/514960-certificate-insecure-algorithm.patch
+    + allow certs generated with insecure algorithms if they are in cache
+      (Closes: 514960)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 
