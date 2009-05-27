@@ -6,13 +6,13 @@ mutt (1.5.19-4) unstable; urgency=low
   * debian/control:
     + added pkg-config to Build-Depends
   * patches/debian-specific/529838-gnutls-autoconf.patch:
-    + uses pkg-config to detect gnutls rather than libgnutls-config (Closes: 529838)
+    + pkg-config to detect gnutls rather than libgnutls-config (Closes: 529838)
   * patches/upstream/530661-mandatory-doubledash.patch
     + document the mandatory usage of -- with the -a option (Closes: 530661)
   * patches/features/sensible_browser_position
-    + modified so mutt does not segfault when the last mailbox is removed (Closes: 439387)
+    + mutt does not segfault when the last mailbox is removed (Closes: 439387)
   * patches/upstream/375530-index-weirdness.patch
-    + fix index weirdness if mailbox is emptied while inside the pager (Closes: 375530)
+    + fix index weirdness if mailbox is emptied (Closes: 375530)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 
