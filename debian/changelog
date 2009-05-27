@@ -17,6 +17,8 @@ mutt (1.5.19-4) unstable; urgency=low
   * patches/upstream/514960-certificate-insecure-algorithm.patch
     + allow certs generated with insecure algorithms if they are in cache
       (Closes: 514960)
+  * patches/misc/manpage-typos.patch
+    + fixes some typos in the manpage (Closes: 428017)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 

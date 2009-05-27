@@ -35,6 +35,7 @@ upstream/493719-segfault-imap-close.patch
 upstream/514960-certificate-insecure-algorithm.patch
 
 misc/hyphen-as-minus.patch
+misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
 
 mutt.org
