@@ -33,6 +33,7 @@ upstream/530661-mandatory-doubledash.patch
 upstream/375530-index-weirdness.patch
 upstream/493719-segfault-imap-close.patch
 upstream/514960-certificate-insecure-algorithm.patch
+upstream/524420-segfault-reconnect-sasl.patch
 
 misc/hyphen-as-minus.patch
 misc/manpage-typos.patch
