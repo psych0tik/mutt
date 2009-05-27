@@ -3,36 +3,40 @@ This is the sensible browser position patch by Haakon Riiser.
 
   * Found in: <20050309162127.GA5656@s>
     http://lists.df7cb.de/mutt/message/20050309.162127.a244a894.en.html
-  * myon 2009-01-15: refreshed for mutt-1.5.19
 
 == END PATCH
 --- a/menu.c
 +++ b/menu.c
-@@ -859,8 +859,12 @@ int menu_redraw (MUTTMENU *menu)
+@@ -859,8 +859,17 @@
  
  int mutt_menuLoop (MUTTMENU *menu)
  {
 +  static int last_position = -1;
    int i = OP_NULL;
  
-+  if (menu->is_mailbox_list && last_position >= 0)
-+    menu->current = last_position;
++  if ( menu->max && menu->is_mailbox_list ) {
++    if ( last_position > (menu->max-1) ) {
++      last_position = -1;
++    } else if (last_position >= 0) {
++      menu->current = last_position;
++    }
++  }
 +
    FOREVER
    {
      if (option (OPTMENUCALLER))
-@@ -1088,6 +1092,8 @@ int mutt_menuLoop (MUTTMENU *menu)
+@@ -1088,6 +1097,8 @@
  	break;
  
        default:
-+	if (menu->is_mailbox_list)
-+	  last_position = menu->current;
++        if (menu->is_mailbox_list)
++          last_position = menu->current;
  	return (i);
      }
    }
 --- a/browser.c
 +++ b/browser.c
-@@ -56,6 +56,7 @@ typedef struct folder_t
+@@ -56,6 +56,7 @@
    int num;
  } FOLDER;
  
@@ -40,7 +44,7 @@ This is the sensible browser position patch by Haakon Riiser.
  static char LastDir[_POSIX_PATH_MAX] = "";
  static char LastDirBackup[_POSIX_PATH_MAX] = "";
  
-@@ -511,9 +512,13 @@ static void init_menu (struct browser_st
+@@ -511,9 +512,13 @@
    menu->tagged = 0;
    
    if (buffy)
@@ -54,33 +58,32 @@ This is the sensible browser position patch by Haakon Riiser.
      strfcpy (path, LastDir, sizeof (path));
      mutt_pretty_mailbox (path, sizeof (path));
  #ifdef USE_IMAP
-@@ -522,8 +527,23 @@ static void init_menu (struct browser_st
+@@ -522,8 +527,22 @@
  	      path, NONULL (Mask.pattern));
    else
  #endif
 -    snprintf (title, titlelen, _("Directory [%s], File mask: %s"),
 -	      path, NONULL(Mask.pattern));
-+    {
-+      char *p = strrchr (OldLastDir, '/');
-+      if (p && p - OldLastDir == mutt_strlen (LastDir) &&
-+	  mutt_strncmp (LastDir, OldLastDir, p - OldLastDir) == 0)
-+      {
-+	/* If we get here, it means that LastDir is the parent directory of
-+	 * OldLastDir.	I.e., we're returning from a subdirectory, and we want
-+	 * to position the cursor on the directory we're returning from. */
-+	int i;
-+	for (i = 0; i < state->entrymax; i++)
-+	  if (mutt_strcmp (state->entry[i].name, p + 1) == 0)
-+	    menu->current = i;
-+      }
-+      snprintf (title, titlelen, _("Directory [%s], File mask: %s"),
-+		path, NONULL(Mask.pattern));
-+    }
-+
++     {
++       char *p = strrchr (OldLastDir, '/');
++       if (p && p - OldLastDir == mutt_strlen (LastDir) &&
++          mutt_strncmp (LastDir, OldLastDir, p - OldLastDir) == 0)
++       {
++        /* If we get here, it means that LastDir is the parent directory of
++         * OldLastDir.  I.e., we're returning from a subdirectory, and we want
++         * to position the cursor on the directory we're returning from. */
++        int i;
++        for (i = 0; i < state->entrymax; i++)
++          if (mutt_strcmp (state->entry[i].name, p + 1) == 0)
++            menu->current = i;
++       }
++       snprintf (title, titlelen, _("Directory [%s], File mask: %s"),
++                path, NONULL(Mask.pattern));
++     }
    }
    menu->redraw = REDRAW_FULL;
  }
-@@ -706,7 +726,6 @@ void _mutt_select_file (char *f, size_t 
+@@ -706,7 +725,6 @@
  #endif
  	    )
  	  {
@@ -90,7 +93,7 @@ This is the sensible browser position patch by Haakon Riiser.
  	    strfcpy (OldLastDir, LastDir, sizeof (OldLastDir));
 --- a/mutt_menu.h
 +++ b/mutt_menu.h
-@@ -49,6 +49,7 @@ typedef struct menu_t
+@@ -49,6 +49,7 @@
    int offset;	/* which screen row to start the index */
    int pagelen;	/* number of entries per screen */
    int tagprefix;

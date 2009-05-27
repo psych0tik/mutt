@@ -9,6 +9,8 @@ mutt (1.5.19-4) unstable; urgency=low
     + uses pkg-config to detect gnutls rather than libgnutls-config (Closes: 529838)
   * patches/upstream/530661-mandatory-doubledash.patch
     + document the mandatory usage of -- with the -a option (Closes: 530661)
+  * patches/features/sensible_browser_position
+    + modified so mutt does not segfault when the last mailbox is removed (Closes: 439387)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 
