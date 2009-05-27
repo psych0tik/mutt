@@ -22,6 +22,7 @@ debian-specific/correct_docdir_in_man_page.diff
 debian-specific/dont_document_not_present_features.diff 
 debian-specific/document_debian_defaults
 debian-specific/assumed_charset-compat
+debian-specific/529838-gnutls-autoconf.patch
 misc/define-pgp_getkeys_command.diff 
 misc/gpg.rc-paths
 misc/smime.rc
