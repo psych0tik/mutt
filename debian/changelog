@@ -7,6 +7,8 @@ mutt (1.5.19-4) unstable; urgency=low
     + added pkg-config to Build-Depends
   * patches/debian-specific/529838-gnutls-autoconf.patch:
     + uses pkg-config to detect gnutls rather than libgnutls-config (Closes: 529838)
+  * patches/upstream/530661-mandatory-doubledash.patch
+    + document the mandatory usage of -- with the -a option (Closes: 530661)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 

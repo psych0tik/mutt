@@ -113,7 +113,7 @@ signs and lintian will not complain
  .SH DESCRIPTION
  .PP
  Mutt is a small but very powerful text based program for reading and sending electronic
-@@ -132,12 +132,12 @@
+@@ -134,12 +134,12 @@
  Start Mutt with a listing of all mailboxes specified by the \fImailboxes\fP
  command.
  .IP "-z"
