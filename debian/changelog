@@ -29,6 +29,8 @@ mutt (1.5.19-4) unstable; urgency=low
     + doc update: clarify what attach_charset does (Closes: 502628)
   * patches/upstream/504530-stunnel-account_hook-doc.patch 
     + doc update: mention account-hook in the docs for $tunnel (Closes: 504530)
+  * patches/upstream/530887-dovecot-imap.patch
+    + fixes two problems with subdirs on dovecot (Closes: 530671, 530887)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 26 May 2009 23:42:51 +0100
 

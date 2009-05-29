@@ -141,7 +141,7 @@ signs and lintian will not complain
  .B mutt_dotlock
 --- a/init.h
 +++ b/init.h
-@@ -2867,7 +2867,7 @@
+@@ -2874,7 +2874,7 @@
    ** smtp[s]://[user[:pass]@]host[:port]/
    ** .te
    ** .pp
