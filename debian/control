@@ -10,6 +10,7 @@ Build-Depends: debhelper (>> 7), quilt, automake, gawk, gettext, xsltproc,
 Standards-Version: 3.8.1
 Vcs-Git: git://git.debian.org/git/pkg-mutt/mutt.git
 Vcs-Browser: http://git.debian.org/?p=pkg-mutt/mutt.git
+DM-Upload-Allowed: yes
 Homepage: http://www.mutt.org/
 
 Package: mutt
