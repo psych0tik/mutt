@@ -1,5 +1,6 @@
 # build system patches
 misc/am-maintainer-mode
+misc/hg.pmdef.debugtime
 debian-specific/build_doc_adjustments.diff 
 debian-specific/sort-patchlist
 
@@ -40,7 +41,7 @@ misc/smime.rc
 #upstream/504530-stunnel-account_hook-doc.patch
 #upstream/530887-dovecot-imap.patch
 
-#misc/hyphen-as-minus.patch
+misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
 
