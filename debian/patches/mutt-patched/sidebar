@@ -1360,9 +1360,3 @@ in the "mutt-patched" package.
          FREE (&value);
          return;
        }
---- a/PATCHES
-+++ b/PATCHES
-@@ -1,2 +1,3 @@
-+patch-1.5.19.sidebar.20090522.txt
- patch-1.5.18.rr.compressed.1
- patch-1.5.13.cd.ifdef.2
