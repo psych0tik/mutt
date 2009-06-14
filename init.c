@@ -253,8 +253,8 @@ int mutt_extract_token (BUFFER *dest, BUFFER *tok, int flags)
 
       /* read line */
       memset (&expn, 0, sizeof (expn));
-      expn.data = mutt_read_line (NULL, &expn.dsize, fp, &line);
-      fclose (fp);
+      expn.data = mutt_read_line (NULL, &expn.dsize, fp, &line, 0);
+      safe_fclose (&fp);
       mutt_wait_filter (pid);
 
       /* if we got output, make a new string consiting of the shell ouptput
@@ -2069,8 +2069,8 @@ static int parse_set (BUFFER *tmp, BUFFER *s, unsigned long data, BUFFER *err)
     else if (DTYPE(MuttVars[idx].type) == DT_NUM)
     {
       short *ptr = (short *) MuttVars[idx].data;
-      int val;
-      char *t;
+      short val;
+      int rc;
 
       if (query || *s->dptr != '=')
       {
@@ -2088,16 +2088,17 @@ static int parse_set (BUFFER *tmp, BUFFER *s, unsigned long data, BUFFER *err)
       s->dptr++;
 
       mutt_extract_token (tmp, s, 0);
-      val = strtol (tmp->data, &t, 0);
+      rc = mutt_atos (tmp->data, (short *) &val);
 
-      if (!*tmp->data || *t || (short) val != val)
+      if (rc < 0 || !*tmp->data)
       {
-	snprintf (err->data, err->dsize, _("%s: invalid value"), tmp->data);
+	snprintf (err->data, err->dsize, _("%s: invalid value (%s)"), tmp->data,
+		  rc == -1 ? _("format error") : _("number overflow"));
 	r = -1;
 	break;
       }
       else
-	*ptr = (short) val;
+	*ptr = val;
 
       /* these ones need a sanity check */
       if (mutt_strcmp (MuttVars[idx].option, "history") == 0)
@@ -2268,7 +2269,7 @@ static int source_rc (const char *rcfile, BUFFER *err)
   }
 
   memset (&token, 0, sizeof (token));
-  while ((linebuf = mutt_read_line (linebuf, &buflen, f, &line)) != NULL)
+  while ((linebuf = mutt_read_line (linebuf, &buflen, f, &line, M_CONT)) != NULL)
   {
     conv=ConfigCharset && (*ConfigCharset) && Charset;
     if (conv) 
@@ -2299,7 +2300,7 @@ static int source_rc (const char *rcfile, BUFFER *err)
   }
   FREE (&token.data);
   FREE (&linebuf);
-  fclose (f);
+  safe_fclose (&f);
   if (pid != -1)
     mutt_wait_filter (pid);
   if (rc)
@@ -2885,8 +2886,8 @@ void mutt_init (int skip_sys_rc, LIST *commands)
   err.data = error;
   err.dsize = sizeof (error);
 
-  Groups = hash_create (1031);
-  ReverseAlias = hash_create (1031);
+  Groups = hash_create (1031, 0);
+  ReverseAlias = hash_create (1031, 1);
   
   mutt_menu_init ();
 

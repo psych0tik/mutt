@@ -97,7 +97,7 @@ Flags[] =
   { 'z', M_SIZE,		0,		eat_range },
   { '=', M_DUPLICATED,		0,		NULL },
   { '$', M_UNREFERENCED,	0,		NULL },
-  { 0 }
+  { 0,   0,			0,		NULL }
 };
 
 static pattern_t *SearchPattern = NULL; /* current search pattern */
@@ -182,7 +182,7 @@ msg_search (CONTEXT *ctx, pattern_t* pat, int msgno)
 	  mx_close_message (&msg);
 	  if (s.fpout)
 	  {
-	    fclose (s.fpout);
+	    safe_fclose (&s.fpout);
 	    unlink (tempfile);
 	  }
 	  return (0);
@@ -242,7 +242,7 @@ msg_search (CONTEXT *ctx, pattern_t* pat, int msgno)
 
     if (option (OPTTHOROUGHSRC))
     {
-      fclose (fp);
+      safe_fclose (&fp);
       unlink (tempfile);
     }
   }
@@ -277,6 +277,7 @@ static int eat_regexp (pattern_t *pat, BUFFER *s, BUFFER *err)
   if (pat->stringmatch)
   {
     pat->p.str = safe_strdup (buf.data);
+    pat->ign_case = mutt_which_case (buf.data) == REG_ICASE;
     FREE (&buf.data);
   }
   else if (pat->groupmatch)
@@ -700,7 +701,8 @@ static int eat_date (pattern_t *pat, BUFFER *s, BUFFER *err)
 static int patmatch (const pattern_t* pat, const char* buf)
 {
   if (pat->stringmatch)
-    return !strstr (buf, pat->p.str);
+    return pat->ign_case ? !strcasestr (buf, pat->p.str) :
+			   !strstr (buf, pat->p.str);
   else if (pat->groupmatch)
     return !mutt_group_match (pat->p.g, buf);
   else
@@ -1153,7 +1155,8 @@ mutt_pattern_exec (struct pattern_t *pat, pattern_exec_flag flags, CONTEXT *ctx,
     case M_SIZE:
       return (pat->not ^ (h->content->length >= pat->min && (pat->max == M_MAXRANGE || h->content->length <= pat->max)));
     case M_REFERENCE:
-      return (pat->not ^ match_reference (pat, h->env->references));
+      return (pat->not ^ (match_reference (pat, h->env->references) ||
+			  match_reference (pat, h->env->in_reply_to)));
     case M_ADDRESS:
       return (pat->not ^ match_adrlist (pat, flags & M_MATCH_FULL_ADDRESS, 4,
                                         h->env->from, h->env->sender,
@@ -1398,15 +1401,16 @@ int mutt_search_command (int cur, int op)
   progress_t progress;
   const char* msg = NULL;
 
-  if (op != OP_SEARCH_NEXT && op != OP_SEARCH_OPPOSITE)
+  if (!*LastSearch || (op != OP_SEARCH_NEXT && op != OP_SEARCH_OPPOSITE))
   {
-    strfcpy (buf, LastSearch, sizeof (buf));
-    if (mutt_get_field ((op == OP_SEARCH) ? _("Search for: ") :
-		      _("Reverse search for: "), buf, sizeof (buf),
+    strfcpy (buf, *LastSearch ? LastSearch : "", sizeof (buf));
+    if (mutt_get_field ((op == OP_SEARCH || op == OP_SEARCH_NEXT) ?
+			_("Search for: ") : _("Reverse search for: "),
+			buf, sizeof (buf),
 		      M_CLEAR | M_PATTERN) != 0 || !buf[0])
       return (-1);
 
-    if (op == OP_SEARCH)
+    if (op == OP_SEARCH || op == OP_SEARCH_NEXT)
       unset_option (OPTSEARCHREVERSE);
     else
       set_option (OPTSEARCHREVERSE);
@@ -1417,7 +1421,7 @@ int mutt_search_command (int cur, int op)
     mutt_check_simple (temp, sizeof (temp), NONULL (SimpleSearch));
 
     if (!SearchPattern || mutt_strcmp (temp, LastSearchExpn))
-    {
+     {
       set_option (OPTSEARCHINVALID);
       strfcpy (LastSearch, buf, sizeof (LastSearch));
       mutt_message _("Compiling search pattern...");
@@ -1425,17 +1429,12 @@ int mutt_search_command (int cur, int op)
       err.data = error;
       err.dsize = sizeof (error);
       if ((SearchPattern = mutt_pattern_comp (temp, M_FULL_MSG, &err)) == NULL)
-      {
+       {
 	mutt_error ("%s", error);
 	return (-1);
       }
       mutt_clear_error ();
     }
-  }
-  else if (!SearchPattern)
-  {
-    mutt_error _("No search pattern.");
-    return (-1);
   }
 
   if (option (OPTSEARCHINVALID))

@@ -251,7 +251,7 @@ int mx_lock_file (const char *path, int fd, int excl, int dot, int timeout)
 int mx_unlock_file (const char *path, int fd, int dot)
 {
 #ifdef USE_FCNTL
-  struct flock unlockit = { F_UNLCK, 0, 0, 0 };
+  struct flock unlockit = { F_UNLCK, 0, 0, 0, 0 };
 
   memset (&unlockit, 0, sizeof (struct flock));
   unlockit.l_type = F_UNLCK;
@@ -370,42 +370,12 @@ int mx_get_magic (const char *path)
   if (S_ISDIR (st.st_mode))
   {
     /* check for maildir-style mailbox */
-
-    snprintf (tmp, sizeof (tmp), "%s/cur", path);
-    if (stat (tmp, &st) == 0 && S_ISDIR (st.st_mode))
-      return (M_MAILDIR);
+    if (mx_is_maildir (path))
+      return M_MAILDIR;
 
     /* check for mh-style mailbox */
-
-    snprintf (tmp, sizeof (tmp), "%s/.mh_sequences", path);
-    if (access (tmp, F_OK) == 0)
-      return (M_MH);
-
-    snprintf (tmp, sizeof (tmp), "%s/.xmhcache", path);
-    if (access (tmp, F_OK) == 0)
-      return (M_MH);
-    
-    snprintf (tmp, sizeof (tmp), "%s/.mew_cache", path);
-    if (access (tmp, F_OK) == 0)
-      return (M_MH);
-
-    snprintf (tmp, sizeof (tmp), "%s/.mew-cache", path);
-    if (access (tmp, F_OK) == 0)
-      return (M_MH);
-    
-    snprintf (tmp, sizeof (tmp), "%s/.sylpheed_cache", path);
-    if (access (tmp, F_OK) == 0)
-      return (M_MH);
-
-    /* 
-     * ok, this isn't an mh folder, but mh mode can be used to read
-     * Usenet news from the spool. ;-) 
-     */
-
-    snprintf (tmp, sizeof (tmp), "%s/.overview", path);
-    if (access (tmp, F_OK) == 0)
-      return (M_MH);
-
+    if (mx_is_mh (path))
+      return M_MH;
   }
   else if (st.st_size == 0)
   {
@@ -895,7 +865,8 @@ int mx_close_mailbox (CONTEXT *ctx, int *index_hint)
 
   if (move_messages)
   {
-    mutt_message (_("Moving read messages to %s..."), mbox);
+    if (!ctx->quiet)
+      mutt_message (_("Moving read messages to %s..."), mbox);
 
 #ifdef USE_IMAP
     /* try to use server-side copy first */
@@ -954,7 +925,8 @@ int mx_close_mailbox (CONTEXT *ctx, int *index_hint)
   }
   else if (!ctx->changed && ctx->deleted == 0)
   {
-    mutt_message _("Mailbox is unchanged.");
+    if (!ctx->quiet)
+      mutt_message _("Mailbox is unchanged.");
     mx_fastclose_mailbox (ctx);
     return 0;
   }
@@ -989,12 +961,15 @@ int mx_close_mailbox (CONTEXT *ctx, int *index_hint)
     }
   }
 
-  if (move_messages)
-     mutt_message (_("%d kept, %d moved, %d deleted."),
-       ctx->msgcount - ctx->deleted, read_msgs, ctx->deleted);
-  else
-    mutt_message (_("%d kept, %d deleted."),
-      ctx->msgcount - ctx->deleted, ctx->deleted);
+  if (!ctx->quiet)
+  {
+    if (move_messages)
+      mutt_message (_("%d kept, %d moved, %d deleted."),
+	ctx->msgcount - ctx->deleted, read_msgs, ctx->deleted);
+    else
+      mutt_message (_("%d kept, %d deleted."),
+	ctx->msgcount - ctx->deleted, ctx->deleted);
+  }
 
   if (ctx->msgcount == ctx->deleted &&
       (ctx->magic == M_MMDF || ctx->magic == M_MBOX) &&
@@ -1118,7 +1093,8 @@ int mx_sync_mailbox (CONTEXT *ctx, int *index_hint)
 
   if (!ctx->changed && !ctx->deleted)
   {
-    mutt_message _("Mailbox is unchanged.");
+    if (!ctx->quiet)
+      mutt_message _("Mailbox is unchanged.");
     return (0);
   }
 
@@ -1164,11 +1140,17 @@ int mx_sync_mailbox (CONTEXT *ctx, int *index_hint)
   {
 #ifdef USE_IMAP
     if (ctx->magic == M_IMAP && !purge)
-      mutt_message _("Mailbox checkpointed.");
+    {
+      if (!ctx->quiet)
+        mutt_message _("Mailbox checkpointed.");
+    }
     else
 #endif
-    mutt_message (_("%d kept, %d deleted."), msgcount - deleted,
-      deleted);
+    {
+      if (!ctx->quiet)
+	mutt_message (_("%d kept, %d deleted."), msgcount - deleted,
+		      deleted);
+    }
 
     mutt_sleep (0);
     

@@ -128,10 +128,35 @@ static int test_new_folder (const char *path)
   if ((f = fopen (path, "rb")))
   {
     rc = test_last_status_new (f);
-    fclose (f);
+    safe_fclose (&f);
   }
 
   return rc;
+}
+
+void mutt_buffy_cleanup (const char *buf, struct stat *st)
+{
+  struct utimbuf ut;
+  BUFFY *tmp;
+
+  if (option(OPTCHECKMBOXSIZE))
+  {
+    tmp = mutt_find_mailbox (buf);
+    if (tmp && !tmp->new)
+      mutt_update_mailbox (tmp);
+  }
+  else
+  {
+    /* fix up the times so buffy won't get confused */
+    if (st->st_mtime > st->st_atime)
+    {
+      ut.actime = st->st_atime;
+      ut.modtime = time (NULL);
+      utime (buf, &ut); 
+    }
+    else
+      utime (buf, NULL);
+  }
 }
 
 BUFFY *mutt_find_mailbox (const char *path)
@@ -171,6 +196,8 @@ int mutt_parse_mailboxes (BUFFER *path, BUFFER *s, unsigned long data, BUFFER *e
   BUFFY **tmp,*tmp1;
   char buf[_POSIX_PATH_MAX];
   struct stat sb;
+  char f1[PATH_MAX], f2[PATH_MAX];
+  char *p, *q;
 
   while (MoreArgs (s))
   {
@@ -181,7 +208,6 @@ int mutt_parse_mailboxes (BUFFER *path, BUFFER *s, unsigned long data, BUFFER *e
     {
       for (tmp = &Incoming; *tmp;)
       {
-        FREE (&((*tmp)->path));
         tmp1=(*tmp)->next;
         FREE (tmp);		/* __FREE_CHECKED__ */
         *tmp=tmp1;
@@ -194,11 +220,16 @@ int mutt_parse_mailboxes (BUFFER *path, BUFFER *s, unsigned long data, BUFFER *e
     /* Skip empty tokens. */
     if(!*buf) continue;
 
-    /* simple check to avoid duplicates */
+    /* avoid duplicates */
+    p = realpath (buf, f1);
     for (tmp = &Incoming; *tmp; tmp = &((*tmp)->next))
     {
-      if (mutt_strcmp (buf, (*tmp)->path) == 0)
+      q = realpath ((*tmp)->path, f2);
+      if (mutt_strcmp (p ? p : buf, q ? q : (*tmp)->path) == 0)
+      {
+	dprint(3,(debugfile,"mailbox '%s' already registered as '%s'\n", buf, (*tmp)->path));
 	break;
+      }
     }
 
     if(data == M_UNMAILBOXES)
@@ -216,7 +247,7 @@ int mutt_parse_mailboxes (BUFFER *path, BUFFER *s, unsigned long data, BUFFER *e
     if (!*tmp)
     {
       *tmp = (BUFFY *) safe_calloc (1, sizeof (BUFFY));
-      (*tmp)->path = safe_strdup (buf);
+      strfcpy ((*tmp)->path, buf, sizeof ((*tmp)->path));
       (*tmp)->next = NULL;
       /* it is tempting to set magic right here */
       (*tmp)->magic = 0;
@@ -259,6 +290,10 @@ int mutt_buffy_check (int force)
   char path[_POSIX_PATH_MAX];
   struct stat contex_sb;
   time_t t;
+
+  sb.st_size=0;
+  contex_sb.st_dev=0;
+  contex_sb.st_ino=0;
 
 #ifdef USE_IMAP
   /* update postponed count as well, on force */
@@ -476,59 +511,34 @@ int mutt_buffy_notify (void)
  * mutt_buffy() -- incoming folders completion routine
  *
  * given a folder name, this routine gives the next incoming folder with new
- * new mail.
+ * mail.
  */
 void mutt_buffy (char *s, size_t slen)
 {
-  int count;
   BUFFY *tmp = Incoming;
+  int pass, found = 0;
 
-  mutt_expand_path (s, _POSIX_PATH_MAX);
-  switch (mutt_buffy_check (0))
+  mutt_expand_path (s, slen);
+
+  if (mutt_buffy_check (0)) 
   {
-  case 0:
-
-    *s = '\0';
-    break;
-
-  case 1:
-
-    while (tmp && !tmp->new)
-      tmp = tmp->next;
-    if (!tmp)
-    {
-      *s = '\0';
-      mutt_buffy_check (1); /* buffy was wrong - resync things */
-      break;
-    }
-    strfcpy (s, tmp->path, slen);
-    mutt_pretty_mailbox (s, slen);
-    break;
-
-  default:
-    
-    count = 0;
-    while (count < 3)
-    {
-      if (mutt_strcmp (s, tmp->path) == 0)
-	count++;
-      else if (count && tmp->new)
-	break;
-      tmp = tmp->next;
-      if (!tmp)
+    for (pass = 0; pass < 2; pass++)
+      for (tmp = Incoming; tmp; tmp = tmp->next) 
       {
-	tmp = Incoming;
-	count++;
+	mutt_expand_path (tmp->path, sizeof (tmp->path));
+	if ((found || pass) && tmp->new) 
+	{
+	  strfcpy (s, tmp->path, slen);
+	  mutt_pretty_mailbox (s, slen);
+	  return;
+	}
+	if (mutt_strcmp (s, tmp->path) == 0)
+	  found = 1;
       }
-    }
-    if (count >= 3)
-    {
-      *s = '\0';
-      mutt_buffy_check (1); /* buffy was wrong - resync things */
-      break;
-    }
-    strfcpy (s, tmp->path, slen);
-    mutt_pretty_mailbox (s, slen);
-    break;
+
+    mutt_buffy_check (1); /* buffy was wrong - resync things */
   }
+
+  /* no folders with new mail */
+  *s = '\0';
 }

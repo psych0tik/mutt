@@ -78,7 +78,7 @@ Copyright (C) 1998-2005 Werner Koch <wk@isil.d.shuttle.de>\n\
 Copyright (C) 1999-2009 Brendan Cully <brendan@kublai.com>\n\
 Copyright (C) 1999-2002 Tommi Komulainen <Tommi.Komulainen@iki.fi>\n\
 Copyright (C) 2000-2002 Edmund Grimley Evans <edmundo@rano.org>\n\
-Copyright (C) 2006-2008 Rocco Rutte <pdmef@gmx.net>\n\
+Copyright (C) 2006-2009 Rocco Rutte <pdmef@gmx.net>\n\
 \n\
 Many others not mentioned here contributed code, fixes,\n\
 and suggestions.\n");
@@ -631,7 +631,11 @@ int main (int argc, char **argv)
 
       case 'd':
 #ifdef DEBUG
-	debuglevel = atoi (optarg);
+	if (mutt_atoi (optarg, &debuglevel) < 0 || debuglevel <= 0)
+	{
+	  fprintf (stderr, _("Error: value '%s' is invalid for -d.\n"), optarg);
+	  return 1;
+	}
 	printf (_("Debugging at level %d.\n"), debuglevel);
 #else
 	printf _("DEBUG was not defined during compilation.  Ignored.\n");
@@ -741,6 +745,9 @@ int main (int argc, char **argv)
   /* Initialize crypto backends.  */
   crypt_init ();
 
+  if (newMagic)
+    mx_set_magic (newMagic);
+
   if (queries)
   {
     for (; optind < argc; optind++)
@@ -772,9 +779,6 @@ int main (int argc, char **argv)
     }
     return rv;
   }
-
-  if (newMagic)
-    mx_set_magic (newMagic);
 
   if (!option (OPTNOCURSES))
   {
@@ -909,7 +913,7 @@ int main (int argc, char **argv)
 	  if (!option (OPTNOCURSES))
 	    mutt_endwin (NULL);
 	  perror (tempfile);
-	  fclose (fin);
+	  safe_fclose (&fin);
 	  FREE (&tempfile);
 	  exit (1);
 	}
@@ -917,9 +921,9 @@ int main (int argc, char **argv)
 	  mutt_copy_stream (fin, fout);
 	else if (bodytext)
 	  fputs (bodytext, fout);
-	fclose (fout);
+	safe_fclose (&fout);
 	if (fin && fin != stdin)
-	  fclose (fin);
+	  safe_fclose (&fin);
       }
     }
 

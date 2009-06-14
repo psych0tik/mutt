@@ -55,7 +55,7 @@ static struct mapping_t AttachHelp[] = {
   { N_("Pipe"),  OP_PIPE },
   { N_("Print"), OP_PRINT },
   { N_("Help"),  OP_HELP },
-  { NULL }
+  { NULL,        0 }
 };
 
 void mutt_update_tree (ATTACHPTR **idx, short idxlen)
@@ -433,7 +433,10 @@ static int mutt_query_save_attachment (FILE *fp, BODY *body, HEADER *hdr, char *
   {
     if (mutt_get_field (prompt, buf, sizeof (buf), M_FILE | M_CLEAR) != 0
 	|| !buf[0])
+    {
+      mutt_clear_error ();
       return -1;
+    }
     
     prompt = NULL;
     mutt_expand_path (buf, sizeof (buf));
@@ -518,7 +521,7 @@ void mutt_save_attachment_list (FILE *fp, int tag, BODY *top, HEADER *hdr, MUTTM
 	  if (rc == 0 && AttachSep && (fpout = fopen (tfile,"a")) != NULL)
 	  {
 	    fprintf(fpout, "%s", AttachSep);
-	    fclose (fpout);
+	    safe_fclose (&fpout);
 	  }
 	}
 	else
@@ -527,7 +530,7 @@ void mutt_save_attachment_list (FILE *fp, int tag, BODY *top, HEADER *hdr, MUTTM
 	  if (rc == 0 && AttachSep && (fpout = fopen (tfile,"a")) != NULL)
 	  {
 	    fprintf(fpout, "%s", AttachSep);
-	    fclose (fpout);
+	    safe_fclose (&fpout);
 	  }
 	}
       }
@@ -622,7 +625,7 @@ static void pipe_attachment (FILE *fp, BODY *b, STATE *state)
       return;
     }
     mutt_copy_stream (ifp, state->fpout);
-    fclose (ifp);
+    safe_fclose (&ifp);
     if (AttachSep)
       state_puts (AttachSep, state);
   }
@@ -671,7 +674,7 @@ void mutt_pipe_attachment_list (FILE *fp, int tag, BODY *top, int filter)
     mutt_endwin (NULL);
     thepid = mutt_create_filter (buf, &state.fpout, NULL, NULL);
     pipe_attachment_list (buf, fp, tag, top, filter, &state);
-    fclose (state.fpout);
+    safe_fclose (&state.fpout);
     if (mutt_wait_filter (thepid) != 0 || option (OPTWAITKEY))
       mutt_any_key_to_continue (NULL);
   }
@@ -737,7 +740,7 @@ static void print_attachment_list (FILE *fp, int tag, BODY *top, STATE *state)
 	    if ((ifp = fopen (newfile, "r")) != NULL)
 	    {
 	      mutt_copy_stream (ifp, state->fpout);
-	      fclose (ifp);
+	      safe_fclose (&ifp);
 	      if (AttachSep)
 		state_puts (AttachSep, state);
 	    }
@@ -771,7 +774,7 @@ void mutt_print_attachment_list (FILE *fp, int tag, BODY *top)
     memset (&state, 0, sizeof (STATE));
     thepid = mutt_create_filter (NONULL (PrintCmd), &state.fpout, NULL, NULL);
     print_attachment_list (fp, tag, top, &state);
-    fclose (state.fpout);
+    safe_fclose (&state.fpout);
     if (mutt_wait_filter (thepid) != 0 || option (OPTWAITKEY))
       mutt_any_key_to_continue (NULL);
   }
@@ -1242,7 +1245,7 @@ void mutt_view_attachments (HEADER *hdr)
 
         if (WithCrypto && need_secured && secured)
 	{
-	  fclose (fp);
+	  safe_fclose (&fp);
 	  mutt_free_body (&cur);
 	}
 

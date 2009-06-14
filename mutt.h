@@ -35,6 +35,12 @@
 #include <limits.h>
 #include <stdarg.h>
 #include <signal.h>
+/* On OS X 10.5.x, wide char functions are inlined by default breaking
+ * --without-wc-funcs compilation
+ */
+#ifdef __APPLE_CC__
+#define _DONT_USE_CTYPE_INLINE_
+#endif
 #ifdef HAVE_WCHAR_H
 # include <wchar.h>
 #endif
@@ -258,6 +264,7 @@ enum
   OPT_COPY,
   OPT_DELETE,
   OPT_FORWEDIT,
+  OPT_FCCATTACH,
   OPT_INCLUDE,
   OPT_MFUPTO,
   OPT_MIMEFWD,
@@ -331,7 +338,6 @@ enum
   OPTENCODEFROM,
   OPTENVFROM,
   OPTFASTREPLY,
-  OPTFCCATTACH,
   OPTFCCCLEAR,
   OPTFOLLOWUPTO,
   OPTFORCENAME,
@@ -352,6 +358,7 @@ enum
   OPTHIDETHREADSUBJECT,
   OPTHIDETOPLIMITED,
   OPTHIDETOPMISSING,
+  OPTHONORDISP,
   OPTIGNORELWS,
   OPTIGNORELISTREPLYTO,
 #ifdef USE_IMAP
@@ -370,6 +377,8 @@ enum
   OPTSSLV3,
   OPTTLSV1,
   OPTSSLFORCETLS,
+  OPTSSLVERIFYDATES,
+  OPTSSLVERIFYHOST,
 #endif /* defined(USE_SSL) */
   OPTIMPLICITAUTOVIEW,
   OPTINCLUDEONLYFIRST,
@@ -544,6 +553,7 @@ int mutt_matches_ignore (const char *, LIST *);
 /* add an element to a list */
 LIST *mutt_add_list (LIST *, const char *);
 LIST *mutt_add_list_n (LIST*, const void *, size_t);
+LIST *mutt_find_list (LIST *, const char *);
 
 void mutt_init (int, LIST *);
 
@@ -809,6 +819,7 @@ typedef struct pattern_t
   unsigned int alladdr : 1;
   unsigned int stringmatch : 1;
   unsigned int groupmatch : 1;
+  unsigned int ign_case : 1;		/* ignore case for local stringmatch searches */
   int min;
   int max;
   struct pattern_t *next;
