@@ -1,10 +1,14 @@
 mutt (1.5.20-1) unstable; urgency=low
 
-  * New upstream release
+  * New upstream release 
+    + Closes: 93268, 199709, 209390, 277945, 292350, 307819, 436007, 478861
+    + Closes: 500766, 516364, 520735, 528465, 529090
   * debian/patches/series:
     + commented all references to upstream/*, they should be included in 1.5.20
     + removed debian-specific/529838-gnutls-autoconf.patch, ditto
     + removed misc/hyphen-as-minus.patch, misc/manpage-typos.patch, ditto
+    + features/trash-folder: do not reupload messages to $trash if IMAP is used
+      (Closes: #448241)
   * debian/patches: all patches refreshed, sidebar patches adapted to 1.5.20
 
  -- Antonio Radici <antonio@dyne.org>  Sun, 14 Jun 2009 20:53:18 +0100
