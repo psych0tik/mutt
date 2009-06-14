@@ -17,7 +17,7 @@ signs and lintian will not complain
  .PP
  .B mutt 
 --v[v]
-+\\\\\-v[v]
++\-v[v]
  .PP
  .B mutt 
 --D
