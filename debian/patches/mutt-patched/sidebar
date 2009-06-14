@@ -31,16 +31,15 @@ in the "mutt-patched" package.
 
 --- a/buffy.c
 +++ b/buffy.c
-@@ -261,7 +261,7 @@
+@@ -292,6 +292,7 @@
    char path[_POSIX_PATH_MAX];
    struct stat contex_sb;
    time_t t;
--
 +  CONTEXT *ctx;
- #ifdef USE_IMAP
-   /* update postponed count as well, on force */
-   if (force)
-@@ -296,6 +296,8 @@
+ 
+   sb.st_size=0;
+   contex_sb.st_dev=0;
+@@ -331,6 +332,8 @@
    
    for (tmp = Incoming; tmp; tmp = tmp->next)
    {
@@ -49,7 +48,7 @@ in the "mutt-patched" package.
  #ifdef USE_IMAP
      if (tmp->magic != M_IMAP)
  #endif
-@@ -353,10 +355,27 @@
+@@ -388,10 +391,27 @@
        case M_MBOX:
        case M_MMDF:
  
@@ -80,7 +79,7 @@ in the "mutt-patched" package.
  	}
  	else if (option(OPTCHECKMBOXSIZE))
  	{
-@@ -366,35 +385,86 @@
+@@ -401,35 +421,86 @@
  	if (tmp->newly_created &&
  	    (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
  	  tmp->newly_created = 0;
@@ -175,7 +174,7 @@ in the "mutt-patched" package.
 --- a/buffy.h
 +++ b/buffy.h
 @@ -25,7 +25,12 @@
-   char *path;
+   char path[_POSIX_PATH_MAX];
    off_t size;
    struct buffy_t *next;
 +  struct buffy_t *prev;
@@ -362,7 +361,7 @@ in the "mutt-patched" package.
  
 @@ -571,10 +578,13 @@
  
-       if (menu->redraw & REDRAW_STATUS) 
+       if (menu->redraw & REDRAW_STATUS)
        {
 +        DrawFullLine = 1;
  	menu_status_line (buf, sizeof (buf), menu, NONULL (Status));
@@ -383,15 +382,15 @@ in the "mutt-patched" package.
        else if (option (OPTBRAILLEFRIENDLY))
  	move (menu->current - menu->top + menu->offset, 0);
        else
-@@ -1068,6 +1078,7 @@
+@@ -1075,6 +1085,7 @@
  	  menu->redraw = REDRAW_FULL;
  	break;
  
 +      case OP_SIDEBAR_OPEN:
        case OP_MAIN_CHANGE_FOLDER:
        case OP_MAIN_NEXT_UNREAD_MAILBOX:
-       
-@@ -1099,7 +1110,11 @@
+ 
+@@ -1106,7 +1117,11 @@
  	{
  	  mutt_buffy (buf, sizeof (buf));
  
@@ -404,7 +403,7 @@ in the "mutt-patched" package.
  	  {
  	    if (menu->menu == MENU_PAGER)
  	    {
-@@ -1117,6 +1132,7 @@
+@@ -1124,6 +1139,7 @@
  	}
  
  	mutt_expand_path (buf, sizeof (buf));
@@ -412,7 +411,7 @@ in the "mutt-patched" package.
  	if (mx_get_magic (buf) <= 0)
  	{
  	  mutt_error (_("%s is not a mailbox."), buf);
-@@ -2209,6 +2225,12 @@
+@@ -2216,6 +2232,12 @@
  	mutt_what_key();
  	break;
  
@@ -460,7 +459,7 @@ in the "mutt-patched" package.
    { NULL,			0,				NULL }
  };
  
-@@ -268,6 +273,11 @@
+@@ -270,6 +275,11 @@
  
    { "what-key",		OP_WHAT_KEY,		NULL },
  
@@ -474,7 +473,7 @@ in the "mutt-patched" package.
  
 --- a/globals.h
 +++ b/globals.h
-@@ -116,6 +116,7 @@
+@@ -117,6 +117,7 @@
  WHERE char *SendCharset;
  WHERE char *Sendmail;
  WHERE char *Shell;
@@ -482,7 +481,7 @@ in the "mutt-patched" package.
  WHERE char *Signature;
  WHERE char *SimpleSearch;
  #if USE_SMTP
-@@ -208,6 +209,9 @@
+@@ -209,6 +210,9 @@
  WHERE short ScoreThresholdRead;
  WHERE short ScoreThresholdFlag;
  
@@ -494,9 +493,9 @@ in the "mutt-patched" package.
  WHERE short ImapPipelineDepth;
 --- a/init.h
 +++ b/init.h
-@@ -1594,6 +1594,22 @@
-   ** you may \fIunset\fP this setting.
-   ** (Crypto only)
+@@ -1963,6 +1963,22 @@
+   ** not used.
+   ** (PGP only)
    */
 +  {"sidebar_delim", DT_STR, R_BOTH, UL &SidebarDelim, "|"},
 +  /*
@@ -653,7 +652,7 @@ in the "mutt-patched" package.
    menu_make_entry (buf, sizeof (buf), menu, menu->current);
    menu_pad_string (buf, sizeof (buf));
  
-@@ -886,7 +888,7 @@
+@@ -885,7 +887,7 @@
      
      
      if (option (OPTARROWCURSOR))
@@ -683,7 +682,7 @@ in the "mutt-patched" package.
  
 --- a/mutt.h
 +++ b/mutt.h
-@@ -417,6 +417,7 @@
+@@ -426,6 +426,7 @@
    OPTSAVEEMPTY,
    OPTSAVENAME,
    OPTSCORE,
@@ -691,7 +690,7 @@ in the "mutt-patched" package.
    OPTSIGDASHES,
    OPTSIGONTOP,
    OPTSORTRE,
-@@ -854,6 +855,7 @@
+@@ -865,6 +866,7 @@
  {
    char *path;
    FILE *fp;
@@ -699,7 +698,7 @@ in the "mutt-patched" package.
    time_t mtime;
    off_t size;
    off_t vsize;
-@@ -894,6 +896,7 @@
+@@ -905,6 +907,7 @@
    unsigned int quiet : 1;	/* inhibit status messages? */
    unsigned int collapsed : 1;   /* are all threads collapsed? */
    unsigned int closing : 1;	/* mailbox is being closed */
@@ -709,7 +708,7 @@ in the "mutt-patched" package.
    void *data;			/* driver specific data */
 --- a/muttlib.c
 +++ b/muttlib.c
-@@ -1217,6 +1217,8 @@
+@@ -1232,6 +1232,8 @@
  	  pl = pw = 1;
  
  	/* see if there's room to add content, else ignore */
@@ -718,7 +717,7 @@ in the "mutt-patched" package.
  	if ((col < COLS && wlen < destlen) || soft)
  	{
  	  int pad;
-@@ -1259,6 +1261,52 @@
+@@ -1274,6 +1276,52 @@
  	  col += wid;
  	  src += pl;
  	}
@@ -773,7 +772,7 @@ in the "mutt-patched" package.
        else if (ch == '|')
 --- a/mx.c
 +++ b/mx.c
-@@ -626,6 +626,7 @@
+@@ -596,6 +596,7 @@
   *		M_APPEND	open mailbox for appending
   *		M_READONLY	open mailbox in read-only mode
   *		M_QUIET		only print error messages
@@ -781,7 +780,7 @@ in the "mutt-patched" package.
   *	ctx	if non-null, context struct to use
   */
  CONTEXT *mx_open_mailbox (const char *path, int flags, CONTEXT *pctx)
-@@ -648,6 +649,8 @@
+@@ -618,6 +619,8 @@
      ctx->quiet = 1;
    if (flags & M_READONLY)
      ctx->readonly = 1;
@@ -790,7 +789,7 @@ in the "mutt-patched" package.
  
    if (flags & (M_APPEND|M_NEWFOLDER))
    {
-@@ -752,9 +755,21 @@
+@@ -722,9 +725,21 @@
  void mx_fastclose_mailbox (CONTEXT *ctx)
  {
    int i;
@@ -833,7 +832,7 @@ in the "mutt-patched" package.
  
  #include "mutt_crypt.h"
  
-@@ -1060,6 +1061,8 @@
+@@ -1071,6 +1072,8 @@
    mbstate_t mbstate;
  
    int wrap_cols = mutt_term_width ((flags & M_PAGER_NOWRAP) ? 0 : Wrap);
@@ -842,7 +841,7 @@ in the "mutt-patched" package.
    
    /* FIXME: this should come from lineInfo */
    memset(&mbstate, 0, sizeof(mbstate));
-@@ -1694,7 +1697,7 @@
+@@ -1717,7 +1720,7 @@
      if ((redraw & REDRAW_BODY) || topline != oldtopline)
      {
        do {
@@ -851,7 +850,7 @@ in the "mutt-patched" package.
  	curline = oldtopline = topline;
  	lines = 0;
  	force_redraw = 0;
-@@ -1707,6 +1710,7 @@
+@@ -1730,6 +1733,7 @@
  			    &QuoteList, &q_level, &force_redraw, &SearchRE) > 0)
  	    lines++;
  	  curline++;
@@ -859,7 +858,7 @@ in the "mutt-patched" package.
  	}
  	last_offset = lineInfo[curline].offset;
        } while (force_redraw);
-@@ -1720,6 +1724,7 @@
+@@ -1743,6 +1747,7 @@
  	  addch ('~');
  	addch ('\n');
  	lines++;
@@ -867,34 +866,30 @@ in the "mutt-patched" package.
        }
        /* We are going to update the pager status bar, so it isn't
         * necessary to reset to normal color now. */
-@@ -1743,22 +1748,22 @@
+@@ -1766,11 +1771,11 @@
        /* print out the pager status bar */
        SETCOLOR (MT_COLOR_STATUS);
        BKGDSET (MT_COLOR_STATUS);
 -      CLEARLINE (statusoffset);
 +      CLEARLINE_WIN (statusoffset);
-       if (IsHeader (extra))
+ 
+       if (IsHeader (extra) || IsMsgAttach (extra))
        {
 -	size_t l1 = COLS * MB_LEN_MAX;
-+	size_t l1 = (COLS-SidebarWidth) * MB_LEN_MAX;
++ 	size_t l1 = (COLS-SidebarWidth) * MB_LEN_MAX;
  	size_t l2 = sizeof (buffer);
- 	hfi.hdr = extra->hdr;
+ 	hfi.hdr = (IsHeader (extra)) ? extra->hdr : extra->bdy->hdr;
  	mutt_make_string_info (buffer, l1 < l2 ? l1 : l2, NONULL (PagerFmt), &hfi, M_FORMAT_MAKEPRINT);
-       }
-       else if (IsMsgAttach (extra))
+@@ -1780,7 +1785,7 @@
        {
--	size_t l1 = COLS * MB_LEN_MAX;
-+	size_t l1 = (COLS-SidebarWidth) * MB_LEN_MAX;
- 	size_t l2 = sizeof (buffer);
- 	hfi.hdr = extra->bdy->hdr;
- 	mutt_make_string_info (buffer, l1 < l2 ? l1 : l2, NONULL (PagerFmt), &hfi, M_FORMAT_MAKEPRINT);
+ 	char bn[STRING];
+ 	snprintf (bn, sizeof (bn), "%s (%s)", banner, pager_progress_str);
+-	mutt_paddstr (COLS, bn);
++        mutt_paddstr (COLS, IsHeader (extra) || IsMsgAttach (extra) ?  buffer : banner);
        }
--      mutt_paddstr (COLS, IsHeader (extra) || IsMsgAttach (extra) ?  buffer : banner);
-+      mutt_paddstr (COLS-SidebarWidth, IsHeader (extra) || IsMsgAttach (extra) ?  buffer : banner);
        BKGDSET (MT_COLOR_NORMAL);
        SETCOLOR (MT_COLOR_NORMAL);
-       if (option(OPTXTERMSETTITLES))
-@@ -1775,18 +1780,23 @@
+@@ -1798,18 +1803,23 @@
        /* redraw the pager_index indicator, because the
         * flags for this message might have changed. */
        menu_redraw_current (index);
@@ -920,7 +915,7 @@ in the "mutt-patched" package.
      redraw = 0;
  
      if (option(OPTBRAILLEFRIENDLY)) {
-@@ -2684,6 +2694,13 @@
+@@ -2742,6 +2752,13 @@
  	mutt_what_key ();
  	break;
  
@@ -1311,8 +1306,8 @@ in the "mutt-patched" package.
 +#endif /* SIDEBAR_H */
 --- a/doc/Muttrc
 +++ b/doc/Muttrc
-@@ -2167,6 +2167,26 @@
- # function.
+@@ -657,6 +657,26 @@
+ # $crypt_autosign, $crypt_replysign and $smime_is_default.
  # 
  # 
 +# set sidebar_visible=no
@@ -1340,7 +1335,7 @@ in the "mutt-patched" package.
  # Name: crypt_autosign
 --- a/imap/imap.c
 +++ b/imap/imap.c
-@@ -1513,7 +1513,7 @@
+@@ -1521,7 +1521,7 @@
  
      imap_munge_mbox_name (munged, sizeof (munged), name);
      snprintf (command, sizeof (command),
@@ -1367,5 +1362,7 @@ in the "mutt-patched" package.
        }
 --- a/PATCHES
 +++ b/PATCHES
-@@ -0,0 +1 @@
+@@ -1,2 +1,3 @@
 +patch-1.5.19.sidebar.20090522.txt
+ patch-1.5.18.rr.compressed.1
+ patch-1.5.13.cd.ifdef.2

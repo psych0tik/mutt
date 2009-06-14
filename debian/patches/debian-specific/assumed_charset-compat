@@ -3,7 +3,7 @@ got renamed to attach_charset. We add it back for compatibility.
 
 --- a/init.h
 +++ b/init.h
-@@ -208,6 +208,9 @@
+@@ -211,6 +211,9 @@
    ** Note: for Japanese users, ``iso-2022-*'' must be put at the head
    ** of the value as shown above if included.
    */

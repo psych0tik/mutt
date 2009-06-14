@@ -6,7 +6,7 @@ the maildir-mtime patch. The hunk is considerably shorter as we are always
 counting messages; the if..break part has been dropped.
 --- a/buffy.c
 +++ b/buffy.c
-@@ -409,6 +409,11 @@
+@@ -445,6 +445,11 @@
   	    tmp->has_new = tmp->new = 1;
              tmp->msgcount++;
              tmp->msg_unread++;

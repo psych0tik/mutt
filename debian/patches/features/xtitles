@@ -48,7 +48,7 @@ This is the xterm title patch as found on the mutt mailing lists.
        menu->redraw = 0;
 --- a/globals.h
 +++ b/globals.h
-@@ -140,6 +140,8 @@
+@@ -141,6 +141,8 @@
  WHERE char *Tochars;
  WHERE char *Username;
  WHERE char *Visual;
@@ -88,9 +88,9 @@ This is the xterm title patch as found on the mutt mailing lists.
  	     DTYPE (MuttVars[idx].type) == DT_PATH ||
 --- a/init.h
 +++ b/init.h
-@@ -3285,6 +3285,27 @@
-   ** option does nothing: mutt will never write out the ``Bcc:'' header
-   ** in this case.
+@@ -3347,6 +3347,27 @@
+   ** Also see the $$read_inc, $$net_inc and $$time_inc variables and the
+   ** ``$tuning'' section of the manual for performance considerations.
    */
 +  {"xterm_icon",       DT_STR,   R_BOTH, UL &XtermIcon,  UL "M%?n?AIL&ail?"},
 +  /*
@@ -114,11 +114,11 @@ This is the xterm title patch as found on the mutt mailing lists.
 +  ** to the one used by ``$$status_format''.
 +  */
    /*--*/
-   { NULL }
+   { NULL, 0, 0, 0, 0 }
  };
 --- a/mutt.h
 +++ b/mutt.h
-@@ -438,6 +438,7 @@
+@@ -447,6 +447,7 @@
    OPTWRAPSEARCH,
    OPTWRITEBCC,		/* write out a bcc header? */
    OPTXMAILER,
@@ -128,8 +128,8 @@ This is the xterm title patch as found on the mutt mailing lists.
    OPTCRYPTUSEPKA,
 --- a/pager.c
 +++ b/pager.c
-@@ -1761,6 +1761,13 @@
-       mutt_paddstr (COLS, IsHeader (extra) || IsMsgAttach (extra) ?  buffer : banner);
+@@ -1784,6 +1784,13 @@
+       }
        BKGDSET (MT_COLOR_NORMAL);
        SETCOLOR (MT_COLOR_NORMAL);
 +      if (option(OPTXTERMSETTITLES))

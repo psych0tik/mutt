@@ -11,7 +11,7 @@ used, rather than calling gethostbyname() on the actual hostname
  #include <errno.h>
  #include <sys/wait.h>
  
-@@ -2952,6 +2953,31 @@
+@@ -2953,6 +2954,31 @@
    return 0;
  }
  
@@ -43,7 +43,7 @@ used, rather than calling gethostbyname() on the actual hostname
  void mutt_init (int skip_sys_rc, LIST *commands)
  {
    struct passwd *pw;
-@@ -3026,10 +3052,25 @@
+@@ -3027,10 +3053,25 @@
      Hostname = mutt_substrdup (utsname.nodename, p);
      p++;
      strfcpy (buffer, p, sizeof (buffer)); /* save the domain for below */

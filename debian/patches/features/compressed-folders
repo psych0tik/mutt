@@ -226,7 +226,7 @@ The home page for this patch is:
 +static char *get_compression_cmd (const char* cmd, const CONTEXT* ctx)
 +{
 +  char expanded[_POSIX_PATH_MAX];
-+  mutt_FormatString (expanded, sizeof (expanded), 0, cmd, 
++  mutt_FormatString (expanded, sizeof (expanded), 0, cmd,
 +		     compresshook_format_str, (unsigned long) ctx, 0);
 +  return safe_strdup (expanded);
 +}
@@ -366,8 +366,8 @@ The home page for this patch is:
 +      fclose (ctx->fp);
 +    ctx->fp = NULL;
 +    /* if the folder was removed, remove the gzipped folder too */
-+    if ((ctx->magic > 0) 
-+	&& (access (ctx->path, F_OK) != 0) 
++    if ((ctx->magic > 0)
++	&& (access (ctx->path, F_OK) != 0)
 +	&& ! option (OPTSAVEEMPTY))
 +      remove (ctx->realpath);
 +    else
@@ -446,7 +446,7 @@ The home page for this patch is:
 +  if (! (ctx->append
 +	 && ((append = get_append_command (ctx->realpath, ctx))
 +	     || (append = ci->close))))
-+  { 
++  {
 +    /* if we can not or should not append, we only have to remove the */
 +    /* compressed info, because sync was already called               */
 +    mutt_fast_close_compressed (ctx);
@@ -551,7 +551,7 @@ The home page for this patch is:
 +void mutt_fast_close_compressed (CONTEXT *);
 --- a/configure.ac
 +++ b/configure.ac
-@@ -795,6 +795,11 @@ AC_ARG_ENABLE(locales-fix, AC_HELP_STRIN
+@@ -805,6 +805,11 @@
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
  
@@ -565,7 +565,7 @@ The home page for this patch is:
                  AC_DEFINE_UNQUOTED(EXECSHELL, "$withval",
 --- a/curs_main.c
 +++ b/curs_main.c
-@@ -1128,6 +1128,11 @@ int mutt_index_menu (void)
+@@ -1135,6 +1135,11 @@
          {
  	  int check;
  
@@ -579,7 +579,7 @@ The home page for this patch is:
  
 --- a/doc/manual.xml.head
 +++ b/doc/manual.xml.head
-@@ -5160,6 +5160,205 @@ macro pager \cb |urlview\n
+@@ -5678,6 +5678,205 @@
  
  </chapter>
  
@@ -612,9 +612,9 @@ The home page for this patch is:
 +For example:
 +
 +<screen>
-+open-hook \\.gz$ "gzip -cd %f &gt; %t" 
++open-hook \\.gz$ "gzip -cd %f &gt; %t"
 +close-hook \\.gz$ "gzip -c %t &gt; %f"
-+append-hook \\.gz$ "gzip -c %t &gt;&gt; %f" 
++append-hook \\.gz$ "gzip -c %t &gt;&gt; %f"
 +</screen>
 +
 +You do not have to specify all of the commands. If you omit <link
@@ -662,7 +662,7 @@ The home page for this patch is:
 +Example:
 +
 +<screen>
-+open-hook \\.gz$ "gzip -cd %f &gt; %t" 
++open-hook \\.gz$ "gzip -cd %f &gt; %t"
 +</screen>
 +
 +If the <emphasis>command</emphasis> is empty, this operation is
@@ -728,7 +728,7 @@ The home page for this patch is:
 +Example:
 +
 +<screen>
-+append-hook \\.gz$ "gzip -c %t &gt;&gt; %f" 
++append-hook \\.gz$ "gzip -c %t &gt;&gt; %f"
 +</screen>
 +
 +When <link linkend="append-hook">append-hook</link> is used, the folder
@@ -787,7 +787,7 @@ The home page for this patch is:
  
 --- a/doc/Muttrc.head
 +++ b/doc/Muttrc.head
-@@ -29,6 +29,11 @@ macro generic,pager <F1> "<shell-escape>
+@@ -29,6 +29,11 @@
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
  bind browser y exit
  
@@ -801,7 +801,7 @@ The home page for this patch is:
  #
 --- a/doc/muttrc.man.head
 +++ b/doc/muttrc.man.head
-@@ -345,6 +345,24 @@ specify the ID of the public key to be u
+@@ -345,6 +345,24 @@
  to a certain recipient.  The meaning of "key ID" is to be taken
  broadly: This can be a different e-mail address, a numerical key ID,
  or even just an arbitrary search string.
@@ -817,7 +817,7 @@ The home page for this patch is:
 +"\fI\\\\.gz$\fP"). The commands tell Mutt how to uncompress a folder
 +(\fBopen-hook\fP), compress a folder (\fBclose-hook\fP) or append a
 +compressed mail to a compressed folder (\fBappend-hook\fP). The
-+\fIcommand\fP string is the 
++\fIcommand\fP string is the
 +.BR printf (3)
 +like format string, and it should accept two parameters: \fB%f\fP,
 +which is replaced with the (compressed) folder name, and \fB%t\fP
@@ -839,7 +839,7 @@ The home page for this patch is:
  #include <limits.h>
  #include <string.h>
  #include <stdlib.h>
-@@ -92,6 +96,16 @@ int mutt_parse_hook (BUFFER *buf, BUFFER
+@@ -92,6 +96,16 @@
      memset (&pattern, 0, sizeof (pattern));
      pattern.data = safe_strdup (path);
    }
@@ -858,7 +858,7 @@ The home page for this patch is:
        )
 --- a/init.h
 +++ b/init.h
-@@ -3452,6 +3452,11 @@ struct command_t Commands[] = {
+@@ -3514,6 +3514,11 @@
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
@@ -872,7 +872,7 @@ The home page for this patch is:
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
 --- a/main.c
 +++ b/main.c
-@@ -402,6 +402,12 @@ static void show_version (void)
+@@ -402,6 +402,12 @@
  #else
  	"-LOCALES_HACK  "
  #endif
@@ -887,7 +887,7 @@ The home page for this patch is:
  	"+HAVE_WC_FUNCS  "
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -18,7 +18,7 @@ BUILT_SOURCES = keymap_defs.h patchlist.
+@@ -18,7 +18,7 @@
  bin_PROGRAMS = mutt @DOTLOCK_TARGET@ @PGPAUX_TARGET@
  mutt_SOURCES = \
  	addrbook.c alias.c attach.c base64.c browser.c buffy.c color.c \
@@ -896,7 +896,7 @@ The home page for this patch is:
  	commands.c complete.c compose.c copy.c curs_lib.c curs_main.c date.c \
  	edit.c enter.c flags.c init.c filter.c from.c \
  	getdomain.c group.c \
-@@ -57,7 +57,7 @@ EXTRA_mutt_SOURCES = account.c bcache.c 
+@@ -57,7 +57,7 @@
  	bcache.h browser.h hcache.h mbyte.h mutt_idna.h remailer.h url.h
  
  EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP OPS.CRYPT OPS.SMIME TODO UPDATING \
@@ -918,7 +918,7 @@ The home page for this patch is:
  #include <sys/stat.h>
  #include <dirent.h>
  #include <string.h>
-@@ -1038,6 +1042,12 @@ bail:  /* Come here in case of disaster 
+@@ -1048,6 +1052,12 @@
  int mbox_close_mailbox (CONTEXT *ctx)
  {
    mx_unlock_file (ctx->path, fileno (ctx->fp), 1);
@@ -933,7 +933,7 @@ The home page for this patch is:
    return 0;
 --- a/mutt.h
 +++ b/mutt.h
-@@ -140,6 +140,11 @@ typedef enum
+@@ -146,6 +146,11 @@
  #define M_ACCOUNTHOOK	(1<<9)
  #define M_REPLYHOOK	(1<<10)
  #define M_SEND2HOOK     (1<<11)
@@ -945,7 +945,7 @@ The home page for this patch is:
  
  /* tree characters for linearize_tree and print_enriched_string */
  #define M_TREE_LLCORNER		1
-@@ -872,6 +877,11 @@ typedef struct _context
+@@ -883,6 +888,11 @@
    int flagged;			/* how many flagged messages */
    int msgnotreadyet;		/* which msg "new" in pager, -1 if none */
  
@@ -970,7 +970,7 @@ The home page for this patch is:
  #ifdef USE_IMAP
  #include "imap.h"
  #endif
-@@ -445,6 +449,10 @@ int mx_get_magic (const char *path)
+@@ -415,6 +419,10 @@
      return (-1);
    }
  
@@ -981,7 +981,7 @@ The home page for this patch is:
    return (magic);
  }
  
-@@ -484,6 +492,13 @@ static int mx_open_mailbox_append (CONTE
+@@ -454,6 +462,13 @@
  {
    struct stat sb;
  
@@ -995,7 +995,7 @@ The home page for this patch is:
    ctx->append = 1;
  
  #ifdef USE_IMAP
-@@ -647,7 +662,12 @@ CONTEXT *mx_open_mailbox (const char *pa
+@@ -617,7 +632,12 @@
    }
  
    ctx->magic = mx_get_magic (path);
@@ -1009,7 +1009,7 @@ The home page for this patch is:
    if(ctx->magic == 0)
      mutt_error (_("%s is not a mailbox."), path);
  
-@@ -748,6 +768,10 @@ void mx_fastclose_mailbox (CONTEXT *ctx)
+@@ -718,6 +738,10 @@
      mutt_free_header (&ctx->hdrs[i]);
    FREE (&ctx->hdrs);
    FREE (&ctx->v2r);
@@ -1020,7 +1020,7 @@ The home page for this patch is:
    FREE (&ctx->path);
    FREE (&ctx->pattern);
    if (ctx->limit_pattern) 
-@@ -800,6 +824,12 @@ static int sync_mailbox (CONTEXT *ctx, i
+@@ -770,6 +794,12 @@
    
    if (tmp && tmp->new == 0)
      mutt_update_mailbox (tmp);
@@ -1033,7 +1033,7 @@ The home page for this patch is:
    return rc;
  }
  
-@@ -1058,6 +1088,11 @@ int mx_close_mailbox (CONTEXT *ctx, int 
+@@ -1033,6 +1063,11 @@
        !mutt_is_spool(ctx->path) && !option (OPTSAVEEMPTY))
      mx_unlink_empty (ctx->path);
  
@@ -1045,7 +1045,7 @@ The home page for this patch is:
    mx_fastclose_mailbox (ctx);
  
    return 0;
-@@ -1373,6 +1408,11 @@ int mx_check_mailbox (CONTEXT *ctx, int 
+@@ -1355,6 +1390,11 @@
  {
    int rc;
  
@@ -1059,7 +1059,7 @@ The home page for this patch is:
      if (ctx->locked) lock = 0;
 --- a/mx.h
 +++ b/mx.h
-@@ -40,6 +40,9 @@ enum
+@@ -40,6 +40,9 @@
  #ifdef USE_POP
    , M_POP
  #endif
@@ -1071,16 +1071,7 @@ The home page for this patch is:
  WHERE short DefaultMagic INITVAL (M_MBOX);
 --- a/po/de.po
 +++ b/po/de.po
-@@ -3,7 +3,7 @@ msgstr ""
- "Project-Id-Version: 1.5.18\n"
- "Report-Msgid-Bugs-To: \n"
- "POT-Creation-Date: 2009-01-05 16:36-0800\n"
--"PO-Revision-Date: 2008-05-18 10:28+0200\n"
-+"PO-Revision-Date: 2009-01-15 23:09+0100\n"
- "Last-Translator: Roland Rosenfeld <roland@spinnaker.de>\n"
- "Language-Team: German <mutt-po@mutt.org>\n"
- "MIME-Version: 1.0\n"
-@@ -1975,6 +1975,10 @@ msgstr "Hilfe für %s"
+@@ -2005,6 +2005,10 @@
  msgid "Bad history file format (line %d)"
  msgstr "Falsches Format der Datei früherer Eingaben (Zeile %d)"
  
@@ -1091,26 +1082,7 @@ The home page for this patch is:
  #: hook.c:251
  #, c-format
  msgid "unhook: Can't do unhook * from within a hook."
-@@ -2718,18 +2722,10 @@ msgstr "Lese %s..."
- msgid "Mailbox is corrupt!"
- msgstr "Mailbox fehlerhaft!"
- 
--#: mbox.c:678
--msgid "Mailbox was corrupted!"
--msgstr "Mailbox wurde zerstört!"
--
- #: mbox.c:719 mbox.c:976
- msgid "Fatal error!  Could not reopen mailbox!"
- msgstr "Fataler Fehler, konnte Mailbox nicht erneut öffnen!"
- 
--#: mbox.c:728
--msgid "Unable to lock mailbox!"
--msgstr "Kann Mailbox nicht für exklusiven Zugriff sperren!"
--
- #. this means ctx->changed or ctx->deleted was set, but no
- #. * messages were found to be changed or deleted.  This should
- #. * never happen, is we presume it is a bug in mutt.
-@@ -5298,3 +5294,45 @@ msgstr "Zeige S/MIME Optionen"
+@@ -5378,3 +5382,45 @@
  
  #~ msgid "Authentication method is unknown."
  #~ msgstr "Authentifizierungsmethode unbekannt."
@@ -1158,7 +1130,7 @@ The home page for this patch is:
 +msgstr " %s: Fehler beim packen der Mailbox! Entpackte Mailbox gespeichert!\n"
 --- a/po/POTFILES.in
 +++ b/po/POTFILES.in
-@@ -8,6 +8,7 @@ charset.c
+@@ -8,6 +8,7 @@
  color.c
  commands.c
  compose.c
@@ -1168,7 +1140,7 @@ The home page for this patch is:
  cryptglue.c
 --- a/status.c
 +++ b/status.c
-@@ -96,6 +96,14 @@ status_format_str (char *buf, size_t buf
+@@ -96,6 +96,14 @@
  
      case 'f':
        snprintf (fmt, sizeof(fmt), "%%%ss", prefix);
@@ -1185,5 +1157,6 @@ The home page for this patch is:
  	strfcpy (tmp, Context->path, sizeof (tmp));
 --- a/PATCHES
 +++ b/PATCHES
-@@ -0,0 +1 @@
+@@ -1 +1,2 @@
 +patch-1.5.18.rr.compressed.1
+ patch-1.5.13.cd.ifdef.2

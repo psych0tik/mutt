@@ -10,7 +10,7 @@ add a missing manpage for smime_keys
  	muttbug.man			\
  	mutt.man			\
  	PGP-Notes.txt			\
-@@ -43,13 +44,14 @@
+@@ -45,13 +46,14 @@
  
  all: makedoc-all
  
@@ -26,7 +26,7 @@ add a missing manpage for smime_keys
  	./instdoc $(srcdir)/muttbug.man $(DESTDIR)$(mandir)/man1/flea.1
  	./instdoc $(srcdir)/muttbug.man $(DESTDIR)$(mandir)/man1/muttbug.1
  	test x@DOTLOCK_TARGET@ = x || ./instdoc $(srcdir)/dotlock.man \
-@@ -78,7 +80,7 @@
+@@ -80,7 +82,7 @@
  	fi
  
  uninstall-local:
@@ -35,8 +35,8 @@ add a missing manpage for smime_keys
  		rm -f $(DESTDIR)$(mandir)/man1/$$f ; \
  	done
  	for f in muttrc.5 mbox.5 mmdf.5 ; do \
-@@ -137,7 +139,7 @@
- 	-aspell -l en --mode nroff -c muttrc.man.head
+@@ -145,7 +147,7 @@
+ 	rm -rf vars.tmp.1 vars.tmp.2
  
  clean-local:
 -	rm -f *~ *.html *.orig *.rej  stamp-doc-* *.ps mutt.1 muttrc.man
@@ -44,7 +44,7 @@ add a missing manpage for smime_keys
  	rm -f *.aux *.log *.tex *.out
  
  DISTCLEANFILES=manual.txt manual.html manual.xml manual.pdf html \
-@@ -161,6 +163,9 @@
+@@ -169,6 +171,9 @@
  mutt.1: $(srcdir)/mutt.man
  	$(EDIT) $(srcdir)/mutt.man > $@
  

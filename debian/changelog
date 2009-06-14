@@ -1,3 +1,14 @@
+mutt (1.5.20-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/patches/series:
+    + commented all references to upstream/*, they should be included in 1.5.20
+    + removed debian-specific/529838-gnutls-autoconf.patch, ditto
+    + removed misc/hyphen-as-minus.patch, misc/manpage-typos.patch, ditto
+  * debian/patches: all patches refreshed, sidebar patches adapted to 1.5.20
+
+ -- Antonio Radici <antonio@dyne.org>  Sun, 14 Jun 2009 20:53:18 +0100
+
 mutt (1.5.19-4) unstable; urgency=low
 
   * debian/rules:

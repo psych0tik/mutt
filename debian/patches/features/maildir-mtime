@@ -18,7 +18,7 @@ The home page for this patch is:
 == END PATCH
 --- a/buffy.c
 +++ b/buffy.c
-@@ -226,6 +226,7 @@
+@@ -257,6 +257,7 @@
      (*tmp)->new = 0;
      (*tmp)->notified = 1;
      (*tmp)->newly_created = 0;
@@ -26,7 +26,7 @@ The home page for this patch is:
  
      /* for check_mbox_size, it is important that if the folder is new (tested by
       * reading it), the size is set to 0 so that later when we check we see
-@@ -254,6 +255,7 @@
+@@ -285,6 +286,7 @@
  {
    BUFFY *tmp;
    struct stat sb;
@@ -34,7 +34,7 @@ The home page for this patch is:
    struct dirent *de;
    DIR *dirp;
    char path[_POSIX_PATH_MAX];
-@@ -298,6 +300,7 @@
+@@ -333,6 +335,7 @@
      if (tmp->magic != M_IMAP)
  #endif
      tmp->new = 0;
@@ -42,7 +42,7 @@ The home page for this patch is:
  
  #ifdef USE_IMAP
      if (tmp->magic != M_IMAP)
-@@ -380,10 +383,20 @@
+@@ -415,10 +418,20 @@
  	  if (*de->d_name != '.' && 
  	      (!(p = strstr (de->d_name, ":2,")) || !strchr (p + 3, 'T')))
  	  {
@@ -69,7 +69,7 @@ The home page for this patch is:
  	closedir (dirp);
 --- a/init.h
 +++ b/init.h
-@@ -1185,6 +1185,16 @@
+@@ -1350,6 +1350,16 @@
    ** \fBDON'T CHANGE THIS SETTING UNLESS YOU ARE REALLY SURE WHAT YOU ARE
    ** DOING!\fP
    */
@@ -84,11 +84,11 @@ The home page for this patch is:
 +  **
 +  */
  #ifdef USE_HCACHE
-   { "header_cache", DT_PATH, R_NONE, UL &HeaderCache, 0 },
+   { "maildir_header_cache_verify", DT_BOOL, R_NONE, OPTHCACHEVERIFY, 1 },
    /*
 --- a/mutt.h
 +++ b/mutt.h
-@@ -375,6 +375,7 @@
+@@ -384,6 +384,7 @@
    OPTINCLUDEONLYFIRST,
    OPTKEEPFLAGGED,
    OPTMAILCAPSANITIZE,
@@ -155,7 +155,7 @@ The home page for this patch is:
        continue;
      }
  #endif
-@@ -464,7 +471,7 @@
+@@ -479,7 +486,7 @@
      strfcpy (buffer, NONULL(tmp->path), sizeof (buffer));
      mutt_pretty_mailbox (buffer, sizeof (buffer));
  
@@ -167,7 +167,7 @@ The home page for this patch is:
 --- a/buffy.h
 +++ b/buffy.h
 @@ -25,6 +25,7 @@
-   char *path;
+   char path[_POSIX_PATH_MAX];
    off_t size;
    struct buffy_t *next;
 +  time_t mtime;			/* for maildirs...time of newest entry */
