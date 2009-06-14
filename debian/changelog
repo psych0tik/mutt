@@ -22,6 +22,7 @@ mutt (1.5.20-1) unstable; urgency=low
     + features/trash-folder: do not reupload messages to $trash if IMAP is used
       (Closes: #448241)
     + added misc/hg.pmdef.debugtime, see upstream #3263
+  * debian/control: added DM-Upload-Allowed: yes
 
  -- Antonio Radici <antonio@dyne.org>  Sun, 14 Jun 2009 20:53:18 +0100
 
