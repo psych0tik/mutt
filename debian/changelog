@@ -1,8 +1,19 @@
 mutt (1.5.20-1) unstable; urgency=low
 
-  * New upstream release 
-    + Closes: 93268, 199709, 209390, 277945, 292350, 307819, 436007, 478861
-    + Closes: 500766, 516364, 520735, 528465, 529090
+  * New upstream release, includes the following features:
+    + Bounced messages contains From: headers (Closes: 93268)
+    + Attachments displayed based on Content-Disposition (Closes: 199709)
+    + fcc to a mailbox does not raise the 'new' flag (Closes: 209390)
+    + '!' supported as suffix in gpg keys (Closes: 277945)
+    + failed attachment saving shows an error message (Closes: 292350)
+    + inline signed messages sent honouring $send_charset (Closes: 307819)
+    + support for <clear-flag> and <set-flag> in the pager (Closes: 436007)
+    + fcc_attach is a quad option (Closes: 478861)
+    + Content-Description header not included in reply (Closes: 500766)
+    + imap_sync_mailbox fix for a segfault (Closes: 516364)
+    + better threading support with particular Message-ID's (Closes: 520735)
+    + no crash on IMAP folder refresh (Closes: 528465)
+    + undisclosed-recipients not passed in the envelope (Closes: 529090)
   * debian/patches/series:
     + commented all references to upstream/*, they should be included in 1.5.20
     + removed debian-specific/529838-gnutls-autoconf.patch, ditto
@@ -11,7 +22,6 @@ mutt (1.5.20-1) unstable; urgency=low
     + features/trash-folder: do not reupload messages to $trash if IMAP is used
       (Closes: #448241)
     + added misc/hg.pmdef.debugtime, see upstream #3263
-  * debian/patches: all patches refreshed, sidebar patches adapted to 1.5.20
 
  -- Antonio Radici <antonio@dyne.org>  Sun, 14 Jun 2009 20:53:18 +0100
 
