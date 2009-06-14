@@ -139,13 +139,17 @@ MUTT_LIB_WHERE int debuglevel MUTT_LIB_INITVAL(0);
 #define S_ERR 127
 #define S_BKG 126
 
+/* Flags for mutt_read_line() */
+#define M_CONT		(1<<0)		/* \-continuation */
+#define M_EOL		(1<<1)		/* don't strip \n/\r\n */
+
 /* The actual library functions. */
 
 FILE *safe_fopen (const char *, const char *);
 
 char *mutt_concatn_path (char *, size_t, const char *, size_t, const char *, size_t);
 char *mutt_concat_path (char *, const char *, const char *, size_t);
-char *mutt_read_line (char *, size_t *, FILE *, int *);
+char *mutt_read_line (char *, size_t *, FILE *, int *, int);
 char *mutt_skip_whitespace (char *);
 char *mutt_strlower (char *);
 char *mutt_substrcpy (char *, const char *, const char *, size_t);
@@ -153,6 +157,16 @@ char *mutt_substrdup (const char *, const char *);
 char *safe_strcat (char *, size_t, const char *);
 char *safe_strncat (char *, size_t, const char *, size_t);
 char *safe_strdup (const char *);
+
+/* strtol() wrappers with range checking; they return
+ * 	 0 success
+ * 	-1 format error
+ * 	-2 overflow (for int and short)
+ * the int pointer may be NULL to test only without conversion
+ */
+int mutt_atos (const char *, short *);
+int mutt_atoi (const char *, int *);
+int mutt_atol (const char *, long *);
 
 const char *mutt_stristr (const char *, const char *);
 const char *mutt_basename (const char *);

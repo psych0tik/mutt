@@ -146,7 +146,7 @@ int mutt_display_message (HEADER *cur)
   }
 
   res = mutt_copy_message (fpout, Context, cur, cmflags,
-       	(option (OPTWEED) ? (CH_WEED | CH_REORDER) : 0) | CH_DECODE | CH_FROM);
+       	(option (OPTWEED) ? (CH_WEED | CH_REORDER) : 0) | CH_DECODE | CH_FROM | CH_DISPLAY);
   if ((safe_fclose (&fpout) != 0 && errno != EPIPE) || res < 0)
   {
     mutt_error (_("Could not copy message"));
@@ -245,6 +245,29 @@ void ci_bounce_message (HEADER *h, int *redraw)
   ADDRESS *adr = NULL;
   char *err = NULL;
   int rc;
+
+ /* RfC 5322 mandates a From: header, so warn before bouncing
+  * messages without one */
+  if (h)
+  {
+    if (!h->env->from)
+    {
+      mutt_error _("Warning: message has no From: header");
+      mutt_sleep (2);
+    }
+  }
+  else if (Context)
+  {
+    for (rc = 0; rc < Context->msgcount; rc++)
+    {
+      if (Context->hdrs[rc]->tagged && !Context->hdrs[rc]->env->from)
+      {
+	mutt_error ("Warning: message has no From: header");
+	mutt_sleep (2);
+	break;
+      }
+    }
+  }
 
   if(h)
     strfcpy(prompt, _("Bounce message to: "), sizeof(prompt));
@@ -391,7 +414,7 @@ static int _mutt_pipe_message (HEADER *h, char *cmd,
     }
       
     pipe_msg (h, fpout, decode, print);
-    fclose (fpout);
+    safe_fclose (&fpout);
     rc = mutt_wait_filter (thepid);
   }
   else
@@ -706,8 +729,6 @@ int mutt_save_message (HEADER *h, int delete,
   char prompt[SHORT_STRING], buf[_POSIX_PATH_MAX];
   CONTEXT ctx;
   struct stat st;
-  BUFFY *tmp = NULL;
-  struct utimbuf ut;
 
   *redraw = 0;
 
@@ -841,26 +862,7 @@ int mutt_save_message (HEADER *h, int delete,
     mx_close_mailbox (&ctx, NULL);
 
     if (need_buffy_cleanup)
-    {
-      if (option(OPTCHECKMBOXSIZE))
-      {
-	tmp = mutt_find_mailbox (buf);
-	if (tmp && !tmp->new)
-	  mutt_update_mailbox (tmp);
-      }
-      else
-      {
-	/* fix up the times so buffy won't get confused */
-	if (st.st_mtime > st.st_atime)
-	{
-	  ut.actime = st.st_atime;
-	  ut.modtime = time (NULL);
-	  utime (buf, &ut); 
-	}
-	else
-	  utime (buf, NULL);
-      }
-    }
+      mutt_buffy_cleanup (ctx.path, &st);
 
     mutt_clear_error ();
     return (0);

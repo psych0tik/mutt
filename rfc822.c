@@ -757,12 +757,17 @@ ADDRESS *rfc822_cpy_adr_real (ADDRESS *addr)
 }
 
 /* this should be rfc822_cpy_adrlist */
-ADDRESS *rfc822_cpy_adr (ADDRESS *addr)
+ADDRESS *rfc822_cpy_adr (ADDRESS *addr, int prune)
 {
   ADDRESS *top = NULL, *last = NULL;
   
   for (; addr; addr = addr->next)
   {
+    if (prune && addr->group && (!addr->next || !addr->next->mailbox))
+    {
+      addr = addr->next;
+      continue;
+    }
     if (last)
     {
       last->next = rfc822_cpy_adr_real (addr);
@@ -775,7 +780,7 @@ ADDRESS *rfc822_cpy_adr (ADDRESS *addr)
 }
 
 /* append list 'b' to list 'a' and return the last element in the new list */
-ADDRESS *rfc822_append (ADDRESS **a, ADDRESS *b)
+ADDRESS *rfc822_append (ADDRESS **a, ADDRESS *b, int prune)
 {
   ADDRESS *tmp = *a;
 
@@ -784,9 +789,9 @@ ADDRESS *rfc822_append (ADDRESS **a, ADDRESS *b)
   if (!b)
     return tmp;
   if (tmp)
-    tmp->next = rfc822_cpy_adr (b);
+    tmp->next = rfc822_cpy_adr (b, prune);
   else
-    tmp = *a = rfc822_cpy_adr (b);
+    tmp = *a = rfc822_cpy_adr (b, prune);
   while (tmp && tmp->next)
     tmp = tmp->next;
   return tmp;
@@ -816,7 +821,6 @@ int rfc822_valid_msgid (const char *msgid)
    * domain-literal = "[" *(dtext / quoted-pair) "]"
    */
 
-  char* dom;
   unsigned int l, i;
 
   if (!msgid || !*msgid)
@@ -827,7 +831,7 @@ int rfc822_valid_msgid (const char *msgid)
     return -1;
   if (msgid[0] != '<' || msgid[l-1] != '>')
     return -1;
-  if (!(dom = strrchr (msgid, '@')))
+  if (!(strrchr (msgid, '@')))
     return -1;
 
   /* TODO: complete parser */

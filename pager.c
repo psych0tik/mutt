@@ -812,8 +812,14 @@ resolve_types (char *buf, char *raw, struct line_t *lineInfo, int n, int last,
   if (lineInfo[n].type == MT_COLOR_NORMAL || 
       lineInfo[n].type == MT_COLOR_QUOTED)
   {
-    i = 0;
+    size_t nl;
 
+    /* don't consider line endings part of the buffer
+     * for regex matching */
+    if ((nl = mutt_strlen (buf)) > 0 && buf[nl-1] == '\n')
+      buf[nl-1] = 0;
+
+    i = 0;
     offset = 0;
     lineInfo[n].chunks = 0;
     do
@@ -863,6 +869,8 @@ resolve_types (char *buf, char *raw, struct line_t *lineInfo, int n, int last,
       else
 	offset = (lineInfo[n].syntax)[i].last;
     } while (found || null_rx);
+    if (nl > 0)
+      buf[nl] = '\n';
   }
 }
 
@@ -988,18 +996,18 @@ trim_incomplete_mbyte(unsigned char *buf, size_t len)
 }
 
 static int
-fill_buffer (FILE *f, LOFF_T *last_pos, LOFF_T offset, unsigned char *buf, 
-	     unsigned char *fmt, size_t blen, int *buf_ready)
+fill_buffer (FILE *f, LOFF_T *last_pos, LOFF_T offset, unsigned char **buf,
+	     unsigned char **fmt, size_t *blen, int *buf_ready)
 {
-  unsigned char *p;
+  unsigned char *p, *q;
   static int b_read;
-  
+  int l;
+
   if (*buf_ready == 0)
   {
-    buf[blen - 1] = 0;
     if (offset != *last_pos)
       fseeko (f, offset, 0);
-    if (fgets ((char *) buf, blen - 1, f) == NULL)
+    if ((*buf = (unsigned char *) mutt_read_line ((char *) *buf, blen, f, &l, M_EOL)) == NULL)
     {
       fmt[0] = 0;
       return (-1);
@@ -1008,26 +1016,29 @@ fill_buffer (FILE *f, LOFF_T *last_pos, LOFF_T offset, unsigned char *buf,
     b_read = (int) (*last_pos - offset);
     *buf_ready = 1;
 
+    safe_realloc (fmt, *blen);
+
     /* incomplete mbyte characters trigger a segfault in regex processing for
      * certain versions of glibc. Trim them if necessary. */
-    if (b_read == blen - 2)
-      b_read -= trim_incomplete_mbyte(buf, b_read);
+    if (b_read == *blen - 2)
+      b_read -= trim_incomplete_mbyte(*buf, b_read);
     
     /* copy "buf" to "fmt", but without bold and underline controls */
-    p = buf;
+    p = *buf;
+    q = *fmt;
     while (*p)
     {
-      if (*p == '\010' && (p > buf))
+      if (*p == '\010' && (p > *buf))
       {
 	if (*(p+1) == '_')	/* underline */
 	  p += 2;
 	else if (*(p+1))	/* bold or overstrike */
 	{
-	  *(fmt-1) = *(p+1);
+	  *(q-1) = *(p+1);
 	  p += 2;
 	}
 	else			/* ^H */
-	  *fmt++ = *p++;
+	  *q++ = *p++;
       }
       else if (*p == '\033' && *(p+1) == '[' && is_ansi (p + 2))
       {
@@ -1041,9 +1052,9 @@ fill_buffer (FILE *f, LOFF_T *last_pos, LOFF_T offset, unsigned char *buf,
 	  ;
       }
       else
-	*fmt++ = *p++;
+	*q++ = *p++;
     }
-    *fmt = 0;
+    *q = 0;
   }
   return b_read;
 }
@@ -1228,7 +1239,8 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
 	      int *last, int *max, int flags, struct q_class_t **QuoteList,
 	      int *q_level, int *force_redraw, regex_t *SearchRE)
 {
-  unsigned char buf[LONG_STRING], fmt[LONG_STRING];
+  unsigned char *buf = NULL, *fmt = NULL;
+  size_t buflen = 0;
   unsigned char *buf_ptr = buf;
   int ch, vch, col, cnt, b_read;
   int buf_ready = 0, change_last = 0;
@@ -1236,6 +1248,7 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
   int offset;
   int def_color;
   int m;
+  int rc = -1;
   ansi_attr a = {0,0,0,-1};
   regmatch_t pmatch[1];
 
@@ -1264,11 +1277,11 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
     if ((*lineInfo)[n].type == -1)
     {
       /* determine the line class */
-      if (fill_buffer (f, last_pos, (*lineInfo)[n].offset, buf, fmt, sizeof (buf), &buf_ready) < 0)
+      if (fill_buffer (f, last_pos, (*lineInfo)[n].offset, &buf, &fmt, &buflen, &buf_ready) < 0)
       {
 	if (change_last)
 	  (*last)--;
-	return (-1);
+	goto out;
       }
 
       resolve_types ((char *) fmt, (char *) buf, *lineInfo, n, *last,
@@ -1293,11 +1306,11 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
   if ((flags & M_SHOWCOLOR) && !(*lineInfo)[n].continuation &&
       (*lineInfo)[n].type == MT_COLOR_QUOTED && (*lineInfo)[n].quote == NULL)
   {
-    if (fill_buffer (f, last_pos, (*lineInfo)[n].offset, buf, fmt, sizeof (buf), &buf_ready) < 0)
+    if (fill_buffer (f, last_pos, (*lineInfo)[n].offset, &buf, &fmt, &buflen, &buf_ready) < 0)
     {
       if (change_last)
 	(*last)--;
-      return (-1);
+      goto out;
     }
     regexec ((regex_t *) QuoteRegexp.rx, (char *) fmt, 1, pmatch, 0);
     (*lineInfo)[n].quote = classify_quote (QuoteList,
@@ -1308,11 +1321,11 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
 
   if ((flags & M_SEARCH) && !(*lineInfo)[n].continuation && (*lineInfo)[n].search_cnt == -1) 
   {
-    if (fill_buffer (f, last_pos, (*lineInfo)[n].offset, buf, fmt, sizeof (buf), &buf_ready) < 0)
+    if (fill_buffer (f, last_pos, (*lineInfo)[n].offset, &buf, &fmt, &buflen, &buf_ready) < 0)
     {
       if (change_last)
 	(*last)--;
-      return (-1);
+      goto out;
     }
 
     offset = 0;
@@ -1341,20 +1354,22 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
   if (!(flags & M_SHOW) && (*lineInfo)[n+1].offset > 0)
   {
     /* we've already scanned this line, so just exit */
-    return (0);
+    rc = 0;
+    goto out;
   }
   if ((flags & M_SHOWCOLOR) && *force_redraw && (*lineInfo)[n+1].offset > 0)
   {
     /* no need to try to display this line... */
-    return (1); /* fake display */
+    rc = 1;
+    goto out; /* fake display */
   }
 
-  if ((b_read = fill_buffer (f, last_pos, (*lineInfo)[n].offset, buf, fmt, 
-			      sizeof (buf), &buf_ready)) < 0)
+  if ((b_read = fill_buffer (f, last_pos, (*lineInfo)[n].offset, &buf, &fmt, 
+			     &buflen, &buf_ready)) < 0)
   {
     if (change_last)
       (*last)--;
-    return (-1);
+    goto out;
   }
 
   /* now chose a good place to break the line */
@@ -1398,7 +1413,10 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
 
   /* if we don't need to display the line we are done */
   if (!(flags & M_SHOW))
-    return 0;
+  {
+    rc = 0;
+    goto out;
+  }
 
   /* display the line */
   format_line (lineInfo, n, buf, flags, &a, cnt, &ch, &vch, &col, &special);
@@ -1459,7 +1477,12 @@ display_line (FILE *f, LOFF_T *last_pos, struct line_t **lineInfo, int n,
   if (!(flags & M_SHOW))
     flags = 0;
 
-  return (flags);
+  rc = flags;
+
+out:
+  FREE(&buf);
+  FREE(&fmt);
+  return rc;
 }
 
 static int
@@ -1499,7 +1522,7 @@ static struct mapping_t PagerHelpExtra[] = {
 int 
 mutt_pager (const char *banner, const char *fname, int flags, pager_t *extra)
 {
-  static char searchbuf[STRING];
+  static char searchbuf[STRING] = "";
   char buffer[LONG_STRING];
   char helpstr[SHORT_STRING*2];
   char tmphelp[SHORT_STRING*2];
@@ -1508,7 +1531,7 @@ mutt_pager (const char *banner, const char *fname, int flags, pager_t *extra)
   struct q_class_t *QuoteList = NULL;
   int i, j, ch = 0, rc = -1, hideQuoted = 0, q_level = 0, force_redraw = 0;
   int lines = 0, curline = 0, topline = 0, oldtopline = 0, err, first = 1;
-  int r = -1, wrapped = 0;
+  int r = -1, wrapped = 0, searchctx = 0;
   int redraw = REDRAW_FULL;
   FILE *fp = NULL;
   LOFF_T last_pos = 0, last_offset = 0;
@@ -1542,7 +1565,7 @@ mutt_pager (const char *banner, const char *fname, int flags, pager_t *extra)
   if (stat (fname, &sb) != 0)
   {
     mutt_perror (fname);
-    fclose (fp);
+    safe_fclose (&fp);
     return (-1);
   }
   unlink (fname);
@@ -1744,21 +1767,21 @@ mutt_pager (const char *banner, const char *fname, int flags, pager_t *extra)
       SETCOLOR (MT_COLOR_STATUS);
       BKGDSET (MT_COLOR_STATUS);
       CLEARLINE (statusoffset);
-      if (IsHeader (extra))
+
+      if (IsHeader (extra) || IsMsgAttach (extra))
       {
 	size_t l1 = COLS * MB_LEN_MAX;
 	size_t l2 = sizeof (buffer);
-	hfi.hdr = extra->hdr;
+	hfi.hdr = (IsHeader (extra)) ? extra->hdr : extra->bdy->hdr;
 	mutt_make_string_info (buffer, l1 < l2 ? l1 : l2, NONULL (PagerFmt), &hfi, M_FORMAT_MAKEPRINT);
+	mutt_paddstr (COLS, buffer);
       }
-      else if (IsMsgAttach (extra))
+      else
       {
-	size_t l1 = COLS * MB_LEN_MAX;
-	size_t l2 = sizeof (buffer);
-	hfi.hdr = extra->bdy->hdr;
-	mutt_make_string_info (buffer, l1 < l2 ? l1 : l2, NONULL (PagerFmt), &hfi, M_FORMAT_MAKEPRINT);
+	char bn[STRING];
+	snprintf (bn, sizeof (bn), "%s (%s)", banner, pager_progress_str);
+	mutt_paddstr (COLS, bn);
       }
-      mutt_paddstr (COLS, IsHeader (extra) || IsMsgAttach (extra) ?  buffer : banner);
       BKGDSET (MT_COLOR_NORMAL);
       SETCOLOR (MT_COLOR_NORMAL);
     }
@@ -1965,12 +1988,17 @@ mutt_pager (const char *banner, const char *fname, int flags, pager_t *extra)
 	{
 	  wrapped = 0;
 
+	  if (SearchContext > 0 && SearchContext < LINES - 2 - option (OPTHELP) ? 1 : 0)
+	    searchctx = SearchContext;
+	  else
+	    searchctx = 0;
+
 search_next:
 	  if ((!SearchBack && ch==OP_SEARCH_NEXT) ||
 	      (SearchBack &&ch==OP_SEARCH_OPPOSITE))
 	  {
 	    /* searching forward */
-	    for (i = wrapped ? 0 : topline + 1; i < lastLine; i++)
+	    for (i = wrapped ? 0 : topline + searchctx + 1; i < lastLine; i++)
 	    {
 	      if ((!hideQuoted || lineInfo[i].type != MT_COLOR_QUOTED) && 
 		    !lineInfo[i].continuation && lineInfo[i].search_cnt > 0)
@@ -1991,7 +2019,7 @@ search_next:
 	  else
 	  {
 	    /* searching backward */
-	    for (i = wrapped ? lastLine : topline - 1; i >= 0; i--)
+	    for (i = wrapped ? lastLine : topline + searchctx - 1; i >= 0; i--)
 	    {
 	      if ((!hideQuoted || (has_types && 
 		    lineInfo[i].type != MT_COLOR_QUOTED)) && 
@@ -2012,7 +2040,12 @@ search_next:
 	  }
 
 	  if (lineInfo[topline].search_cnt > 0)
+	  {
 	    SearchFlag = M_SEARCH;
+	    /* give some context for search results */
+	    if (topline - searchctx > 0)
+	      topline -= searchctx;
+	  }
 
 	  break;
 	}
@@ -2021,9 +2054,10 @@ search_next:
       case OP_SEARCH:
       case OP_SEARCH_REVERSE:
         strfcpy (buffer, searchbuf, sizeof (buffer));
-	if (mutt_get_field ((SearchBack ? _("Reverse search: ") :
-			  _("Search: ")), buffer, sizeof (buffer),
-			  M_CLEAR) != 0)
+	if (mutt_get_field ((ch == OP_SEARCH || ch == OP_SEARCH_NEXT) ?
+			    _("Search for: ") : _("Reverse search for: "),
+			    buffer, sizeof (buffer),
+			    M_CLEAR) != 0)
 	  break;
 
 	if (!strcmp (buffer, searchbuf))
@@ -2120,7 +2154,17 @@ search_next:
 	    mutt_error _("Not found.");
 	  }
 	  else
+	  {
 	    SearchFlag = M_SEARCH;
+	    /* give some context for search results */
+	    if (SearchContext > 0 && SearchContext < LINES - 2 - option (OPTHELP) ? 1 : 0)
+	      searchctx = SearchContext;
+	    else
+	      searchctx = 0;
+	    if (topline - searchctx > 0)
+	      topline -= searchctx;
+	  }
+
 	}
 	redraw = REDRAW_BODY;
 	break;
@@ -2275,6 +2319,20 @@ search_next:
 	  mutt_set_flag (Context, extra->hdr, M_TAG, 0);
 	redraw = REDRAW_STATUS | REDRAW_INDEX;
 	if (option (OPTRESOLVE))
+	{
+	  ch = -1;
+	  rc = OP_MAIN_NEXT_UNDELETED;
+	}
+	break;
+
+      case OP_MAIN_SET_FLAG:
+      case OP_MAIN_CLEAR_FLAG:
+	CHECK_MODE(IsHeader (extra));
+	CHECK_READONLY;
+
+	if (mutt_change_flag (extra->hdr, (ch == OP_MAIN_SET_FLAG)) == 0)
+	  redraw |= REDRAW_STATUS | REDRAW_INDEX;
+	if (extra->hdr->deleted && option (OPTRESOLVE))
 	{
 	  ch = -1;
 	  rc = OP_MAIN_NEXT_UNDELETED;
@@ -2677,7 +2735,7 @@ search_next:
     }
   }
 
-  fclose (fp);
+  safe_fclose (&fp);
   if (IsHeader (extra))
   {
     Context->msgnotreadyet = -1;

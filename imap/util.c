@@ -1,22 +1,22 @@
 /*
  * Copyright (C) 1996-8 Michael R. Elkins <me@mutt.org>
  * Copyright (C) 1996-9 Brandon Long <blong@fiction.net>
- * Copyright (C) 1999-2008 Brendan Cully <brendan@kublai.com>
- * 
+ * Copyright (C) 1999-2009 Brendan Cully <brendan@kublai.com>
+ *
  *     This program is free software; you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation; either version 2 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *     This program is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU General Public License
  *     along with this program; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */ 
+ */
 
 /* general IMAP utility functions */
 
@@ -54,6 +54,7 @@
 int imap_expand_path (char* path, size_t len)
 {
   IMAP_MBOX mx;
+  IMAP_DATA* idata;
   ciss_url_t url;
   char fixedpath[LONG_STRING];
   int rc;
@@ -61,8 +62,9 @@ int imap_expand_path (char* path, size_t len)
   if (imap_parse_path (path, &mx) < 0)
     return -1;
 
+  idata = imap_conn_find (&mx.account, M_IMAP_CONN_NONEW);
   mutt_account_tourl (&mx.account, &url);
-  imap_fix_path(NULL, mx.mbox, fixedpath, sizeof (fixedpath));
+  imap_fix_path (idata, mx.mbox, fixedpath, sizeof (fixedpath));
   url.path = fixedpath;
 
   rc = url_ciss_tostring (&url, path, len, U_DECODE_PASSWD);
@@ -224,7 +226,7 @@ int imap_parse_path (const char* path, IMAP_MBOX* mx)
     else
       /* walk past closing '}' */
       mx->mbox = safe_strdup (c+1);
-  
+
     if ((c = strrchr (tmp, '@')))
     {
       *c = '\0';
@@ -232,14 +234,14 @@ int imap_parse_path (const char* path, IMAP_MBOX* mx)
       strfcpy (tmp, c+1, sizeof (tmp));
       mx->account.flags |= M_ACCT_USER;
     }
-  
+
     if ((n = sscanf (tmp, "%127[^:/]%127s", mx->account.host, tmp)) < 1)
     {
       dprint (1, (debugfile, "imap_parse_path: NULL host in %s\n", path));
       FREE (&mx->mbox);
       return -1;
     }
-  
+
     if (n > 1) {
       if (sscanf (tmp, ":%hu%127s", &(mx->account.port), tmp) >= 1)
 	mx->account.flags |= M_ACCT_PORT;
@@ -266,10 +268,28 @@ int imap_parse_path (const char* path, IMAP_MBOX* mx)
 /* silly helper for mailbox name string comparisons, because of INBOX */
 int imap_mxcmp (const char* mx1, const char* mx2)
 {
+  char* b1;
+  char* b2;
+  int rc;
+
+  if (!mx1 || !*mx1)
+    mx1 = "INBOX";
+  if (!mx2 || !*mx2)
+    mx2 = "INBOX";
   if (!ascii_strcasecmp (mx1, "INBOX") && !ascii_strcasecmp (mx2, "INBOX"))
     return 0;
-  
-  return mutt_strcmp (mx1, mx2);
+
+  b1 = safe_malloc (strlen (mx1) + 1);
+  b2 = safe_malloc (strlen (mx2) + 1);
+
+  imap_fix_path (NULL, mx1, b1, strlen (mx1) + 1);
+  imap_fix_path (NULL, mx2, b2, strlen (mx2) + 1);
+
+  rc = mutt_strcmp (b1, b2);
+  FREE (&b1);
+  FREE (&b2);
+
+  return rc;
 }
 
 /* imap_pretty_mailbox: called by mutt_pretty_mailbox to make IMAP paths
@@ -389,23 +409,24 @@ void imap_free_idata (IMAP_DATA** idata)
  * are not required to do this.
  * Moreover, IMAP servers may dislike the path ending with the delimiter.
  */
-char *imap_fix_path (IMAP_DATA *idata, char *mailbox, char *path, 
+char *imap_fix_path (IMAP_DATA *idata, const char *mailbox, char *path,
     size_t plen)
 {
   int i = 0;
-  char delim;
-  
+  char delim = '\0';
+
   if (idata)
     delim = idata->delim;
-  else if (ImapDelimChars && ImapDelimChars[0])
-    delim = ImapDelimChars[0];
-  else
-    delim = '/';
 
   while (mailbox && *mailbox && i < plen - 1)
   {
-    if (strchr(ImapDelimChars, *mailbox) || *mailbox == delim)
+    if ((ImapDelimChars && strchr(ImapDelimChars, *mailbox))
+        || *mailbox == delim)
     {
+      /* use connection delimiter if known. Otherwise use user delimiter */
+      if (!idata)
+        delim = *mailbox;
+
       while (*mailbox &&
 	     (strchr(ImapDelimChars, *mailbox) || *mailbox == delim))
         mailbox++;
@@ -514,7 +535,7 @@ time_t imap_parse_date (char *s)
   struct tm t;
   time_t tz;
 
-  t.tm_mday = (s[0] == ' '? s[1] - '0' : (s[0] - '0') * 10 + (s[1] - '0'));  
+  t.tm_mday = (s[0] == ' '? s[1] - '0' : (s[0] - '0') * 10 + (s[1] - '0'));
   s += 2;
   if (*s != '-')
     return 0;
@@ -582,7 +603,7 @@ void imap_quote_string (char *dest, size_t dlen, const char *src)
   *pt++ = '"';
   /* save room for trailing quote-char */
   dlen -= 2;
-  
+
   for (; *s && dlen; s++)
   {
     if (strchr (quote, *s))
@@ -662,7 +683,7 @@ void imap_unmunge_mbox_name (char *s)
     imap_utf7_decode (&buf);
     strncpy (s, buf, strlen (s));
   }
-  
+
   FREE (&buf);
 }
 
@@ -688,10 +709,10 @@ int imap_wordcasecmp(const char *a, const char *b)
   return ascii_strcasecmp(a, tmp);
 }
 
-/* 
+/*
  * Imap keepalive: poll the current folder to keep the
  * connection alive.
- * 
+ *
  */
 
 static RETSIGTYPE alrm_handler (int sig)
@@ -740,7 +761,7 @@ int imap_wait_keepalive (pid_t pid)
   int rc;
 
   short imap_passive = option (OPTIMAPPASSIVE);
-  
+
   set_option (OPTIMAPPASSIVE);
   set_option (OPTKEEPQUIET);
 
@@ -765,7 +786,7 @@ int imap_wait_keepalive (pid_t pid)
   }
 
   alarm (0);	/* cancel a possibly pending alarm */
-  
+
   sigaction (SIGALRM, &oldalrm, NULL);
   sigprocmask (SIG_SETMASK, &oldmask, NULL);
 

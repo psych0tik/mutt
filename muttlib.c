@@ -252,6 +252,21 @@ LIST *mutt_add_list_n (LIST *head, const void *data, size_t len)
   return head;
 }
 
+LIST *mutt_find_list (LIST *l, const char *data)
+{
+  LIST *p = l;
+
+  while (p)
+  {
+    if (data == p->data)
+      return p;
+    if (data && p->data && mutt_strcmp (p->data, data) == 0)
+      return p;
+    p = p->next;
+  }
+  return NULL;
+}
+
 void mutt_free_list (LIST **list)
 {
   LIST *p;
@@ -759,7 +774,7 @@ void mutt_pretty_mailbox (char *s, size_t buflen)
   char *p = s, *q = s;
   size_t len;
   url_scheme_t scheme;
-  char tmp[_POSIX_PATH_MAX];
+  char tmp[PATH_MAX];
 
   scheme = url_check_scheme (s);
 
@@ -1093,7 +1108,7 @@ void mutt_FormatString (char *dest,		/* output buffer */
       if ((pid = mutt_create_filter(command->data, NULL, &filter, NULL)))
       {
         n = fread(dest, 1, destlen /* already decremented */, filter);
-        fclose(filter);
+        safe_fclose (&filter);
         dest[n] = '\0';
         while (dest[n-1] == '\n' || dest[n-1] == '\r')
           dest[--n] = '\0';

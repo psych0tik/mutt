@@ -576,6 +576,8 @@ static void man_print_strval (const char *v, FILE *out)
       fputs ("\\(rq", out);
     else if (*v == '\\')
       fputs ("\\\\", out);
+    else if (*v == '-')
+      fputs ("\\-", out);
     else
       fputc (*v, out);
   }
@@ -697,8 +699,11 @@ static void print_confline (const char *varname, int type, const char *val, FILE
 	man_print_strval (val, out);
 	fputs ("\\(rq\n", out);
       }
-      else
-	fprintf (out, "Default: %s\n", val);
+      else {
+	fputs ("Default: ", out);
+	man_print_strval (val, out);
+	fputs ("\n", out);
+      }
 
       fputs (".fi", out);
 
@@ -1040,6 +1045,8 @@ static int print_it (int special, char *str, FILE *out, int docstat)
 		fputs ("\\(rq", out);
 	      else if (*str == '\\')
 		fputs ("\\\\", out);
+              else if (*str == '-')
+                fputs ("\\-", out);
 	      else if (!strncmp (str, "``", 2))
 	      {
 		fputs ("\\(lq", out);
@@ -1143,7 +1150,7 @@ static int print_it (int special, char *str, FILE *out, int docstat)
 	}
 	case SP_END_TAB:
 	{
-	  fputs ("\n</screen>", out);
+	  fputs ("</screen>", out);
 	  docstat &= ~D_TAB;
 	  docstat |= D_NL;
 	  break;
@@ -1155,34 +1162,36 @@ static int print_it (int special, char *str, FILE *out, int docstat)
 	    fputs ("\n</para>\n", out);
 	    docstat &= ~D_PA;
 	  }
-	  fputs ("\n<variablelist>\n", out);
+	  fputs ("\n<informaltable>\n<tgroup cols=\"2\">\n<tbody>\n", out);
 	  docstat |= D_DL;
 	  break;
 	}
 	case SP_DT:
 	{
-	  fputs ("<varlistentry><term>", out);
+	  fputs ("<row><entry>", out);
 	  break;
 	}
 	case SP_DD:
 	{
 	  docstat |= D_DD;
 	  if (docstat & D_DL)
-	    fputs("</term>\n", out);
-	  fputs ("<listitem><para>", out);
+	    fputs("</entry><entry>", out);
+	  else
+	    fputs ("<listitem><para>", out);
 	  break;
 	}
         case SP_END_DD:
         {
-	  docstat &= ~D_DD;
-	  fputs ("</para></listitem>", out);
 	  if (docstat & D_DL)
-	    fputs("</varlistentry>\n", out);
+	    fputs ("</entry></row>\n", out);
+	  else
+	    fputs ("</para></listitem>", out);
+	  docstat &= ~D_DD;
 	  break;
         }
 	case SP_END_DL:
 	{
-	  fputs ("</para></listitem></varlistentry></variablelist>\n", out);
+	  fputs ("</entry></row></tbody></tgroup></informaltable>\n", out);
 	  docstat &= ~(D_DD|D_DL);
 	  break;
 	}
