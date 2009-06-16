@@ -32,3 +32,4 @@ stamp-h1
 debian/stamp-patched
 obj-i486-linux-gnu-patched/
 obj-i486-linux-gnu/
+tags
