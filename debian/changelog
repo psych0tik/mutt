@@ -1,3 +1,11 @@
+mutt (1.5.20-2) unstable; urgency=low
+
+  * debian/patches/series:
+    + upstream/533209-mutt_perror.patch: better error reporting if a mailbox
+      cannot be opened (Closes: 533209)
+
+ -- Antonio Radici <antonio@dyne.org>  Tue, 16 Jun 2009 23:20:32 +0100
+
 mutt (1.5.20-1) unstable; urgency=low
 
   * New upstream release, includes the following features:

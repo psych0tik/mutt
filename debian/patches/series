@@ -40,6 +40,7 @@ misc/smime.rc
 #upstream/502628-attach_charset-doc.patch
 #upstream/504530-stunnel-account_hook-doc.patch
 #upstream/530887-dovecot-imap.patch
+upstream/533209-mutt_perror.patch
 
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
