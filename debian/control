@@ -4,7 +4,7 @@ Priority: standard
 Maintainer: Christoph Berg <myon@debian.org>
 Uploaders: Adeodato Simó <dato@net.com.org.es>, Antonio Radici <antonio@dyne.org>
 Build-Depends: debhelper (>> 7), quilt, automake, gawk, gettext, xsltproc,
- docbook-xml, docbook-xsl, links, libncurses5-dev, libsasl2-dev, libgnutls-dev,
+ docbook-xml, docbook-xsl, elinks-lite, libncurses5-dev, libsasl2-dev, libgnutls-dev,
  libidn11-dev, zlib1g-dev, libncursesw5-dev, libgdbm-dev, libkrb5-dev, pkg-config,
  libgpgme11-dev
 Standards-Version: 3.8.1

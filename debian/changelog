@@ -5,6 +5,7 @@ mutt (1.5.20-2) unstable; urgency=low
       cannot be opened (Closes: 533209)
   * debian/control:
     + added default-mta to Recommends, removed exim4 (Closes: 533442)
+    + added elinks-lite to B-D, removed links (Closes: 533445)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 16 Jun 2009 23:20:32 +0100
 
