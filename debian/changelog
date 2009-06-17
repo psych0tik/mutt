@@ -1,3 +1,9 @@
+mutt (1.5.20-1+fix533439-atime) unstable; urgency=low
+
+  * upstream test patch to fix the atime issue (See #533439 and upstream #3271)
+
+ -- Antonio Radici <antonio@dyne.org>  Thu, 18 Jun 2009 00:11:11 +0100
+
 mutt (1.5.20-1) unstable; urgency=low
 
   * New upstream release, includes the following features:
