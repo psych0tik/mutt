@@ -56,11 +56,13 @@ add a missing manpage for smime_keys
                 $(srcdir)/gen-map-doc $(top_srcdir)/VERSION $(top_srcdir)/ChangeLog
 --- /dev/null
 +++ b/doc/smime_keys.man
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,69 @@
 +.\" -*-nroff-*-
 +.\"
 +.\"
-+.\"     Copyright (C) 2009 Antonio Radici <antonio@dyne.org>
++.\"     Copyright (C) 2001,2002 Oliver Ehli <elmy@acm.org>
++.\"     Copyright (C) 2001 Mike Schiraldi <raldi@research.netsol.com>
++.\"     Copyright (C) 2003 Bjoern Jacke <bjoern@j3e.de>
 +.\"
 +.\"     This program is free software; you can redistribute it and/or modify
 +.\"     it under the terms of the GNU General Public License as published by

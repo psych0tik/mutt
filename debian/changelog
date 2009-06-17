@@ -3,6 +3,7 @@ mutt (1.5.20-2) unstable; urgency=low
   * debian/patches/series:
     + upstream/533209-mutt_perror.patch: better error reporting if a mailbox
       cannot be opened (Closes: 533209)
+    + added the right copyright misc/smime_keys-manpage.patch
   * debian/control:
     + added default-mta to Recommends, removed exim4 (Closes: 533442)
     + added elinks-lite to B-D, removed links (Closes: 533445)
