@@ -3,6 +3,8 @@ mutt (1.5.20-2) unstable; urgency=low
   * debian/patches/series:
     + upstream/533209-mutt_perror.patch: better error reporting if a mailbox
       cannot be opened (Closes: 533209)
+  * debian/control:
+    + added default-mta to Recommends, removed exim4 (Closes: 533442)
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 16 Jun 2009 23:20:32 +0100
 
