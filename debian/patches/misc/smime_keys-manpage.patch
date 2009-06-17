@@ -1,4 +1,5 @@
 add a missing manpage for smime_keys
+see upstream CR #3272
 
 --- a/doc/Makefile.am
 +++ b/doc/Makefile.am
