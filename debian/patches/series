@@ -52,6 +52,9 @@ mutt-patched/sidebar-compat-revert.debian
 mutt-patched/sidebar
 mutt-patched/sidebar-compat-apply.debian
 
+# not applying cleanly at the moment
+mutt-patched/nntp
+
 # unapplied patches for custom packages
 # not-applied/chdir
 # not-applied/indexcolor
