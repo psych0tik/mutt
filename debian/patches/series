@@ -42,6 +42,8 @@ misc/smime.rc
 #upstream/530887-dovecot-imap.patch
 upstream/533209-mutt_perror.patch
 
+upstream/533459-unmailboxes
+
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
