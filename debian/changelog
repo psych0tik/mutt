@@ -1,4 +1,4 @@
-mutt (1.5.20-1+fix533439-atime) unstable; urgency=low
+mutt (1.5.20-1+fix533439) unstable; urgency=low
 
   * upstream test patch to fix the atime issue (See #533439 and upstream #3271)
 
