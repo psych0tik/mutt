@@ -772,7 +772,7 @@ in the "mutt-patched" package.
        else if (ch == '|')
 --- a/mx.c
 +++ b/mx.c
-@@ -596,6 +596,7 @@
+@@ -595,6 +595,7 @@
   *		M_APPEND	open mailbox for appending
   *		M_READONLY	open mailbox in read-only mode
   *		M_QUIET		only print error messages
@@ -780,7 +780,7 @@ in the "mutt-patched" package.
   *	ctx	if non-null, context struct to use
   */
  CONTEXT *mx_open_mailbox (const char *path, int flags, CONTEXT *pctx)
-@@ -618,6 +619,8 @@
+@@ -617,6 +618,8 @@
      ctx->quiet = 1;
    if (flags & M_READONLY)
      ctx->readonly = 1;
@@ -789,7 +789,7 @@ in the "mutt-patched" package.
  
    if (flags & (M_APPEND|M_NEWFOLDER))
    {
-@@ -722,9 +725,21 @@
+@@ -721,9 +724,21 @@
  void mx_fastclose_mailbox (CONTEXT *ctx)
  {
    int i;
