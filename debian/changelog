@@ -10,7 +10,6 @@ mutt (1.5.20-2) unstable; urgency=low
     + mutt-patched/sidebar-{dotted,sorted} added (Closes: 523774)
   * debian/control:
     + added default-mta to Recommends, removed exim4 (Closes: 533442)
-    + added elinks-lite to B-D, removed links (Closes: 533445)
   * debian/mutt.install and debian/extra/lib/mailto-mutt: 
     + added the firefox mailto handler (Closes: 406850)
  
