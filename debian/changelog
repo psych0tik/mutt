@@ -3,7 +3,7 @@ mutt (1.5.20-2) unstable; urgency=low
   * debian/patches/series:
     + upstream/533209-mutt_perror.patch: better error reporting if a mailbox
       cannot be opened (Closes: 533209)
-    + upstream/533459-unmailboxes: fixes the segfault with the unmailboxes 
+    + upstream/533459-unmailboxes.patch: fixes a segfault with the unmailboxes 
       command (Closes: 533459)
     + 533439-mbox-time.patch: do not corrupt the atime/mtime of mboxes when 
       opened (Closes: 533439)

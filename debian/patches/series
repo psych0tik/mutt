@@ -41,7 +41,7 @@ misc/smime.rc
 #upstream/504530-stunnel-account_hook-doc.patch
 #upstream/530887-dovecot-imap.patch
 upstream/533209-mutt_perror.patch
-upstream/533459-unmailboxes
+upstream/533459-unmailboxes.patch
 upstream/533439-mbox-time.patch
 
 misc/hyphen-as-minus.patch
