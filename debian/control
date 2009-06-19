@@ -16,7 +16,7 @@ Homepage: http://www.mutt.org/
 Package: mutt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: default-mta | mail-transport-agent, locales, mime-support, libsasl2-modules, 
+Recommends: exim4 | mail-transport-agent, locales, mime-support, libsasl2-modules, 
  libgpgme11
 Suggests: urlview, aspell | ispell, gnupg, mixmaster, openssl, ca-certificates
 Provides: mail-reader, imap-client
