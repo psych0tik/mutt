@@ -5,8 +5,10 @@ mutt (1.5.20-2) unstable; urgency=low
       cannot be opened (Closes: 533209)
     + upstream/533459-unmailboxes.patch: fixes a segfault with the unmailboxes 
       command (Closes: 533459)
-    + 533439-mbox-time.patch: do not corrupt the atime/mtime of mboxes when 
-      opened (Closes: 533439)
+    + upstream/533439-mbox-time.patch: do not corrupt the atime/mtime of 
+      mboxes when opened (Closes: 533439)
+    + upstream/531430-imapuser.patch: ask the user for the right information
+      while logging in on IMAP servers (Closes: 531430)
     + added the right copyright misc/smime_keys-manpage.patch
     + mutt-patched/sidebar: refreshed
     + mutt-patched/sidebar-{dotted,sorted} added (Closes: 523774)
