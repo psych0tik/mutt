@@ -483,11 +483,6 @@ diff -udprP mutt-1.5.20.orig/OPS mutt-1.5.20/OPS
  OP_VERSION "show the Mutt version number and date"
  OP_VIEW_ATTACH "view attachment using mailcap entry if necessary"
  OP_VIEW_ATTACHMENTS "show MIME attachments"
-diff -udprP mutt-1.5.20.orig/PATCHES mutt-1.5.20/PATCHES
---- mutt-1.5.20.orig/PATCHES	2008-11-11 21:55:46.000000000 +0200
-+++ mutt-1.5.20/PATCHES	2009-06-15 21:05:24.000000000 +0300
-@@ -0,0 +1 @@
-+vvv.nntp
 diff -udprP mutt-1.5.20.orig/account.c mutt-1.5.20/account.c
 --- mutt-1.5.20.orig/account.c	2008-11-11 21:55:46.000000000 +0200
 +++ mutt-1.5.20/account.c	2009-06-15 21:05:24.000000000 +0300
@@ -7606,3 +7601,7 @@ diff -udprP mutt-1.5.20.orig/doc/Muttrc mutt-1.5.20/doc/Muttrc
 +# name of original article author) to article that followuped to newsgroup.
 +# 
 +# 
+--- a/PATCHES
++++ b/PATCHES
+@@ -0,0 +1 @@
++vvv.nntp
