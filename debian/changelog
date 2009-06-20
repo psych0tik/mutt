@@ -21,8 +21,11 @@ mutt (1.5.20-2) unstable; urgency=low
   [ Christoph Berg ]
   * Remove maildir-mtime patch, upstream has a different implementation
     (though with different results; Closes: 533471)
+  * Use elinks-lite (with an alternative Build-Dependency on elinks) for
+    rendering the manual. Thanks to Ahmed El-Mahmoudy for the suggestion.
+    (Closes: 533445)
 
- -- Christoph Berg <myon@debian.org>  Sat, 20 Jun 2009 13:55:09 +0200
+ -- Christoph Berg <myon@debian.org>  Sat, 20 Jun 2009 15:00:50 +0200
 
 mutt (1.5.20-1) unstable; urgency=low
 
