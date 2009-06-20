@@ -3,7 +3,7 @@ sometimes confused, see upstream #3268
 
 --- a/mx.c
 +++ b/mx.c
-@@ -411,7 +411,6 @@
+@@ -415,7 +415,6 @@
    {
      dprint (1, (debugfile, "mx_get_magic(): unable to open file %s for reading.\n",
  		path));

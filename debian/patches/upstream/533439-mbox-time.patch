@@ -1,5 +1,5 @@
 upstream test patch to fix the atime issue
-(See #533439 and upstream #3271)
+(See #533439 and upstream #3271, #1372)
 
 --- a/mbox.c
 +++ b/mbox.c
@@ -8,7 +8,7 @@ upstream test patch to fix the atime issue
  /* if mailbox has at least 1 new message, sets mtime > atime of mailbox
   * so buffy check reports new mail */
 -static void reset_atime (CONTEXT *ctx)
-+static void reset_atime (CONTEXT *ctx, struct stat *st)
++void mbox_reset_atime (CONTEXT *ctx, struct stat *st)
  {
    struct utimbuf utimebuf;
 -  int i;
@@ -73,7 +73,7 @@ upstream test patch to fix the atime issue
    }
  
 +  /* Restore the previous access/modification times */
-+  reset_atime (ctx, &statbuf);
++  mbox_reset_atime (ctx, &statbuf);
 +
    /* reopen the mailbox in read-only mode */
    if ((ctx->fp = fopen (ctx->path, "r")) == NULL)
@@ -90,3 +90,24 @@ upstream test patch to fix the atime issue
    return (0); /* signal success */
  
  bail:  /* Come here in case of disaster */
+--- a/mx.c
++++ b/mx.c
+@@ -1005,6 +1005,8 @@
+   {
+     if (!ctx->quiet)
+       mutt_message _("Mailbox is unchanged.");
++    if (ctx->magic == M_MBOX || ctx->magic == M_MMDF)
++      mbox_reset_atime (ctx, NULL);
+     mx_fastclose_mailbox (ctx);
+     return 0;
+   }
+--- a/mx.h
++++ b/mx.h
+@@ -59,6 +59,7 @@
+ int mmdf_parse_mailbox (CONTEXT *);
+ void mbox_unlock_mailbox (CONTEXT *);
+ int mbox_check_empty (const char *);
++void mbox_reset_atime (CONTEXT *, struct stat *);
+ 
+ int mh_read_dir (CONTEXT *, const char *);
+ int mh_sync_mailbox (CONTEXT *, int *);
