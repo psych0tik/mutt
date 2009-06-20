@@ -6,7 +6,6 @@ debian-specific/sort-patchlist
 
 # features
 features/ifdef
-features/maildir-mtime
 features/xtitles
 features/trash-folder
 features/purge-message
@@ -42,9 +41,7 @@ misc/smime_keys-manpage.patch
 
 mutt.org
 # extra patches for mutt-patched
-mutt-patched/sidebar-compat-revert.debian
 mutt-patched/sidebar
-mutt-patched/sidebar-compat-apply.debian
 mutt-patched/sidebar-dotted
 mutt-patched/sidebar-sorted
 

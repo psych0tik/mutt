@@ -1,5 +1,6 @@
 mutt (1.5.20-2) unstable; urgency=low
 
+  [ Antonio Radici ]
   * debian/patches/series:
     + upstream/533209-mutt_perror.patch: better error reporting if a mailbox
       cannot be opened (Closes: 533209)
@@ -16,8 +17,12 @@ mutt (1.5.20-2) unstable; urgency=low
     + Debian policy bumped to 3.8.2
   * debian/mutt.install and debian/extra/lib/mailto-mutt: 
     + added the firefox mailto handler (Closes: 406850)
- 
- -- Antonio Radici <antonio@dyne.org>  Tue, 16 Jun 2009 23:20:32 +0100
+
+  [ Christoph Berg ]
+  * Remove maildir-mtime patch, upstream has a different implementation
+    (though with different results; Closes: 533471)
+
+ -- Christoph Berg <myon@debian.org>  Sat, 20 Jun 2009 13:55:09 +0200
 
 mutt (1.5.20-1) unstable; urgency=low
 
