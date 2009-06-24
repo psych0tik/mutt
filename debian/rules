@@ -6,7 +6,7 @@ include /usr/share/quilt/quilt.make
 
 ###
 # build a separate mutt-patched package?
-BUILD_PATCHED := no
+BUILD_PATCHED := yes
 ###
 # header cache backend
 # HCACHE_DB := bdb
