@@ -10,6 +10,8 @@ mutt (1.5.20-2) unstable; urgency=low
       mboxes when opened (Closes: 533439)
     + upstream/531430-imapuser.patch: ask the user for the right information
       while logging in on IMAP servers (Closes: 531430)
+    + upstream/534543-imap-port.patch: correctly parse the port in an IMAP
+      url (Closes: 534543)
     + added the right copyright misc/smime_keys-manpage.patch
     + mutt-patched/sidebar: refreshed
     + mutt-patched/sidebar-{dotted,sorted} added (Closes: 523774)
