@@ -1,8 +1,10 @@
 add a missing manpage for smime_keys
 see upstream CR #3272
 
---- a/doc/Makefile.am
-+++ b/doc/Makefile.am
+Index: mutt/doc/Makefile.am
+===================================================================
+--- mutt.orig/doc/Makefile.am	2009-06-25 12:35:40.000000000 +0200
++++ mutt/doc/Makefile.am	2009-06-25 12:36:48.000000000 +0200
 @@ -10,6 +10,7 @@
  noinst_PROGRAMS = makedoc
  
@@ -36,7 +38,7 @@ see upstream CR #3272
  		rm -f $(DESTDIR)$(mandir)/man1/$$f ; \
  	done
  	for f in muttrc.5 mbox.5 mmdf.5 ; do \
-@@ -145,7 +147,7 @@
+@@ -142,7 +144,7 @@
  	rm -rf vars.tmp.1 vars.tmp.2
  
  clean-local:
@@ -45,7 +47,7 @@ see upstream CR #3272
  	rm -f *.aux *.log *.tex *.out
  
  DISTCLEANFILES=manual.txt manual.html manual.xml manual.pdf html \
-@@ -169,6 +171,9 @@
+@@ -166,6 +168,9 @@
  mutt.1: $(srcdir)/mutt.man
  	$(EDIT) $(srcdir)/mutt.man > $@
  
@@ -55,8 +57,10 @@ see upstream CR #3272
  stamp-doc-xml: makedoc$(EXEEXT) $(top_srcdir)/init.h \
                 manual.xml.head $(top_srcdir)/functions.h $(top_srcdir)/OPS* manual.xml.tail \
                 $(srcdir)/gen-map-doc $(top_srcdir)/VERSION $(top_srcdir)/ChangeLog
---- /dev/null
-+++ b/doc/smime_keys.man
+Index: mutt/doc/smime_keys.man
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ mutt/doc/smime_keys.man	2009-06-25 12:36:48.000000000 +0200
 @@ -0,0 +1,69 @@
 +.\" -*-nroff-*-
 +.\"

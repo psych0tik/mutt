@@ -10,8 +10,10 @@ This is the xterm title patch as found on the mutt mailing lists.
     (cleaner code, no functional change, evades conflict with sidebar patch)
 
 == END PATCH
---- a/curs_main.c
-+++ b/curs_main.c
+Index: mutt/curs_main.c
+===================================================================
+--- mutt.orig/curs_main.c	2009-06-25 12:35:37.000000000 +0200
++++ mutt/curs_main.c	2009-06-25 12:35:44.000000000 +0200
 @@ -110,6 +110,19 @@
  
  extern size_t UngetCount;
@@ -46,8 +48,10 @@ This is the xterm title patch as found on the mutt mailing lists.
        }
  
        menu->redraw = 0;
---- a/globals.h
-+++ b/globals.h
+Index: mutt/globals.h
+===================================================================
+--- mutt.orig/globals.h	2009-06-25 12:35:37.000000000 +0200
++++ mutt/globals.h	2009-06-25 12:35:44.000000000 +0200
 @@ -141,6 +141,8 @@
  WHERE char *Tochars;
  WHERE char *Username;
@@ -57,8 +61,10 @@ This is the xterm title patch as found on the mutt mailing lists.
  
  WHERE char *CurrentFolder;
  WHERE char *LastFolder;
---- a/init.c
-+++ b/init.c
+Index: mutt/init.c
+===================================================================
+--- mutt.orig/init.c	2009-06-25 12:35:42.000000000 +0200
++++ mutt/init.c	2009-06-25 12:35:44.000000000 +0200
 @@ -1892,6 +1892,26 @@
  	toggle_option (MuttVars[idx].data);
        else
@@ -86,9 +92,11 @@ This is the xterm title patch as found on the mutt mailing lists.
      }
      else if (myvar || DTYPE (MuttVars[idx].type) == DT_STR ||
  	     DTYPE (MuttVars[idx].type) == DT_PATH ||
---- a/init.h
-+++ b/init.h
-@@ -3347,6 +3347,27 @@
+Index: mutt/init.h
+===================================================================
+--- mutt.orig/init.h	2009-06-25 12:35:42.000000000 +0200
++++ mutt/init.h	2009-06-25 12:35:44.000000000 +0200
+@@ -3337,6 +3337,27 @@
    ** Also see the $$read_inc, $$net_inc and $$time_inc variables and the
    ** ``$tuning'' section of the manual for performance considerations.
    */
@@ -116,9 +124,11 @@ This is the xterm title patch as found on the mutt mailing lists.
    /*--*/
    { NULL, 0, 0, 0, 0 }
  };
---- a/mutt.h
-+++ b/mutt.h
-@@ -447,6 +447,7 @@
+Index: mutt/mutt.h
+===================================================================
+--- mutt.orig/mutt.h	2009-06-25 12:35:37.000000000 +0200
++++ mutt/mutt.h	2009-06-25 12:35:44.000000000 +0200
+@@ -446,6 +446,7 @@
    OPTWRAPSEARCH,
    OPTWRITEBCC,		/* write out a bcc header? */
    OPTXMAILER,
@@ -126,8 +136,10 @@ This is the xterm title patch as found on the mutt mailing lists.
  
    OPTCRYPTUSEGPGME,
    OPTCRYPTUSEPKA,
---- a/pager.c
-+++ b/pager.c
+Index: mutt/pager.c
+===================================================================
+--- mutt.orig/pager.c	2009-06-25 12:35:37.000000000 +0200
++++ mutt/pager.c	2009-06-25 12:35:44.000000000 +0200
 @@ -1784,6 +1784,13 @@
        }
        BKGDSET (MT_COLOR_NORMAL);
@@ -142,8 +154,10 @@ This is the xterm title patch as found on the mutt mailing lists.
      }
  
      if ((redraw & REDRAW_INDEX) && index)
---- a/status.c
-+++ b/status.c
+Index: mutt/status.c
+===================================================================
+--- mutt.orig/status.c	2009-06-25 12:35:37.000000000 +0200
++++ mutt/status.c	2009-06-25 12:35:44.000000000 +0200
 @@ -195,6 +195,8 @@
        break;
  
@@ -153,8 +167,10 @@ This is the xterm title patch as found on the mutt mailing lists.
        if (menu->top + menu->pagelen >= menu->max)
  	cp = menu->top ? "end" : "all";
        else
---- a/mutt_menu.h
-+++ b/mutt_menu.h
+Index: mutt/mutt_menu.h
+===================================================================
+--- mutt.orig/mutt_menu.h	2009-06-25 12:35:37.000000000 +0200
++++ mutt/mutt_menu.h	2009-06-25 12:35:44.000000000 +0200
 @@ -103,6 +103,8 @@
  void menu_current_bottom (MUTTMENU *);
  void menu_check_recenter (MUTTMENU *);

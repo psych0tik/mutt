@@ -35,6 +35,7 @@ upstream/531430-imapuser.patch
 
 # the following two patches are also in upstream hg repo
 # plese drop them if there is a new release
+534543-imap-port.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch

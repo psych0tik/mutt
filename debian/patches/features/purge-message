@@ -26,8 +26,10 @@ of having a trash folder feature.
   - Fixed indentation of "purged" in mutt.h.
 
 == END PATCH
---- a/OPS
-+++ b/OPS
+Index: mutt/OPS
+===================================================================
+--- mutt.orig/OPS	2009-06-25 12:35:37.000000000 +0200
++++ mutt/OPS	2009-06-25 12:36:14.000000000 +0200
 @@ -141,6 +141,7 @@
  OP_PREV_LINE "scroll up one line"
  OP_PREV_PAGE "move to the previous page"
@@ -36,8 +38,10 @@ of having a trash folder feature.
  OP_QUERY "query external program for addresses"
  OP_QUERY_APPEND "append new query results to current results"
  OP_QUIT "save changes to mailbox and quit"
---- a/curs_main.c
-+++ b/curs_main.c
+Index: mutt/curs_main.c
+===================================================================
+--- mutt.orig/curs_main.c	2009-06-25 12:35:44.000000000 +0200
++++ mutt/curs_main.c	2009-06-25 12:36:14.000000000 +0200
 @@ -1823,6 +1823,7 @@
  	MAYBE_REDRAW (menu->redraw);
  	break;
@@ -91,8 +95,10 @@ of having a trash folder feature.
  	{
  	  if (option (OPTRESOLVE))
  	  {
---- a/flags.c
-+++ b/flags.c
+Index: mutt/flags.c
+===================================================================
+--- mutt.orig/flags.c	2009-06-25 12:35:48.000000000 +0200
++++ mutt/flags.c	2009-06-25 12:36:14.000000000 +0200
 @@ -104,6 +104,16 @@
        }
        break;
@@ -110,8 +116,10 @@ of having a trash folder feature.
      case M_NEW:
  
        if (!mutt_bit_isset(ctx->rights,M_ACL_SEEN))
---- a/functions.h
-+++ b/functions.h
+Index: mutt/functions.h
+===================================================================
+--- mutt.orig/functions.h	2009-06-25 12:35:37.000000000 +0200
++++ mutt/functions.h	2009-06-25 12:36:14.000000000 +0200
 @@ -120,6 +120,7 @@
    { "toggle-write",		OP_TOGGLE_WRITE,		"%" },
    { "next-thread",		OP_MAIN_NEXT_THREAD,		"\016" },
@@ -128,8 +136,10 @@ of having a trash folder feature.
    { "quit",		OP_QUIT,			"Q" },
    { "exit",		OP_EXIT,			"q" },
    { "reply",		OP_REPLY,			"r" },
---- a/mutt.h
-+++ b/mutt.h
+Index: mutt/mutt.h
+===================================================================
+--- mutt.orig/mutt.h	2009-06-25 12:35:48.000000000 +0200
++++ mutt/mutt.h	2009-06-25 12:36:14.000000000 +0200
 @@ -188,6 +188,7 @@
    M_UNDELETE,
    M_DELETED,
@@ -138,7 +148,7 @@ of having a trash folder feature.
    M_FLAG,
    M_TAG,
    M_UNTAG,
-@@ -705,6 +706,7 @@
+@@ -704,6 +705,7 @@
    unsigned int flagged : 1; 		/* marked important? */
    unsigned int tagged : 1;
    unsigned int appended : 1;		/* has been saved */
@@ -146,8 +156,10 @@ of having a trash folder feature.
    unsigned int deleted : 1;
    unsigned int changed : 1;
    unsigned int attach_del : 1; 		/* has an attachment marked for deletion */
---- a/mx.c
-+++ b/mx.c
+Index: mutt/mx.c
+===================================================================
+--- mutt.orig/mx.c	2009-06-25 12:36:10.000000000 +0200
++++ mutt/mx.c	2009-06-25 12:36:14.000000000 +0200
 @@ -803,6 +803,7 @@
      {
        for (i = 0 ; i < ctx->msgcount ; i++)
@@ -156,8 +168,10 @@ of having a trash folder feature.
  	    && mutt_append_message (ctx_trash, ctx, ctx->hdrs[i], 0, 0) == -1)
  	  {
  	    mx_close_mailbox (ctx_trash, NULL);
---- a/pager.c
-+++ b/pager.c
+Index: mutt/pager.c
+===================================================================
+--- mutt.orig/pager.c	2009-06-25 12:35:44.000000000 +0200
++++ mutt/pager.c	2009-06-25 12:36:14.000000000 +0200
 @@ -2316,12 +2316,15 @@
  	MAYBE_REDRAW (redraw);
  	break;
@@ -195,8 +209,10 @@ of having a trash folder feature.
  	{
  	  if (option (OPTRESOLVE))
  	  {
---- a/pattern.c
-+++ b/pattern.c
+Index: mutt/pattern.c
+===================================================================
+--- mutt.orig/pattern.c	2009-06-25 12:35:37.000000000 +0200
++++ mutt/pattern.c	2009-06-25 12:36:14.000000000 +0200
 @@ -1347,8 +1347,10 @@
        {
  	switch (op)

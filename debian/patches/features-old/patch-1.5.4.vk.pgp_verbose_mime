@@ -1,7 +1,9 @@
 Enable pgp_mime_signature_filename and pgp_mime_signature_description
 
---- a/globals.h
-+++ b/globals.h
+Index: mutt/globals.h
+===================================================================
+--- mutt.orig/globals.h	2009-06-25 12:35:48.000000000 +0200
++++ mutt/globals.h	2009-06-25 12:36:22.000000000 +0200
 @@ -242,6 +242,8 @@
  WHERE char *PgpListSecringCommand;
  WHERE char *PgpListPubringCommand;
@@ -11,9 +13,11 @@ Enable pgp_mime_signature_filename and pgp_mime_signature_description
  
  /*-- formerly in smime.h --*/
  WHERE char *SmimeDefaultKey;
---- a/init.h
-+++ b/init.h
-@@ -2551,6 +2551,18 @@
+Index: mutt/init.h
+===================================================================
+--- mutt.orig/init.h	2009-06-25 12:35:48.000000000 +0200
++++ mutt/init.h	2009-06-25 12:36:22.000000000 +0200
+@@ -2541,6 +2541,18 @@
    ** a line quoted text if it also matches $$smileys. This mostly
    ** happens at the beginning of a line.
    */
@@ -32,8 +36,10 @@ Enable pgp_mime_signature_filename and pgp_mime_signature_description
  
  
  
---- a/pgp.c
-+++ b/pgp.c
+Index: mutt/pgp.c
+===================================================================
+--- mutt.orig/pgp.c	2009-06-25 12:35:36.000000000 +0200
++++ mutt/pgp.c	2009-06-25 12:36:22.000000000 +0200
 @@ -1131,6 +1131,8 @@
    t->disposition = DISPINLINE;
    t->encoding = ENC7BIT;

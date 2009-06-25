@@ -29,9 +29,11 @@ in the "mutt-patched" package.
   - 2008-08-02 myon: Refreshed patch using quilt push -f to remove hunks we do
     not need (Makefile.in).
 
---- a/buffy.c
-+++ b/buffy.c
-@@ -292,6 +292,7 @@
+Index: mutt/buffy.c
+===================================================================
+--- mutt.orig/buffy.c	2009-06-25 12:36:44.000000000 +0200
++++ mutt/buffy.c	2009-06-25 12:36:53.000000000 +0200
+@@ -289,6 +289,7 @@
    char path[_POSIX_PATH_MAX];
    struct stat contex_sb;
    time_t t;
@@ -39,7 +41,7 @@ in the "mutt-patched" package.
  
    sb.st_size=0;
    contex_sb.st_dev=0;
-@@ -331,6 +332,8 @@
+@@ -328,6 +329,8 @@
    
    for (tmp = Incoming; tmp; tmp = tmp->next)
    {
@@ -48,7 +50,7 @@ in the "mutt-patched" package.
  #ifdef USE_IMAP
      if (tmp->magic != M_IMAP)
  #endif
-@@ -388,10 +391,27 @@
+@@ -384,10 +387,27 @@
        case M_MBOX:
        case M_MMDF:
  
@@ -79,7 +81,7 @@ in the "mutt-patched" package.
  	}
  	else if (option(OPTCHECKMBOXSIZE))
  	{
-@@ -401,35 +421,86 @@
+@@ -397,35 +417,86 @@
  	if (tmp->newly_created &&
  	    (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
  	  tmp->newly_created = 0;
@@ -171,8 +173,10 @@ in the "mutt-patched" package.
  	break;
        }
      }
---- a/buffy.h
-+++ b/buffy.h
+Index: mutt/buffy.h
+===================================================================
+--- mutt.orig/buffy.h	2009-06-24 19:37:58.000000000 +0200
++++ mutt/buffy.h	2009-06-25 12:36:53.000000000 +0200
 @@ -25,7 +25,12 @@
    char path[_POSIX_PATH_MAX];
    off_t size;
@@ -186,8 +190,10 @@ in the "mutt-patched" package.
    short notified;		/* user has been notified */
    short magic;			/* mailbox type */
    short newly_created;		/* mbox or mmdf just popped into existence */
---- a/color.c
-+++ b/color.c
+Index: mutt/color.c
+===================================================================
+--- mutt.orig/color.c	2009-06-24 19:37:58.000000000 +0200
++++ mutt/color.c	2009-06-25 12:36:53.000000000 +0200
 @@ -93,6 +93,8 @@
    { "bold",		MT_COLOR_BOLD },
    { "underline",	MT_COLOR_UNDERLINE },
@@ -197,8 +203,10 @@ in the "mutt-patched" package.
    { NULL,		0 }
  };
  
---- a/compose.c
-+++ b/compose.c
+Index: mutt/compose.c
+===================================================================
+--- mutt.orig/compose.c	2009-06-24 19:37:58.000000000 +0200
++++ mutt/compose.c	2009-06-25 12:36:53.000000000 +0200
 @@ -72,7 +72,7 @@
  
  #define HDR_XOFFSET 10
@@ -324,8 +332,10 @@ in the "mutt-patched" package.
  	  mutt_paddstr (W, fcc);
  	  fccSet = 1;
  	}
---- a/curs_main.c
-+++ b/curs_main.c
+Index: mutt/curs_main.c
+===================================================================
+--- mutt.orig/curs_main.c	2009-06-25 12:36:26.000000000 +0200
++++ mutt/curs_main.c	2009-06-25 12:36:53.000000000 +0200
 @@ -26,7 +26,9 @@
  #include "mailbox.h"
  #include "mapping.h"
@@ -424,8 +434,10 @@ in the "mutt-patched" package.
        default:
  	if (menu->menu == MENU_MAIN)
  	  km_error_key (MENU_MAIN);
---- a/flags.c
-+++ b/flags.c
+Index: mutt/flags.c
+===================================================================
+--- mutt.orig/flags.c	2009-06-25 12:36:14.000000000 +0200
++++ mutt/flags.c	2009-06-25 12:36:53.000000000 +0200
 @@ -22,8 +22,10 @@
  
  #include "mutt.h"
@@ -445,8 +457,10 @@ in the "mutt-patched" package.
  }
  
  void mutt_tag_set_flag (int flag, int bf)
---- a/functions.h
-+++ b/functions.h
+Index: mutt/functions.h
+===================================================================
+--- mutt.orig/functions.h	2009-06-25 12:36:35.000000000 +0200
++++ mutt/functions.h	2009-06-25 12:36:53.000000000 +0200
 @@ -169,6 +169,11 @@
    { "decrypt-save",		OP_DECRYPT_SAVE,		NULL },
  
@@ -471,8 +485,10 @@ in the "mutt-patched" package.
    { NULL,		0,				NULL }
  };
  
---- a/globals.h
-+++ b/globals.h
+Index: mutt/globals.h
+===================================================================
+--- mutt.orig/globals.h	2009-06-25 12:36:22.000000000 +0200
++++ mutt/globals.h	2009-06-25 12:36:53.000000000 +0200
 @@ -117,6 +117,7 @@
  WHERE char *SendCharset;
  WHERE char *Sendmail;
@@ -491,9 +507,11 @@ in the "mutt-patched" package.
  #ifdef USE_IMAP
  WHERE short ImapKeepalive;
  WHERE short ImapPipelineDepth;
---- a/init.h
-+++ b/init.h
-@@ -1963,6 +1963,22 @@
+Index: mutt/init.h
+===================================================================
+--- mutt.orig/init.h	2009-06-25 12:36:40.000000000 +0200
++++ mutt/init.h	2009-06-25 12:36:53.000000000 +0200
+@@ -1953,6 +1953,22 @@
    ** not used.
    ** (PGP only)
    */
@@ -516,8 +534,10 @@ in the "mutt-patched" package.
    { "pgp_use_gpg_agent", DT_BOOL, R_NONE, OPTUSEGPGAGENT, 0},
    /*
    ** .pp
---- a/mailbox.h
-+++ b/mailbox.h
+Index: mutt/mailbox.h
+===================================================================
+--- mutt.orig/mailbox.h	2009-06-24 19:37:58.000000000 +0200
++++ mutt/mailbox.h	2009-06-25 12:36:53.000000000 +0200
 @@ -27,6 +27,7 @@
  #define M_NEWFOLDER	(1<<4) /* create a new folder - same as M_APPEND, but uses
  				* safe_fopen() for mbox-style folders.
@@ -526,8 +546,10 @@ in the "mutt-patched" package.
  
  /* mx_open_new_message() */
  #define M_ADD_FROM	1	/* add a From_ line */
---- a/Makefile.am
-+++ b/Makefile.am
+Index: mutt/Makefile.am
+===================================================================
+--- mutt.orig/Makefile.am	2009-06-25 12:36:26.000000000 +0200
++++ mutt/Makefile.am	2009-06-25 12:36:53.000000000 +0200
 @@ -29,7 +29,8 @@
  	score.c send.c sendlib.c signal.c sort.c \
  	status.c system.c thread.c charset.c history.c lib.c \
@@ -538,8 +560,10 @@ in the "mutt-patched" package.
  
  nodist_mutt_SOURCES = $(BUILT_SOURCES)
  
---- a/mbox.c
-+++ b/mbox.c
+Index: mutt/mbox.c
+===================================================================
+--- mutt.orig/mbox.c	2009-06-25 12:36:45.000000000 +0200
++++ mutt/mbox.c	2009-06-25 12:36:53.000000000 +0200
 @@ -104,6 +104,7 @@
      mutt_perror (ctx->path);
      return (-1);
@@ -556,8 +580,10 @@ in the "mutt-patched" package.
  
  #ifdef NFS_ATTRIBUTE_HACK
    if (sb.st_mtime > sb.st_atime)
---- a/menu.c
-+++ b/menu.c
+Index: mutt/menu.c
+===================================================================
+--- mutt.orig/menu.c	2009-06-25 12:36:19.000000000 +0200
++++ mutt/menu.c	2009-06-25 12:36:53.000000000 +0200
 @@ -24,6 +24,7 @@
  #include "mutt_curses.h"
  #include "mutt_menu.h"
@@ -661,8 +687,10 @@ in the "mutt-patched" package.
      else if (option (OPTBRAILLEFRIENDLY))
        move (menu->current - menu->top + menu->offset, 0);
      else
---- a/mutt_curses.h
-+++ b/mutt_curses.h
+Index: mutt/mutt_curses.h
+===================================================================
+--- mutt.orig/mutt_curses.h	2009-06-24 19:37:58.000000000 +0200
++++ mutt/mutt_curses.h	2009-06-25 12:36:53.000000000 +0200
 @@ -64,6 +64,7 @@
  #undef lines
  #endif /* lines */
@@ -680,9 +708,11 @@ in the "mutt-patched" package.
    MT_COLOR_MAX
  };
  
---- a/mutt.h
-+++ b/mutt.h
-@@ -426,6 +426,7 @@
+Index: mutt/mutt.h
+===================================================================
+--- mutt.orig/mutt.h	2009-06-25 12:36:26.000000000 +0200
++++ mutt/mutt.h	2009-06-25 12:36:53.000000000 +0200
+@@ -425,6 +425,7 @@
    OPTSAVEEMPTY,
    OPTSAVENAME,
    OPTSCORE,
@@ -690,7 +720,7 @@ in the "mutt-patched" package.
    OPTSIGDASHES,
    OPTSIGONTOP,
    OPTSORTRE,
-@@ -865,6 +866,7 @@
+@@ -864,6 +865,7 @@
  {
    char *path;
    FILE *fp;
@@ -698,7 +728,7 @@ in the "mutt-patched" package.
    time_t mtime;
    off_t size;
    off_t vsize;
-@@ -905,6 +907,7 @@
+@@ -904,6 +906,7 @@
    unsigned int quiet : 1;	/* inhibit status messages? */
    unsigned int collapsed : 1;   /* are all threads collapsed? */
    unsigned int closing : 1;	/* mailbox is being closed */
@@ -706,8 +736,10 @@ in the "mutt-patched" package.
  
    /* driver hooks */
    void *data;			/* driver specific data */
---- a/muttlib.c
-+++ b/muttlib.c
+Index: mutt/muttlib.c
+===================================================================
+--- mutt.orig/muttlib.c	2009-06-25 12:35:48.000000000 +0200
++++ mutt/muttlib.c	2009-06-25 12:36:53.000000000 +0200
 @@ -1232,6 +1232,8 @@
  	  pl = pw = 1;
  
@@ -770,8 +802,10 @@ in the "mutt-patched" package.
  	break; /* skip rest of input */
        }
        else if (ch == '|')
---- a/mx.c
-+++ b/mx.c
+Index: mutt/mx.c
+===================================================================
+--- mutt.orig/mx.c	2009-06-25 12:36:45.000000000 +0200
++++ mutt/mx.c	2009-06-25 12:36:53.000000000 +0200
 @@ -595,6 +595,7 @@
   *		M_APPEND	open mailbox for appending
   *		M_READONLY	open mailbox in read-only mode
@@ -811,8 +845,10 @@ in the "mutt-patched" package.
  
    if (ctx->mx_close)
      ctx->mx_close (ctx);
---- a/OPS
-+++ b/OPS
+Index: mutt/OPS
+===================================================================
+--- mutt.orig/OPS	2009-06-25 12:36:14.000000000 +0200
++++ mutt/OPS	2009-06-25 12:36:53.000000000 +0200
 @@ -179,3 +179,8 @@
  OP_MAIN_SHOW_LIMIT "show currently active limit pattern"
  OP_MAIN_COLLAPSE_THREAD "collapse/uncollapse current thread"
@@ -822,8 +858,10 @@ in the "mutt-patched" package.
 +OP_SIDEBAR_NEXT "go down to next mailbox"
 +OP_SIDEBAR_PREV "go to previous mailbox"
 +OP_SIDEBAR_OPEN "open hilighted mailbox"
---- a/pager.c
-+++ b/pager.c
+Index: mutt/pager.c
+===================================================================
+--- mutt.orig/pager.c	2009-06-25 12:36:14.000000000 +0200
++++ mutt/pager.c	2009-06-25 12:36:53.000000000 +0200
 @@ -29,6 +29,7 @@
  #include "pager.h"
  #include "attach.h"
@@ -929,8 +967,10 @@ in the "mutt-patched" package.
        default:
  	ch = -1;
  	break;
---- /dev/null
-+++ b/sidebar.c
+Index: mutt/sidebar.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ mutt/sidebar.c	2009-06-25 12:36:53.000000000 +0200
 @@ -0,0 +1,333 @@
 +/*
 + * Copyright (C) ????-2004 Justin Hibbits <jrh29@po.cwru.edu>
@@ -1265,8 +1305,10 @@ in the "mutt-patched" package.
 +	draw_sidebar(menu);
 +}
 +
---- /dev/null
-+++ b/sidebar.h
+Index: mutt/sidebar.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ mutt/sidebar.h	2009-06-25 12:36:53.000000000 +0200
 @@ -0,0 +1,36 @@
 +/*
 + * Copyright (C) ????-2004 Justin Hibbits <jrh29@po.cwru.edu>
@@ -1304,8 +1346,10 @@ in the "mutt-patched" package.
 +void set_buffystats(CONTEXT*);
 +
 +#endif /* SIDEBAR_H */
---- a/doc/Muttrc
-+++ b/doc/Muttrc
+Index: mutt/doc/Muttrc
+===================================================================
+--- mutt.orig/doc/Muttrc	2009-06-24 19:37:58.000000000 +0200
++++ mutt/doc/Muttrc	2009-06-25 12:36:53.000000000 +0200
 @@ -657,6 +657,26 @@
  # $crypt_autosign, $crypt_replysign and $smime_is_default.
  # 
@@ -1333,8 +1377,10 @@ in the "mutt-patched" package.
  # set crypt_autosign=no
  #
  # Name: crypt_autosign
---- a/imap/imap.c
-+++ b/imap/imap.c
+Index: mutt/imap/imap.c
+===================================================================
+--- mutt.orig/imap/imap.c	2009-06-24 19:37:58.000000000 +0200
++++ mutt/imap/imap.c	2009-06-25 12:36:53.000000000 +0200
 @@ -1521,7 +1521,7 @@
  
      imap_munge_mbox_name (munged, sizeof (munged), name);
@@ -1344,8 +1390,10 @@ in the "mutt-patched" package.
  
      if (imap_exec (idata, command, IMAP_CMD_QUEUE) < 0)
      {
---- a/imap/command.c
-+++ b/imap/command.c
+Index: mutt/imap/command.c
+===================================================================
+--- mutt.orig/imap/command.c	2009-06-24 19:37:58.000000000 +0200
++++ mutt/imap/command.c	2009-06-25 12:36:53.000000000 +0200
 @@ -1009,6 +1009,13 @@
  	     opened */
  	  status->uidnext = oldun;

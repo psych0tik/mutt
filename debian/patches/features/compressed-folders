@@ -17,8 +17,10 @@ The home page for this patch is:
   - 2009-09-15 scotton: removed doc/Muttrc for mutt-1.5.19 (only patch doc/Muttrc.head)
 
 == END PATCH
---- /dev/null
-+++ b/compress.c
+Index: mutt/compress.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ mutt/compress.c	2009-06-25 12:36:25.000000000 +0200
 @@ -0,0 +1,499 @@
 +/*
 + * Copyright (C) 1997 Alain Penders <Alain@Finale-Dev.com>
@@ -519,8 +521,10 @@ The home page for this patch is:
 +}
 +
 +#endif /* USE_COMPRESSED */
---- /dev/null
-+++ b/compress.h
+Index: mutt/compress.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ mutt/compress.h	2009-06-25 12:36:26.000000000 +0200
 @@ -0,0 +1,27 @@
 +/*
 + * Copyright (C) 1997 Alain Penders <Alain@Finale-Dev.com>
@@ -549,8 +553,10 @@ The home page for this patch is:
 +int mutt_test_compress_command (const char *);
 +int mutt_check_mailbox_compressed (CONTEXT *);
 +void mutt_fast_close_compressed (CONTEXT *);
---- a/configure.ac
-+++ b/configure.ac
+Index: mutt/configure.ac
+===================================================================
+--- mutt.orig/configure.ac	2009-06-25 12:35:38.000000000 +0200
++++ mutt/configure.ac	2009-06-25 12:36:26.000000000 +0200
 @@ -805,6 +805,11 @@
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
@@ -563,8 +569,10 @@ The home page for this patch is:
  AC_ARG_WITH(exec-shell, AC_HELP_STRING([--with-exec-shell=SHELL], [Specify alternate shell (ONLY if /bin/sh is broken)]),
          [if test $withval != yes; then
                  AC_DEFINE_UNQUOTED(EXECSHELL, "$withval",
---- a/curs_main.c
-+++ b/curs_main.c
+Index: mutt/curs_main.c
+===================================================================
+--- mutt.orig/curs_main.c	2009-06-25 12:36:14.000000000 +0200
++++ mutt/curs_main.c	2009-06-25 12:36:26.000000000 +0200
 @@ -1135,6 +1135,11 @@
          {
  	  int check;
@@ -577,8 +585,10 @@ The home page for this patch is:
  	  mutt_str_replace (&LastFolder, Context->path);
  	  oldcount = Context ? Context->msgcount : 0;
  
---- a/doc/manual.xml.head
-+++ b/doc/manual.xml.head
+Index: mutt/doc/manual.xml.head
+===================================================================
+--- mutt.orig/doc/manual.xml.head	2009-06-25 12:35:42.000000000 +0200
++++ mutt/doc/manual.xml.head	2009-06-25 12:36:26.000000000 +0200
 @@ -5678,6 +5678,205 @@
  
  </chapter>
@@ -785,8 +795,10 @@ The home page for this patch is:
  <chapter id="mimesupport">
  <title>Mutt's MIME Support</title>
  
---- a/doc/Muttrc.head
-+++ b/doc/Muttrc.head
+Index: mutt/doc/Muttrc.head
+===================================================================
+--- mutt.orig/doc/Muttrc.head	2009-06-25 12:35:36.000000000 +0200
++++ mutt/doc/Muttrc.head	2009-06-25 12:36:26.000000000 +0200
 @@ -29,6 +29,11 @@
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
  bind browser y exit
@@ -799,8 +811,10 @@ The home page for this patch is:
  # If Mutt is unable to determine your site's domain name correctly, you can
  # set the default here.
  #
---- a/doc/muttrc.man.head
-+++ b/doc/muttrc.man.head
+Index: mutt/doc/muttrc.man.head
+===================================================================
+--- mutt.orig/doc/muttrc.man.head	2009-06-25 12:35:36.000000000 +0200
++++ mutt/doc/muttrc.man.head	2009-06-25 12:36:26.000000000 +0200
 @@ -345,6 +345,24 @@
  to a certain recipient.  The meaning of "key ID" is to be taken
  broadly: This can be a different e-mail address, a numerical key ID,
@@ -826,8 +840,10 @@ The home page for this patch is:
  .TP
  \fBpush\fP \fIstring\fP
  This command adds the named \fIstring\fP to the keyboard buffer.
---- a/hook.c
-+++ b/hook.c
+Index: mutt/hook.c
+===================================================================
+--- mutt.orig/hook.c	2009-06-25 12:35:36.000000000 +0200
++++ mutt/hook.c	2009-06-25 12:36:26.000000000 +0200
 @@ -24,6 +24,10 @@
  #include "mailbox.h"
  #include "mutt_crypt.h"
@@ -856,9 +872,11 @@ The home page for this patch is:
    else if (DefaultHook && !(data & (M_CHARSETHOOK | M_ICONVHOOK | M_ACCOUNTHOOK))
             && (!WithCrypto || !(data & M_CRYPTHOOK))
        )
---- a/init.h
-+++ b/init.h
-@@ -3514,6 +3514,11 @@
+Index: mutt/init.h
+===================================================================
+--- mutt.orig/init.h	2009-06-25 12:36:22.000000000 +0200
++++ mutt/init.h	2009-06-25 12:36:26.000000000 +0200
+@@ -3504,6 +3504,11 @@
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
    { "folder-hook",	mutt_parse_hook,	M_FOLDERHOOK },
@@ -870,8 +888,10 @@ The home page for this patch is:
    { "group",		parse_group,		0 },
    { "ungroup",		parse_ungroup,		0 },
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
---- a/main.c
-+++ b/main.c
+Index: mutt/main.c
+===================================================================
+--- mutt.orig/main.c	2009-06-25 12:35:36.000000000 +0200
++++ mutt/main.c	2009-06-25 12:36:26.000000000 +0200
 @@ -402,6 +402,12 @@
  #else
  	"-LOCALES_HACK  "
@@ -885,8 +905,10 @@ The home page for this patch is:
  	      
  #ifdef HAVE_WC_FUNCS
  	"+HAVE_WC_FUNCS  "
---- a/Makefile.am
-+++ b/Makefile.am
+Index: mutt/Makefile.am
+===================================================================
+--- mutt.orig/Makefile.am	2009-06-25 12:35:36.000000000 +0200
++++ mutt/Makefile.am	2009-06-25 12:36:26.000000000 +0200
 @@ -18,7 +18,7 @@
  bin_PROGRAMS = mutt @DOTLOCK_TARGET@ @PGPAUX_TARGET@
  mutt_SOURCES = \
@@ -905,8 +927,10 @@ The home page for this patch is:
  	attach.h buffy.h charset.h copy.h crypthash.h dotlock.h functions.h gen_defs \
  	globals.h hash.h history.h init.h keymap.h mutt_crypt.h \
  	mailbox.h mapping.h md5.h mime.h mutt.h mutt_curses.h mutt_menu.h \
---- a/mbox.c
-+++ b/mbox.c
+Index: mutt/mbox.c
+===================================================================
+--- mutt.orig/mbox.c	2009-06-25 12:35:36.000000000 +0200
++++ mutt/mbox.c	2009-06-25 12:36:26.000000000 +0200
 @@ -29,6 +29,10 @@
  #include "copy.h"
  #include "mutt_curses.h"
@@ -931,8 +955,10 @@ The home page for this patch is:
    mutt_unblock_signals ();
    mx_fastclose_mailbox (ctx);
    return 0;
---- a/mutt.h
-+++ b/mutt.h
+Index: mutt/mutt.h
+===================================================================
+--- mutt.orig/mutt.h	2009-06-25 12:36:14.000000000 +0200
++++ mutt/mutt.h	2009-06-25 12:36:26.000000000 +0200
 @@ -146,6 +146,11 @@
  #define M_ACCOUNTHOOK	(1<<9)
  #define M_REPLYHOOK	(1<<10)
@@ -945,7 +971,7 @@ The home page for this patch is:
  
  /* tree characters for linearize_tree and print_enriched_string */
  #define M_TREE_LLCORNER		1
-@@ -883,6 +888,11 @@
+@@ -882,6 +887,11 @@
    int flagged;			/* how many flagged messages */
    int msgnotreadyet;		/* which msg "new" in pager, -1 if none */
  
@@ -957,8 +983,10 @@ The home page for this patch is:
    short magic;			/* mailbox type */
  
    unsigned char rights[(RIGHTSMAX + 7)/8];	/* ACL bits */
---- a/mx.c
-+++ b/mx.c
+Index: mutt/mx.c
+===================================================================
+--- mutt.orig/mx.c	2009-06-25 12:36:14.000000000 +0200
++++ mutt/mx.c	2009-06-25 12:36:26.000000000 +0200
 @@ -30,6 +30,10 @@
  #include "keymap.h"
  #include "url.h"
@@ -1057,8 +1085,10 @@ The home page for this patch is:
    if (ctx)
    {
      if (ctx->locked) lock = 0;
---- a/mx.h
-+++ b/mx.h
+Index: mutt/mx.h
+===================================================================
+--- mutt.orig/mx.h	2009-06-25 12:35:36.000000000 +0200
++++ mutt/mx.h	2009-06-25 12:36:26.000000000 +0200
 @@ -40,6 +40,9 @@
  #ifdef USE_POP
    , M_POP
@@ -1069,8 +1099,10 @@ The home page for this patch is:
  };
  
  WHERE short DefaultMagic INITVAL (M_MBOX);
---- a/po/de.po
-+++ b/po/de.po
+Index: mutt/po/de.po
+===================================================================
+--- mutt.orig/po/de.po	2009-06-25 12:35:36.000000000 +0200
++++ mutt/po/de.po	2009-06-25 12:36:26.000000000 +0200
 @@ -2005,6 +2005,10 @@
  msgid "Bad history file format (line %d)"
  msgstr "Falsches Format der Datei früherer Eingaben (Zeile %d)"
@@ -1137,8 +1169,10 @@ The home page for this patch is:
 +#, c-format
 +msgid " %s: Error compressing mailbox!  Uncompressed one kept!\n"
 +msgstr " %s: Fehler beim packen der Mailbox! Entpackte Mailbox gespeichert!\n"
---- a/po/POTFILES.in
-+++ b/po/POTFILES.in
+Index: mutt/po/POTFILES.in
+===================================================================
+--- mutt.orig/po/POTFILES.in	2009-06-25 12:35:36.000000000 +0200
++++ mutt/po/POTFILES.in	2009-06-25 12:36:26.000000000 +0200
 @@ -8,6 +8,7 @@
  color.c
  commands.c
@@ -1147,8 +1181,10 @@ The home page for this patch is:
  crypt-gpgme.c
  crypt.c
  cryptglue.c
---- a/status.c
-+++ b/status.c
+Index: mutt/status.c
+===================================================================
+--- mutt.orig/status.c	2009-06-25 12:35:44.000000000 +0200
++++ mutt/status.c	2009-06-25 12:36:26.000000000 +0200
 @@ -96,6 +96,14 @@
  
      case 'f':
