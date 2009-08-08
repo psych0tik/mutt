@@ -2,7 +2,7 @@ Source: mutt
 Section: mail
 Priority: standard
 Maintainer: Christoph Berg <myon@debian.org>
-Uploaders: Adeodato Simó <dato@net.com.org.es>, Antonio Radici <antonio@dyne.org>
+Uploaders: Antonio Radici <antonio@dyne.org>
 Build-Depends: automake, debhelper (>> 7), docbook-xml, docbook-xsl,
  elinks-lite | elinks, gawk, gettext, libgdbm-dev, libgnutls-dev,
  libgpgme11-dev, libidn11-dev, libkrb5-dev, libncurses5-dev, libncursesw5-dev,

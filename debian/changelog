@@ -1,3 +1,9 @@
+mutt (1.5.20-3) UNRELEASED; urgency=low
+
+  * Remove myself from Uploaders.
+
+ -- Adeodato Simó <adeodato@debian.org>  Wed, 29 Jul 2009 17:08:08 +0200
+
 mutt (1.5.20-2) unstable; urgency=low
 
   [ Antonio Radici ]
