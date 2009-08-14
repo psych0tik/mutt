@@ -1,8 +1,14 @@
 mutt (1.5.20-3) UNRELEASED; urgency=low
 
+  [ Adeodato Simó ]
   * Remove myself from Uploaders.
 
- -- Adeodato Simó <adeodato@debian.org>  Wed, 29 Jul 2009 17:08:08 +0200
+  [ Antonio Radici ]
+  * debian/patches/series;
+   + upstream/538128-mh-folder-access.patch: MH dirs are now correctly
+     parsed (Closes: 538128)
+
+ -- Antonio Radici <antonio@dyne.org>  Sat, 15 Aug 2009 00:32:49 +0100
 
 mutt (1.5.20-2) unstable; urgency=low
 

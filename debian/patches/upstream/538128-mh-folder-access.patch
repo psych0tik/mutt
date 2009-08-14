@@ -1,0 +1,65 @@
+this fixes a problem with new mail detection on MH folder, for a 
+more detailed history see mutt bugs #3308 and #3312 and debian
+bug 538128
+
+--- a/mh.c
++++ b/mh.c
+@@ -140,22 +140,17 @@
+ 
+ #endif
+ 
+-static int mh_read_token (char *t, int *first, int *last)
++static void mh_read_token (char *t, int *first, int *last)
+ {
+   char *p;
+   if ((p = strchr (t, '-')))
+   {
+     *p++ = '\0';
+-    if (mutt_atoi (t, first) < 0 || mutt_atoi (t, last) < 0)
+-      return -1;
++    *first = atoi (t);
++    *last = atoi (p);
+   }
+   else
+-  {
+-    if (mutt_atoi (t, first) < 0)
+-      return -1;
+-    *last = *first;
+-  }
+-  return 0;
++    *first = *last = atoi (t);
+ }
+ 
+ static int mh_read_sequences (struct mh_sequences *mhs, const char *path)
+@@ -167,7 +162,7 @@
+   size_t sz = 0;
+ 
+   short f;
+-  int first, last, rc;
++  int first, last, rc = 0;
+ 
+   char pathname[_POSIX_PATH_MAX];
+   snprintf (pathname, sizeof (pathname), "%s/.mh_sequences", path);
+@@ -191,12 +186,7 @@
+ 
+     while ((t = strtok (NULL, " \t:")))
+     {
+-      if (mh_read_token (t, &first, &last) < 0)
+-      {
+-	mhs_free_sequences (mhs);
+-	rc = -1;
+-	goto out;
+-      }
++      mh_read_token (t, &first, &last);
+       for (; first <= last; first++)
+ 	mhs_set (mhs, first, f);
+     }
+@@ -207,7 +197,7 @@
+ out:
+   FREE (&buff);
+   safe_fclose (&fp);
+-  return 0;
++  return rc;
+ }
+ 
+ static inline mode_t mh_umask (CONTEXT* ctx)
