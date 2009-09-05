@@ -7,6 +7,8 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
   * debian/patches/series;
    + upstream/538128-mh-folder-access.patch: MH dirs are now correctly
      parsed (Closes: 538128)
+   + upstream/537818-emptycharset.patch: handling empty charsets without
+     segfaulting (Closes: 537818)
 
  -- Antonio Radici <antonio@dyne.org>  Sat, 15 Aug 2009 00:32:49 +0100
 

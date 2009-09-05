@@ -37,6 +37,7 @@ upstream/534543-imap-port.patch
 # the following two patches are also in upstream hg repo
 # plese drop them if there is a new release
 upstream/538128-mh-folder-access.patch
+upstream/537818-emptycharset.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
