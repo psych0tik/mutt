@@ -7,7 +7,7 @@ Build-Depends: automake, debhelper (>> 7), docbook-xml, docbook-xsl,
  elinks-lite | elinks, gawk, gettext, libgdbm-dev, libgnutls-dev,
  libgpgme11-dev, libidn11-dev, libkrb5-dev, libncurses5-dev, libncursesw5-dev,
  libsasl2-dev, pkg-config, quilt, xsltproc, zlib1g-dev
-Standards-Version: 3.8.2
+Standards-Version: 3.8.3
 Vcs-Git: git://git.debian.org/git/pkg-mutt/mutt.git
 Vcs-Browser: http://git.debian.org/?p=pkg-mutt/mutt.git
 DM-Upload-Allowed: yes

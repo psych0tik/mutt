@@ -4,11 +4,13 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
   * Remove myself from Uploaders.
 
   [ Antonio Radici ]
-  * debian/patches/series;
-   + upstream/538128-mh-folder-access.patch: MH dirs are now correctly
-     parsed (Closes: 538128)
-   + upstream/537818-emptycharset.patch: handling empty charsets without
-     segfaulting (Closes: 537818)
+  * debian/patches/series:
+    + upstream/538128-mh-folder-access.patch: MH dirs are now correctly
+      parsed (Closes: 538128)
+    + upstream/537818-emptycharset.patch: handling empty charsets without
+      segfaulting (Closes: 537818)
+  * debian/control:
+    + Standards-Version bumped to 3.8.3
 
  -- Antonio Radici <antonio@dyne.org>  Sat, 15 Aug 2009 00:32:49 +0100
 
