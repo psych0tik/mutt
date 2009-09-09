@@ -9,6 +9,8 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
       parsed (Closes: 538128)
     + upstream/537818-emptycharset.patch: handling empty charsets without
       segfaulting (Closes: 537818)
+    + upstream/535096-pop-port.patch: allow a user to specify a port for a pop
+      connection, as it was before 1.5.20 (Closes: 535096)
   * debian/control:
     + Standards-Version bumped to 3.8.3
 

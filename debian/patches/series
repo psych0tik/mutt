@@ -38,6 +38,7 @@ upstream/534543-imap-port.patch
 # plese drop them if there is a new release
 upstream/538128-mh-folder-access.patch
 upstream/537818-emptycharset.patch
+upstream/535096-pop-port.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
