@@ -28,7 +28,6 @@ po/Makefile
 po/Makefile.in
 po/POTFILES
 stamp-h1
-.gitignore
 debian/stamp-patched
 obj-i486-linux-gnu-patched/
 obj-i486-linux-gnu/
