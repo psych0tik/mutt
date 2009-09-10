@@ -15,13 +15,12 @@ The home page for this patch is:
   - 2009-09-15 myon: refreshed for mutt-1.5.19
                      status.c:103: add sizeof (tmp) to mutt_pretty_mailbox
   - 2009-09-15 scotton: removed doc/Muttrc for mutt-1.5.19 (only patch doc/Muttrc.head)
+  - 2009-09-11 antonio: removed DefaultMagic, see 541360
 
 == END PATCH
-Index: mutt/compress.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ mutt/compress.c	2009-06-25 12:36:25.000000000 +0200
-@@ -0,0 +1,499 @@
+--- /dev/null
++++ b/compress.c
+@@ -0,0 +1,496 @@
 +/*
 + * Copyright (C) 1997 Alain Penders <Alain@Finale-Dev.com>
 + *
@@ -345,10 +344,7 @@ Index: mutt/compress.c
 +
 +  set_path (ctx);
 +
-+  ctx->magic = DefaultMagic;
-+
 +  if (!is_new (ctx->realpath))
-+    if (ctx->magic == M_MBOX || ctx->magic == M_MMDF)
 +      if ((fh = fopen (ctx->path, "w")))
 +	fclose (fh);
 +  /* No error checking - the parent function will catch it */
@@ -521,10 +517,8 @@ Index: mutt/compress.c
 +}
 +
 +#endif /* USE_COMPRESSED */
-Index: mutt/compress.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ mutt/compress.h	2009-06-25 12:36:26.000000000 +0200
+--- /dev/null
++++ b/compress.h
 @@ -0,0 +1,27 @@
 +/*
 + * Copyright (C) 1997 Alain Penders <Alain@Finale-Dev.com>
@@ -553,10 +547,8 @@ Index: mutt/compress.h
 +int mutt_test_compress_command (const char *);
 +int mutt_check_mailbox_compressed (CONTEXT *);
 +void mutt_fast_close_compressed (CONTEXT *);
-Index: mutt/configure.ac
-===================================================================
---- mutt.orig/configure.ac	2009-06-25 12:35:38.000000000 +0200
-+++ mutt/configure.ac	2009-06-25 12:36:26.000000000 +0200
+--- a/configure.ac
++++ b/configure.ac
 @@ -805,6 +805,11 @@
                  AC_DEFINE(LOCALES_HACK,1,[ Define if the result of isprint() is unreliable. ])
          fi])
@@ -569,10 +561,8 @@ Index: mutt/configure.ac
  AC_ARG_WITH(exec-shell, AC_HELP_STRING([--with-exec-shell=SHELL], [Specify alternate shell (ONLY if /bin/sh is broken)]),
          [if test $withval != yes; then
                  AC_DEFINE_UNQUOTED(EXECSHELL, "$withval",
-Index: mutt/curs_main.c
-===================================================================
---- mutt.orig/curs_main.c	2009-06-25 12:36:14.000000000 +0200
-+++ mutt/curs_main.c	2009-06-25 12:36:26.000000000 +0200
+--- a/curs_main.c
++++ b/curs_main.c
 @@ -1135,6 +1135,11 @@
          {
  	  int check;
@@ -585,10 +575,8 @@ Index: mutt/curs_main.c
  	  mutt_str_replace (&LastFolder, Context->path);
  	  oldcount = Context ? Context->msgcount : 0;
  
-Index: mutt/doc/manual.xml.head
-===================================================================
---- mutt.orig/doc/manual.xml.head	2009-06-25 12:35:42.000000000 +0200
-+++ mutt/doc/manual.xml.head	2009-06-25 12:36:26.000000000 +0200
+--- a/doc/manual.xml.head
++++ b/doc/manual.xml.head
 @@ -5678,6 +5678,205 @@
  
  </chapter>
@@ -795,10 +783,8 @@ Index: mutt/doc/manual.xml.head
  <chapter id="mimesupport">
  <title>Mutt's MIME Support</title>
  
-Index: mutt/doc/Muttrc.head
-===================================================================
---- mutt.orig/doc/Muttrc.head	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/doc/Muttrc.head	2009-06-25 12:36:26.000000000 +0200
+--- a/doc/Muttrc.head
++++ b/doc/Muttrc.head
 @@ -29,6 +29,11 @@
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
  bind browser y exit
@@ -811,10 +797,8 @@ Index: mutt/doc/Muttrc.head
  # If Mutt is unable to determine your site's domain name correctly, you can
  # set the default here.
  #
-Index: mutt/doc/muttrc.man.head
-===================================================================
---- mutt.orig/doc/muttrc.man.head	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/doc/muttrc.man.head	2009-06-25 12:36:26.000000000 +0200
+--- a/doc/muttrc.man.head
++++ b/doc/muttrc.man.head
 @@ -345,6 +345,24 @@
  to a certain recipient.  The meaning of "key ID" is to be taken
  broadly: This can be a different e-mail address, a numerical key ID,
@@ -840,10 +824,8 @@ Index: mutt/doc/muttrc.man.head
  .TP
  \fBpush\fP \fIstring\fP
  This command adds the named \fIstring\fP to the keyboard buffer.
-Index: mutt/hook.c
-===================================================================
---- mutt.orig/hook.c	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/hook.c	2009-06-25 12:36:26.000000000 +0200
+--- a/hook.c
++++ b/hook.c
 @@ -24,6 +24,10 @@
  #include "mailbox.h"
  #include "mutt_crypt.h"
@@ -872,10 +854,8 @@ Index: mutt/hook.c
    else if (DefaultHook && !(data & (M_CHARSETHOOK | M_ICONVHOOK | M_ACCOUNTHOOK))
             && (!WithCrypto || !(data & M_CRYPTHOOK))
        )
-Index: mutt/init.h
-===================================================================
---- mutt.orig/init.h	2009-06-25 12:36:22.000000000 +0200
-+++ mutt/init.h	2009-06-25 12:36:26.000000000 +0200
+--- a/init.h
++++ b/init.h
 @@ -3504,6 +3504,11 @@
    { "fcc-hook",		mutt_parse_hook,	M_FCCHOOK },
    { "fcc-save-hook",	mutt_parse_hook,	M_FCCHOOK | M_SAVEHOOK },
@@ -888,10 +868,8 @@ Index: mutt/init.h
    { "group",		parse_group,		0 },
    { "ungroup",		parse_ungroup,		0 },
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
-Index: mutt/main.c
-===================================================================
---- mutt.orig/main.c	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/main.c	2009-06-25 12:36:26.000000000 +0200
+--- a/main.c
++++ b/main.c
 @@ -402,6 +402,12 @@
  #else
  	"-LOCALES_HACK  "
@@ -905,10 +883,8 @@ Index: mutt/main.c
  	      
  #ifdef HAVE_WC_FUNCS
  	"+HAVE_WC_FUNCS  "
-Index: mutt/Makefile.am
-===================================================================
---- mutt.orig/Makefile.am	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/Makefile.am	2009-06-25 12:36:26.000000000 +0200
+--- a/Makefile.am
++++ b/Makefile.am
 @@ -18,7 +18,7 @@
  bin_PROGRAMS = mutt @DOTLOCK_TARGET@ @PGPAUX_TARGET@
  mutt_SOURCES = \
@@ -927,10 +903,8 @@ Index: mutt/Makefile.am
  	attach.h buffy.h charset.h copy.h crypthash.h dotlock.h functions.h gen_defs \
  	globals.h hash.h history.h init.h keymap.h mutt_crypt.h \
  	mailbox.h mapping.h md5.h mime.h mutt.h mutt_curses.h mutt_menu.h \
-Index: mutt/mbox.c
-===================================================================
---- mutt.orig/mbox.c	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/mbox.c	2009-06-25 12:36:26.000000000 +0200
+--- a/mbox.c
++++ b/mbox.c
 @@ -29,6 +29,10 @@
  #include "copy.h"
  #include "mutt_curses.h"
@@ -955,10 +929,8 @@ Index: mutt/mbox.c
    mutt_unblock_signals ();
    mx_fastclose_mailbox (ctx);
    return 0;
-Index: mutt/mutt.h
-===================================================================
---- mutt.orig/mutt.h	2009-06-25 12:36:14.000000000 +0200
-+++ mutt/mutt.h	2009-06-25 12:36:26.000000000 +0200
+--- a/mutt.h
++++ b/mutt.h
 @@ -146,6 +146,11 @@
  #define M_ACCOUNTHOOK	(1<<9)
  #define M_REPLYHOOK	(1<<10)
@@ -983,10 +955,8 @@ Index: mutt/mutt.h
    short magic;			/* mailbox type */
  
    unsigned char rights[(RIGHTSMAX + 7)/8];	/* ACL bits */
-Index: mutt/mx.c
-===================================================================
---- mutt.orig/mx.c	2009-06-25 12:36:14.000000000 +0200
-+++ mutt/mx.c	2009-06-25 12:36:26.000000000 +0200
+--- a/mx.c
++++ b/mx.c
 @@ -30,6 +30,10 @@
  #include "keymap.h"
  #include "url.h"
@@ -1085,10 +1055,8 @@ Index: mutt/mx.c
    if (ctx)
    {
      if (ctx->locked) lock = 0;
-Index: mutt/mx.h
-===================================================================
---- mutt.orig/mx.h	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/mx.h	2009-06-25 12:36:26.000000000 +0200
+--- a/mx.h
++++ b/mx.h
 @@ -40,6 +40,9 @@
  #ifdef USE_POP
    , M_POP
@@ -1099,10 +1067,8 @@ Index: mutt/mx.h
  };
  
  WHERE short DefaultMagic INITVAL (M_MBOX);
-Index: mutt/po/de.po
-===================================================================
---- mutt.orig/po/de.po	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/po/de.po	2009-06-25 12:36:26.000000000 +0200
+--- a/po/de.po
++++ b/po/de.po
 @@ -2005,6 +2005,10 @@
  msgid "Bad history file format (line %d)"
  msgstr "Falsches Format der Datei früherer Eingaben (Zeile %d)"
@@ -1169,10 +1135,8 @@ Index: mutt/po/de.po
 +#, c-format
 +msgid " %s: Error compressing mailbox!  Uncompressed one kept!\n"
 +msgstr " %s: Fehler beim packen der Mailbox! Entpackte Mailbox gespeichert!\n"
-Index: mutt/po/POTFILES.in
-===================================================================
---- mutt.orig/po/POTFILES.in	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/po/POTFILES.in	2009-06-25 12:36:26.000000000 +0200
+--- a/po/POTFILES.in
++++ b/po/POTFILES.in
 @@ -8,6 +8,7 @@
  color.c
  commands.c
@@ -1181,10 +1145,8 @@ Index: mutt/po/POTFILES.in
  crypt-gpgme.c
  crypt.c
  cryptglue.c
-Index: mutt/status.c
-===================================================================
---- mutt.orig/status.c	2009-06-25 12:35:44.000000000 +0200
-+++ mutt/status.c	2009-06-25 12:36:26.000000000 +0200
+--- a/status.c
++++ b/status.c
 @@ -96,6 +96,14 @@
  
      case 'f':

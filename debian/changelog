@@ -6,6 +6,8 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
   [ Antonio Radici ]
   * debian/patches:
     + features/ifdef: fixed a typo (Closes: 539974)
+    + features/compressed-folders: removed any reference to DefaultMagic
+      (Closes: 541360)
     + debian-specific/Muttrc: correctly state that exim4 does not strip Bcc:
       headers (Closes: 474194)
     + upstream/393926-internal-viewer.patch: display any text/* part with the
