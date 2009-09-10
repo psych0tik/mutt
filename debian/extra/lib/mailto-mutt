@@ -92,12 +92,13 @@ fi
 
 mutt_args="${mutt_args:+$mutt_args }$(get_addr_args -c $cc)"
 mutt_args="${mutt_args:+$mutt_args }$(get_addr_args -b $bcc)"
-mutt_args="${mutt_args:+$mutt_args }$(get_addr_args $MAILTO)"
+mutt_args="${mutt_args:+$mutt_args }-- $(get_addr_args $MAILTO)"
 
 run()
 {
   if [ ${debug:-0} -eq 1 ]; then
     echo "$@"
+    [ -t 0 ] && [ -t 1 ] && [ -t 2 ] && $SHELL
   else
     eval "$@"
   fi
@@ -105,12 +106,12 @@ run()
 
 if [ -n "$body" ]; then
   TMPFILE="$(tempfile -p mailto -d /tmp)"
+  trap "rm -f $TMPFILE" 0 1 2 3 4 5 6 7 8 10 11 12 13 14 15
   echo "$body" > $TMPFILE
-  trap "rm -f $TMPFILE" 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-  run x-terminal-emulator -e mutt${mutt_args:+ $mutt_args} -i $TMPFILE
+  run x-terminal-emulator -e mutt -i $TMPFILE${mutt_args:+ $mutt_args}
   ret=$?
   rm -f $TMPFILE
-  trap - 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+  trap - 0 1 2 3 4 5 6 7 8 10 11 12 13 14 15
   exit $ret
 else
   run exec x-terminal-emulator -e mutt${mutt_args:+ $mutt_args}

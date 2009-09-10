@@ -13,6 +13,8 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
       connection, as it was before 1.5.20 (Closes: 535096)
   * debian/control:
     + Standards-Version bumped to 3.8.3
+  * debian/extra/lib/mailto-mutt: patch from madduck@ to correctly handle the
+    way mutt is parsing the command line now (Closes: 545876)  
 
  -- Antonio Radici <antonio@dyne.org>  Sat, 15 Aug 2009 00:32:49 +0100
 
