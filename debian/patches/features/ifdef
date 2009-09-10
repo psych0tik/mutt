@@ -120,7 +120,7 @@ ifdef  trash  set trash=~/Mail/trash
  
 +<sect1 id="ifdef">
 +
-+<title>Configuring features conditionnaly</title>
++<title>Configuring features conditionally</title>
 +
 +<para>
 +Usage: <literal>ifdef</literal> <emphasis>item</emphasis> <emphasis>command</emphasis>
