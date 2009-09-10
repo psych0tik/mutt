@@ -4,13 +4,15 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
   * Remove myself from Uploaders.
 
   [ Antonio Radici ]
-  * debian/patches/series:
+  * debian/patches:
     + upstream/538128-mh-folder-access.patch: MH dirs are now correctly
       parsed (Closes: 538128)
     + upstream/537818-emptycharset.patch: handling empty charsets without
       segfaulting (Closes: 537818)
     + upstream/535096-pop-port.patch: allow a user to specify a port for a pop
       connection, as it was before 1.5.20 (Closes: 535096)
+    + debian-specific/Muttrc: correctly state that exim4 does not strip Bcc:
+      headers (Closes: 474194)
   * debian/control:
     + Standards-Version bumped to 3.8.3
   * debian/extra/lib/mailto-mutt: patch from madduck@ to correctly handle the

@@ -25,7 +25,7 @@
 +set sort=threads
 +
 +# Uncomment if your MTA does not strip Bcc: headers.
-+# (exim4 and postfix strip them, exim(3) does not.)
++# (postfix strips them, exim4 does not.)
 +#unset write_bcc
 +# Postfix and qmail use Delivered-To for detecting loops
 +unset bounce_delivered
