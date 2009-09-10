@@ -15,6 +15,8 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
       headers (Closes: 474194)
     + upstream/542910-search-segfault.patch: fixes a bug in search which caused
       a segfault (Closes: 542910)
+    + upstream/533370-pgp-inline.patch: inline pgp messages now displayed
+      correctly even if pgp_auto_decode is set (Closes: 533370)
   * debian/control:
     + Standards-Version bumped to 3.8.3
   * debian/extra/lib/mailto-mutt: patch from madduck@ to correctly handle the
