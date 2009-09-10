@@ -42,6 +42,7 @@ upstream/535096-pop-port.patch
 upstream/542910-search-segfault.patch
 upstream/533370-pgp-inline.patch
 upstream/533520-signature-highlight.patch
+upstream/393926-internal-viewer.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
