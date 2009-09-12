@@ -44,6 +44,7 @@ upstream/533370-pgp-inline.patch
 upstream/533520-signature-highlight.patch
 upstream/393926-internal-viewer.patch
 upstream/543467-thread-segfault.patch
+upstream/544180-italian-yesorno.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
