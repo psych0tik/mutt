@@ -10,6 +10,8 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
       (Closes: 541360)
     + debian-specific/Muttrc: correctly state that exim4 does not strip Bcc:
       headers (Closes: 474194)
+    + upstream/543467-thread-segfault.patch: patch to prevent mutt from
+      segfaulting when Ctrl+R is hit on malformed messages (Closes: 543467)
     + upstream/393926-internal-viewer.patch: display any text/* part with the
       internal viewer (Closes: 393926)
     + upstream/538128-mh-folder-access.patch: MH dirs are now correctly
