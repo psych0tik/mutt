@@ -33,7 +33,11 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
   * debian/extra/lib/mailto-mutt: patch from madduck@ to correctly handle the
     way mutt is parsing the command line now (Closes: 545876)  
 
- -- Antonio Radici <antonio@dyne.org>  Sat, 15 Aug 2009 00:32:49 +0100
+  [ Christoph Berg ]
+  * Recommend default-mta instead of exim4 (Closes: 533442)
+  * Remove redudant hard-coded libgpgme11 from Recommends.
+
+ -- Christoph Berg <myon@debian.org>  Sun, 13 Sep 2009 13:30:05 +0200
 
 mutt (1.5.20-2) unstable; urgency=low
 
