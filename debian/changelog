@@ -1,4 +1,4 @@
-mutt (1.5.20-3) UNRELEASED; urgency=low
+mutt (1.5.20-3) unstable; urgency=low
 
   [ Adeodato Simó ]
   * Remove myself from Uploaders.
@@ -28,6 +28,8 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
       correctly even if pgp_auto_decode is set (Closes: 533370)
     + upstream/533520-signature-highlight.patch: fixed a problem in signature
       hightlighting if text_flowed was set to 'yes' (Closes: 533520)
+    + upstream/542817-smimekeys-tmpdir.patch: smime_keys.pl will skip tmpdir 
+      if it contains '=' (Closes: 542817)
   * debian/control:
     + Standards-Version bumped to 3.8.3
   * debian/extra/lib/mailto-mutt: patch from madduck@ to correctly handle the
@@ -37,7 +39,7 @@ mutt (1.5.20-3) UNRELEASED; urgency=low
   * Recommend default-mta instead of exim4 (Closes: 533442)
   * Remove redudant hard-coded libgpgme11 from Recommends.
 
- -- Christoph Berg <myon@debian.org>  Sun, 13 Sep 2009 13:30:05 +0200
+ -- Antonio Radici <antonio@dyne.org>  Sun, 13 Sep 2009 18:34:48 +0100
 
 mutt (1.5.20-2) unstable; urgency=low
 
