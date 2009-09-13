@@ -46,6 +46,7 @@ upstream/393926-internal-viewer.patch
 upstream/543467-thread-segfault.patch
 upstream/544180-italian-yesorno.patch
 upstream/542817-smimekeys-tmpdir.patch
+upstream/544794-smtp-batch.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
@@ -63,3 +64,4 @@ mutt-patched/sidebar-sorted
 # not-applied/chdir
 # not-applied/indexcolor
 # not-applied/w3mface
+mutt-patched/sidebar-newonly
