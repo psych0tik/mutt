@@ -30,6 +30,8 @@ mutt (1.5.20-3) unstable; urgency=low
       hightlighting if text_flowed was set to 'yes' (Closes: 533520)
     + upstream/542817-smimekeys-tmpdir.patch: smime_keys.pl will skip tmpdir 
       if it contains '=' (Closes: 542817)
+    + upstream/544794-smtp-batch.patch: mutt won't ask for a password if
+      smtp_user and smtp_pass are set in .muttrc (Closes: 544794)
   * debian/control:
     + Standards-Version bumped to 3.8.3
   * debian/extra/lib/mailto-mutt: patch from madduck@ to correctly handle the
