@@ -1,3 +1,6 @@
+without this patch mutt crashes if any option that contains charset is set to
+empty, see upstream bug http://bugs.mutt.org/3326
+
 --- a/init.c
 +++ b/init.c
 @@ -1751,6 +1751,9 @@
