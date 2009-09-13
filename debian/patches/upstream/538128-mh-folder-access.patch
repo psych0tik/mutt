@@ -4,34 +4,16 @@ bug 538128
 
 --- a/mh.c
 +++ b/mh.c
-@@ -140,22 +140,17 @@
- 
- #endif
- 
--static int mh_read_token (char *t, int *first, int *last)
-+static void mh_read_token (char *t, int *first, int *last)
- {
-   char *p;
+@@ -146,7 +146,7 @@
    if ((p = strchr (t, '-')))
    {
      *p++ = '\0';
 -    if (mutt_atoi (t, first) < 0 || mutt_atoi (t, last) < 0)
--      return -1;
-+    *first = atoi (t);
-+    *last = atoi (p);
++    if (mutt_atoi (t, first) < 0 || mutt_atoi (p, last) < 0)
+       return -1;
    }
    else
--  {
--    if (mutt_atoi (t, first) < 0)
--      return -1;
--    *last = *first;
--  }
--  return 0;
-+    *first = *last = atoi (t);
- }
- 
- static int mh_read_sequences (struct mh_sequences *mhs, const char *path)
-@@ -167,7 +162,7 @@
+@@ -167,7 +167,7 @@
    size_t sz = 0;
  
    short f;
@@ -40,21 +22,7 @@ bug 538128
  
    char pathname[_POSIX_PATH_MAX];
    snprintf (pathname, sizeof (pathname), "%s/.mh_sequences", path);
-@@ -191,12 +186,7 @@
- 
-     while ((t = strtok (NULL, " \t:")))
-     {
--      if (mh_read_token (t, &first, &last) < 0)
--      {
--	mhs_free_sequences (mhs);
--	rc = -1;
--	goto out;
--      }
-+      mh_read_token (t, &first, &last);
-       for (; first <= last; first++)
- 	mhs_set (mhs, first, f);
-     }
-@@ -207,7 +197,7 @@
+@@ -207,7 +207,7 @@
  out:
    FREE (&buff);
    safe_fclose (&fp);
@@ -63,7 +31,15 @@ bug 538128
  }
  
  static inline mode_t mh_umask (CONTEXT* ctx)
-@@ -1155,7 +1145,7 @@
+@@ -238,6 +238,7 @@
+   for (i = 0; !r && i <= mhs.max; i++)
+     if (mhs_check (&mhs, i) & MH_SEQ_UNSEEN)
+       r = 1;
++  mhs_free_sequences (&mhs);
+   return r;
+ }
+ 
+@@ -1155,7 +1156,7 @@
  
    if (ctx->magic == M_MH)
    {
