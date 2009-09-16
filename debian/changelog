@@ -1,3 +1,11 @@
+mutt (1.5.20-5) unstable; urgency=low
+
+  * debian/patches:
+    + upstream/533370-pgp-inline.patch: fixing the patch from 1.5.20-3, now
+      pgp.c is correctly included (Closes: 533370)
+
+ -- Antonio Radici <antonio@dyne.org>  Wed, 16 Sep 2009 22:31:22 +0100
+
 mutt (1.5.20-4) unstable; urgency=low
 
   * Backing out the broken mutt-patched/sidebar-newonly patch 
