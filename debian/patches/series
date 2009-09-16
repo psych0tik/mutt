@@ -64,4 +64,5 @@ mutt-patched/sidebar-sorted
 # not-applied/chdir
 # not-applied/indexcolor
 # not-applied/w3mface
-mutt-patched/sidebar-newonly
+# unapplied, not stable at the moment
+#mutt-patched/sidebar-newonly

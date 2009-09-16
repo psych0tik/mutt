@@ -1,3 +1,10 @@
+mutt (1.5.20-4) unstable; urgency=low
+
+  * Backing out the broken mutt-patched/sidebar-newonly patch 
+    (Closes: 546591, 546592)
+
+ -- Antonio Radici <antonio@dyne.org>  Mon, 14 Sep 2009 18:49:29 +0100
+
 mutt (1.5.20-3) unstable; urgency=low
 
   [ Adeodato Simó ]
