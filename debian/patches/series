@@ -47,6 +47,7 @@ upstream/543467-thread-segfault.patch
 upstream/544180-italian-yesorno.patch
 upstream/542817-smimekeys-tmpdir.patch
 upstream/544794-smtp-batch.patch
+upstream/537694-segv-imap-headers.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch

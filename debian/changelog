@@ -5,6 +5,8 @@ mutt (1.5.20-5) unstable; urgency=low
       pgp.c is correctly included (Closes: 533370)
     + upstream/537694-segv-imap-headers.patch: fixing a segfault when the IMAP 
       server sends additional headers and mutt segfaults (Closes: 537694)
+    + upstream/393926-internal-viewer.patch: revert the patch and add the
+      auto_view of text/x-diff (Closes: 546760)
 
  -- Antonio Radici <antonio@dyne.org>  Wed, 16 Sep 2009 22:31:22 +0100
 
