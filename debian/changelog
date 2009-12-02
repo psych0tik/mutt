@@ -7,8 +7,10 @@ mutt (1.5.20-5) unstable; urgency=low
       server sends additional headers and mutt segfaults (Closes: 537694)
     + upstream/393926-internal-viewer.patch: revert the patch and add the
       auto_view of text/x-diff (Closes: 546760, 549158)
+    + upstream/548577-gpgme-1.2.patch: do not fail to open pgp signed message
+      with libgpgme >= 1.2 (Closes: 548577)
 
- -- Antonio Radici <antonio@dyne.org>  Wed, 16 Sep 2009 22:31:22 +0100
+ -- Antonio Radici <antonio@dyne.org>  Wed, 02 Dec 2009 22:38:00 +0000
 
 mutt (1.5.20-4) unstable; urgency=low
 
