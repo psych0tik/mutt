@@ -2,7 +2,7 @@ mutt (1.5.20-5) unstable; urgency=low
 
   * debian/patches:
     + upstream/533370-pgp-inline.patch: fixing the patch from 1.5.20-3, now
-      pgp.c is correctly included (Closes: 533370)
+      pgp.c is correctly included (Closes: 533370, 558813)
     + upstream/537694-segv-imap-headers.patch: fixing a segfault when the IMAP 
       server sends additional headers and mutt segfaults (Closes: 537694)
     + upstream/393926-internal-viewer.patch: revert the patch and add the
