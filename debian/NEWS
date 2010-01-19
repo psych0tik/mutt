@@ -1,3 +1,12 @@
+mutt (1.5.20-6) unstable; urgency=low
+  The behavior of the write_bcc option has changed, now write_bcc is only
+  used to decide if an Fcc message should have its Bcc header written;
+  if the message is sent outside using SMTP the Bcc header will never be
+  written, see the description of debian-specific/467432-write_bcc.patch
+  for details
+
+ -- Antonio Radici <antonio@dyne.org>  Tue, 19 Jan 2010 21:57:48 +0000
+
 mutt (1.5.17-2) unstable; urgency=low
 
   There is now a "mutt-patched" package that will contain some more
