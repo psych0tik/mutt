@@ -1,3 +1,11 @@
+mutt (1.5.20-6) unstable; urgency=low
+
+  * debian/patches:
+    + debian-specific/467432-write_bcc.patch: do not write Bcc headers 
+      even if write_bcc is set (Closes: 467432, 546884, 467432)
+  
+ -- Antonio Radici <antonio@dyne.org>  Tue, 19 Jan 2010 21:57:48 +0000
+
 mutt (1.5.20-5) unstable; urgency=low
 
   * debian/patches:

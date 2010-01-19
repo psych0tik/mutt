@@ -5,7 +5,7 @@
 
 --- a/doc/Muttrc.head
 +++ b/doc/Muttrc.head
-@@ -12,6 +12,32 @@ unignore from: subject to cc date x-mail
+@@ -12,6 +12,34 @@
  # Display the fields in this order
  hdr_order date from to cc subject
  
@@ -24,8 +24,10 @@
 +# Specifies how to sort messages in the index menu.
 +set sort=threads
 +
-+# Uncomment if your MTA does not strip Bcc: headers.
-+# (postfix strips them, exim4 does not.)
++# The behavior of this option on the Debian mutt package is
++# not the original one because exim4, the default SMTP on Debian
++# does not strip bcc headers so this can cause privacy problems;
++# see man muttrc for more info
 +#unset write_bcc
 +# Postfix and qmail use Delivered-To for detecting loops
 +unset bounce_delivered
@@ -38,7 +40,7 @@
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
  
-@@ -23,7 +49,7 @@ macro index,pager,attach,compose \cb "\
+@@ -23,7 +51,7 @@
  "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
@@ -47,7 +49,7 @@
  
  # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
-@@ -35,7 +61,7 @@ bind browser y exit
+@@ -35,7 +63,7 @@
  # append-hook \\.gz$ "gzip -c %t >> %f"
  
  # If Mutt is unable to determine your site's domain name correctly, you can
@@ -56,7 +58,7 @@
  #
  # set hostname=cs.hmc.edu
  
-@@ -101,6 +127,9 @@ attachments   +I text/plain
+@@ -101,6 +129,9 @@
  attachments   -A message/external-body
  attachments   -I message/external-body
  
