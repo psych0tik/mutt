@@ -1,3 +1,10 @@
+mutt (1.5.20-7) unstable; urgency=low
+
+  * debian/NEWS: backported a note about the new behavior with attachments
+    on the command line (Closes: 539276)
+
+ -- Antonio Radici <antonio@dyne.org>  Fri, 29 Jan 2010 23:32:55 +0000
+
 mutt (1.5.20-6) unstable; urgency=low
 
   * debian/patches:

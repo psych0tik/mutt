@@ -7,6 +7,16 @@ mutt (1.5.20-6) unstable; urgency=low
 
  -- Antonio Radici <antonio@dyne.org>  Tue, 19 Jan 2010 21:57:48 +0000
 
+mutt (1.5.20-1) unstable; urgency=low
+
+  As result of http://bugs.mutt.org/3097 getopt() is now used in a way that
+  behaves consistently on all POSIX systems, unfortunately this has broken
+  the way attachments are added from the command line.
+  Now "--" is mandatory *before* any address if a file is attached from CLI,
+  the mutt manpage correctly documents this behavior.
+
+ -- Antonio Radici <antonio@dyne.org>  Sun, 14 Jun 2009 20:53:18 +0100
+
 mutt (1.5.17-2) unstable; urgency=low
 
   There is now a "mutt-patched" package that will contain some more
