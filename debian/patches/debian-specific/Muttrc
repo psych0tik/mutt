@@ -58,7 +58,18 @@
  #
  # set hostname=cs.hmc.edu
  
-@@ -101,6 +129,9 @@
+@@ -47,6 +75,10 @@
+ # be undone with unmime_lookup.
+ mime_lookup application/octet-stream
+ 
++# Upgrade the progress counter every 250ms, good for mutt over SSH
++# see http://bugs.debian.org/537746
++set time_inc=250
++
+ ##
+ ## *** DEFAULT SETTINGS FOR THE ATTACHMENTS PATCH ***
+ ##
+@@ -101,6 +133,9 @@
  attachments   -A message/external-body
  attachments   -I message/external-body
  

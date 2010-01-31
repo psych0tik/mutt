@@ -5,8 +5,11 @@ mutt (1.5.20-7) unstable; urgency=low
   * debian/patches:
     + upstream/548494-swedish-intl.patch: fixes to Swedish translation 
       (Closes: 548494)
+    + upstream/553238-german-intl.patch: small fix to the German translation
+      (Closes: 553238)
     + upstream/553321-ansi-escape-segfault.patch: prevent mutt from segfaulting
       with large ASCII escape sequences (Closes: 553321)
+    + debian-specific/Muttrc: set time_inc to be 250ms (Closes: 537746)
   * debian/control: 
     + bumping Standards-Version to 3.8.4, nothing to be done
     + adding ${misc:Depends} to make lintian happy

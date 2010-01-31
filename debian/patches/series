@@ -53,6 +53,7 @@ upstream/548577-gpgme-1.2.patch
 upstream/548494-swedish-intl.patch
 upstream/553321-ansi-escape-segfault.patch
 
+upstream/553238-german-intl.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
