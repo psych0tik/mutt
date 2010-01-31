@@ -5,6 +5,9 @@ mutt (1.5.20-7) unstable; urgency=low
   * debian/patches:
     + upstream/548494-swedish-intl.patch: fixes to Swedish translation 
       (Closes: 548494)
+  * debian/control: 
+    + bumping Standards-Version to 3.8.4, nothing to be done
+    + adding ${misc:Depends} to make lintian happy
 
  -- Antonio Radici <antonio@dyne.org>  Fri, 29 Jan 2010 23:32:55 +0000
 
