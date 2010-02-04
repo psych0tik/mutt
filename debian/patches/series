@@ -54,6 +54,7 @@ upstream/548494-swedish-intl.patch
 upstream/553321-ansi-escape-segfault.patch
 upstream/553238-german-intl.patch
 upstream/557395-muttrc-crypto.patch
+upstream/545316-header-color.patch
 
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
