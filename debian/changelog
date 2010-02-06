@@ -11,8 +11,10 @@ mutt (1.5.20-7) unstable; urgency=low
       with large ASCII escape sequences (Closes: 553321)
     + upstream/557395-muttrc-crypto.patch: small fix to the muttrc man 
       (Closes: 557395)
-    + debian/patches/upstream/545316-header-color.patch: do not store the color
-      in header cache (Closes: 545316)
+    + upstream/545316-header-color.patch: do not store the color in header cache
+      (Closes: 545316)
+    + upstream/568295-references.patch: preserve the References header if the
+      In-Reply-To is not initially present (Closes: 568295)
     + debian-specific/Muttrc: set time_inc to be 250ms (Closes: 537746)
   * debian/control: 
     + bumping Standards-Version to 3.8.4, nothing to be done
