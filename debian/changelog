@@ -15,6 +15,8 @@ mutt (1.5.20-7) unstable; urgency=low
       (Closes: 545316)
     + upstream/568295-references.patch: preserve the References header if the
       In-Reply-To is not initially present (Closes: 568295)
+    + upstream/547980-smime_keys-chaining.patch: support certificate chaining in
+      smime_keys (Closes: 547980, 549006)
     + debian-specific/Muttrc: set time_inc to be 250ms (Closes: 537746)
   * debian/control: 
     + bumping Standards-Version to 3.8.4, nothing to be done

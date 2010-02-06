@@ -34,9 +34,6 @@ upstream/533459-unmailboxes.patch
 upstream/533439-mbox-time.patch
 upstream/531430-imapuser.patch
 upstream/534543-imap-port.patch
-
-# the following two patches are also in upstream hg repo
-# plese drop them if there is a new release
 upstream/538128-mh-folder-access.patch
 upstream/537818-emptycharset.patch
 upstream/535096-pop-port.patch
@@ -57,6 +54,7 @@ upstream/557395-muttrc-crypto.patch
 upstream/545316-header-color.patch
 upstream/568295-references.patch
 
+upstream/547980-smime_keys-chaining.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
