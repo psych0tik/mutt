@@ -12,6 +12,7 @@ BUILD_PATCHED := yes
 # HCACHE_DB := bdb
 HCACHE_DB := gdbm
 # HCACHE_DB := qdbm
+# HCACHE_DB := tokyocabinet
 ###
 # GPGME backend
 GPGME := --enable-gpgme
@@ -33,6 +34,9 @@ ifeq ($(HCACHE_DB),gdbm)
 endif
 ifeq ($(HCACHE_DB),qdbm)
     hcache_db := --without-gdbm --without-bdb --without-tokyocabinet
+endif
+ifeq ($(HCACHE_DB),tokyocabinet)
+    hcache_db := --without-gdbm --without-bdb --without-qdbm
 endif
 
 confflags =	--prefix=/usr			\
