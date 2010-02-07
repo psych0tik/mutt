@@ -21,6 +21,8 @@ mutt (1.5.20-7) unstable; urgency=low
       (Closes: 528233)
     + upstream/228671-pipe-mime.patch: don't mess up the terminal while piping
       attachments (Closes: 228671)
+    + upstream/383769-score-match.patch: match full name with ~F, same as
+      mutt-ng (Closes: 383769)
     + debian-specific/Muttrc: set time_inc to be 250ms (Closes: 537746)
   * debian/control: 
     + bumping Standards-Version to 3.8.4, nothing to be done
