@@ -58,6 +58,7 @@ upstream/528233-readonly-open.patch
 upstream/228671-pipe-mime.patch
 upstream/383769-score-match.patch
 upstream/547739-manual-typos.patch
+upstream/311296-rand-mktemp.patch
 
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
