@@ -23,6 +23,7 @@ mutt (1.5.20-7) unstable; urgency=low
       attachments (Closes: 228671)
     + upstream/383769-score-match.patch: match full name with ~F, same as
       mutt-ng (Closes: 383769)
+    + upstream/547739-manual-typos.patch: typos in manual.txt (Closes: 547739)
     + debian-specific/Muttrc: set time_inc to be 250ms (Closes: 537746)
   * debian/control: 
     + bumping Standards-Version to 3.8.4, nothing to be done
