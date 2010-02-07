@@ -1,4 +1,4 @@
-better matching for ~F, same as mutt-ng did, see upstream
+better matching for ~f, same as mutt-ng did, see upstream
 http://bugs.mutt.org/2179
 
 --- a/score.c

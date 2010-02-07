@@ -21,7 +21,7 @@ mutt (1.5.20-7) unstable; urgency=low
       (Closes: 528233)
     + upstream/228671-pipe-mime.patch: don't mess up the terminal while piping
       attachments (Closes: 228671)
-    + upstream/383769-score-match.patch: match full name with ~F, same as
+    + upstream/383769-score-match.patch: match full name with ~f, same as
       mutt-ng (Closes: 383769)
     + upstream/547739-manual-typos.patch: typos in manual.txt (Closes: 547739)
     + upstream/311296-rand-mktemp.patch: more random file creation in /tmp, see
