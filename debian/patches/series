@@ -55,6 +55,7 @@ upstream/545316-header-color.patch
 upstream/568295-references.patch
 
 upstream/547980-smime_keys-chaining.patch
+upstream/528233-readonly-open.patch
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch
