@@ -70,3 +70,47 @@ Minor typos in manual.txt, see upstream http://bugs.mutt.org/3379
  </para>
  
  <para>
+--- a/doc/Muttrc
++++ b/doc/Muttrc
+@@ -1991,7 +1991,7 @@
+ # 
+ # 
+ # The default mailbox type used when creating new folders. May be any of
+-# ``mbox'', ``MMDF'', ``MH'' and ``Maildir''. This is overriden by the
++# ``mbox'', ``MMDF'', ``MH'' and ``Maildir''. This is overridden by the
+ # -m command-line option.
+ # 
+ # 
+--- a/doc/manual.txt
++++ b/doc/manual.txt
+@@ -7405,7 +7405,7 @@
+ Default: mbox
+ 
+ The default mailbox type used when creating new folders. May be any of ?mbox?,
+-?MMDF?, ?MH? and ?Maildir?. This is overriden by the -m command-line option.
++?MMDF?, ?MH? and ?Maildir?. This is overridden by the -m command-line option.
+ 
+ 3.128. menu_context
+ 
+--- a/edit.c
++++ b/edit.c
+@@ -39,7 +39,7 @@
+  * declared "static" (sigh)
+  */
+ static char* EditorHelp1 = N_("\
+-~~		insert a line begining with a single ~\n\
++~~		insert a line beginning with a single ~\n\
+ ~b users	add users to the Bcc: field\n\
+ ~c users	add users to the Cc: field\n\
+ ~f messages	include messages\n\
+--- a/recvattach.c
++++ b/recvattach.c
+@@ -698,7 +698,7 @@
+ 	{
+ 	  if (!mutt_can_decode (top))
+ 	  {
+-	    mutt_error (_("I dont know how to print %s attachments!"), type);
++	    mutt_error (_("I don't know how to print %s attachments!"), type);
+ 	    return (0);
+ 	  }
+ 	}

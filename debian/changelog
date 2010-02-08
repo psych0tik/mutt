@@ -32,7 +32,7 @@ mutt (1.5.20-7) unstable; urgency=low
     + adding ${misc:Depends} to make lintian happy
   * debian/rules: adding a commented rule to enable tokyocabinet if we want
 
- -- Antonio Radici <antonio@dyne.org>  Fri, 29 Jan 2010 23:32:55 +0000
+ -- Antonio Radici <antonio@dyne.org>  Mon, 08 Feb 2010 00:27:55 +0000
 
 mutt (1.5.20-6) unstable; urgency=low
 
