@@ -114,3 +114,14 @@ Minor typos in manual.txt, see upstream http://bugs.mutt.org/3379
  	    return (0);
  	  }
  	}
+--- a/init.h
++++ b/init.h
+@@ -1413,7 +1413,7 @@
+   /*
+   ** .pp
+   ** The default mailbox type used when creating new folders. May be any of
+-  ** ``mbox'', ``MMDF'', ``MH'' and ``Maildir''. This is overriden by the
++  ** ``mbox'', ``MMDF'', ``MH'' and ``Maildir''. This is overridden by the
+   ** \fC-m\fP command-line option.
+   */
+   { "menu_context",	DT_NUM,  R_NONE, UL &MenuContext, 0 },
