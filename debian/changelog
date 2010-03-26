@@ -1,3 +1,11 @@
+mutt (1.5.20-8) unreleased; urgency=low
+
+  * debian/control:
+    + Flip Maintainer and Uploaders. I'm pretty inactive these days.
+    + Nuke DM-Upload-Allowed.
+
+ -- Christoph Berg <myon@debian.org>  Fri, 26 Mar 2010 10:26:03 +0100
+
 mutt (1.5.20-7) unstable; urgency=low
 
   * debian/NEWS: backported a note about the new behavior with attachments
