@@ -11,6 +11,8 @@ mutt (1.5.20-8~unrel) unreleased; urgency=low
   * debian/patches:
     + Update upstream/228671-pipe-mime.patch: Fix segfaults with ssh tunnels.
       Thanks Nikolaus Schulz (Closes: #569279)
+    + Update upstream/528233-readonly-open.patch: Only chmod saved
+      attachments, not existing files. (Closes: #572203)
     + Add upstream/573823-imap_internal_date: Set internaldate of messages
       appended to IMAP mailboxes (Closes: #573823)
 
