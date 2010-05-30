@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 include /usr/share/quilt/quilt.make
+QUILT = QUILT_PATCHES=$(QUILT_PATCH_DIR) quilt --quiltrc /dev/null
 
 ###################### user serviceable parts ######################
 
@@ -96,6 +97,7 @@ $(objdir)-patched/build-stamp: $(QUILT_STAMPFN)
 	
 ifeq ($(BUILD_PATCHED),yes)
 	###################### building mutt-patched ######################
+	$(QUILT) applied > PATCHES
 	autoreconf --install --include=m4
 	cd $(objdir)-patched && \
 	env CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" \
@@ -112,7 +114,8 @@ endif
 build build-arch: $(objdir)/build-stamp
 $(objdir)/build-stamp: $(objdir)-patched/build-stamp
 	###################### building mutt ######################
-	QUILT_PATCHES=$(QUILT_PATCH_DIR) quilt --quiltrc /dev/null pop mutt.org
+	$(QUILT) pop mutt.org
+	$(QUILT) applied > PATCHES
 	
 	autoreconf --install --include=m4
 	-mkdir $(objdir)
@@ -197,7 +200,7 @@ clean: unpatch
 	
 	# please dpkg-source
 	rm -f po/*.gmo
-	touch PATCHES
+	echo -n > PATCHES
 	
 	# remove build trees
 	rm -rf $(objdir) $(objdir)-patched
@@ -205,9 +208,6 @@ clean: unpatch
 	# remove autotool-generated files so they don't show up in the diff.gz
 	rm -f configure config.h.in
 	rm -f Makefile.in contrib/Makefile.in imap/Makefile.in doc/Makefile.in m4/Makefile.in
-	
-	# clean PATCHES hunks (blame quilt refresh)
-	for p in `grep -rl PATCHES debian/patches` ; do perl -wi debian/fix-PATCHES.pl $$p ; done
 	
 	dh_clean
 

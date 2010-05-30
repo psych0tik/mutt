@@ -28,7 +28,7 @@ ifdef  trash  set trash=~/Mail/trash
 == END PATCH
 --- a/init.c
 +++ b/init.c
-@@ -635,6 +635,65 @@
+@@ -635,6 +635,65 @@ static int remove_from_rx_list (RX_LIST
    return (rv);
  }
  
@@ -96,7 +96,7 @@ ifdef  trash  set trash=~/Mail/trash
    do
 --- a/init.h
 +++ b/init.h
-@@ -3413,6 +3413,7 @@
+@@ -3413,6 +3413,7 @@ static int parse_lists (BUFFER *, BUFFER
  static int parse_unlists (BUFFER *, BUFFER *, unsigned long, BUFFER *);
  static int parse_alias (BUFFER *, BUFFER *, unsigned long, BUFFER *);
  static int parse_unalias (BUFFER *, BUFFER *, unsigned long, BUFFER *);
@@ -104,7 +104,7 @@ ifdef  trash  set trash=~/Mail/trash
  static int parse_ignore (BUFFER *, BUFFER *, unsigned long, BUFFER *);
  static int parse_unignore (BUFFER *, BUFFER *, unsigned long, BUFFER *);
  static int parse_source (BUFFER *, BUFFER *, unsigned long, BUFFER *);
-@@ -3463,6 +3464,7 @@
+@@ -3463,6 +3464,7 @@ struct command_t Commands[] = {
    { "group",		parse_group,		0 },
    { "ungroup",		parse_ungroup,		0 },
    { "hdr_order",	parse_list,		UL &HeaderOrderList },
@@ -114,7 +114,7 @@ ifdef  trash  set trash=~/Mail/trash
  #endif
 --- a/doc/manual.xml.head
 +++ b/doc/manual.xml.head
-@@ -4087,6 +4087,28 @@
+@@ -4087,6 +4087,28 @@ considered to be an executable program f
  
  </sect1>
  
@@ -143,7 +143,3 @@ ifdef  trash  set trash=~/Mail/trash
  <sect1 id="unhook">
  <title>Removing Hooks</title>
  
---- /dev/null
-+++ b/PATCHES
-@@ -0,0 +1 @@
-+patch-1.5.13.cd.ifdef.2
