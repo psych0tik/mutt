@@ -16,6 +16,8 @@ The home page for this patch is:
                      status.c:103: add sizeof (tmp) to mutt_pretty_mailbox
   - 2009-09-15 scotton: removed doc/Muttrc for mutt-1.5.19 (only patch doc/Muttrc.head)
   - 2009-09-11 antonio: removed DefaultMagic, see 541360
+  - 2010-05-31 myon: remove commented paragraph "Use folders..." in
+                     doc/Muttrc.head, see #578096
 
 == END PATCH
 --- /dev/null
@@ -783,20 +785,6 @@ The home page for this patch is:
  <chapter id="mimesupport">
  <title>Mutt's MIME Support</title>
  
---- a/doc/Muttrc.head
-+++ b/doc/Muttrc.head
-@@ -29,6 +29,11 @@
- macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
- bind browser y exit
- 
-+# Use folders which match on \\.gz$ as gzipped folders:
-+# open-hook \\.gz$ "gzip -cd %f > %t"
-+# close-hook \\.gz$ "gzip -c %t > %f"
-+# append-hook \\.gz$ "gzip -c %t >> %f"
-+
- # If Mutt is unable to determine your site's domain name correctly, you can
- # set the default here.
- #
 --- a/doc/muttrc.man.head
 +++ b/doc/muttrc.man.head
 @@ -345,6 +345,24 @@
