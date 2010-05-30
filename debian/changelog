@@ -8,6 +8,8 @@ mutt (1.5.20-8~unrel) unreleased; urgency=low
   * Switch to tokyocabinet (Closes: #530670)
   * Instead of trying to maintain the PATCHES file, put "quilt applied" output
     there.
+  * Fix segfaults with ssh tunnels, patch 228671-pipe-mime.patch updated.
+    Thanks Nikolaus Schulz (Closes: #569279)
 
  -- Christoph Berg <myon@debian.org>  Sun, 30 May 2010 23:20:21 +0200
 
