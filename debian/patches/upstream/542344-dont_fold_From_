@@ -1,0 +1,54 @@
+changeset:   5945:5f590adfdf1a
+branch:      HEAD
+user:        Rocco Rutte <pdmef@gmx.net>
+date:        Thu Jun 25 17:31:27 2009 +0200
+summary:     header folding: treat From_ specially, never wrap on sending side
+
+--- a/sendlib.c
++++ b/sendlib.c
+@@ -1630,9 +1630,9 @@ static int fold_one_header (FILE *fp, co
+   dprint(4,(debugfile,"mwoh: pfx=[%s], tag=[%s], flags=%d value=[%s]\n",
+ 	    pfx, tag, flags, value));
+ 
+-  if (fprintf (fp, "%s%s: ", NONULL (pfx), tag) < 0)
++  if (tag && *tag && fprintf (fp, "%s%s: ", NONULL (pfx), tag) < 0)
+     return -1;
+-  col = mutt_strlen (tag) + 2 + mutt_strlen (pfx);
++  col = mutt_strlen (tag) + (tag && *tag ? 2 : 0) + mutt_strlen (pfx);
+ 
+   while (p && *p)
+   {
+@@ -1717,9 +1717,12 @@ static int write_one_header (FILE *fp, i
+ 			     int flags)
+ {
+   char *tagbuf, *valbuf, *t;
++  int is_from = ((end - start) > 5 &&
++		 ascii_strncasecmp (start, "from ", 5) == 0);
+ 
+-  /* only pass through folding machinery if necessary for sending */
+-  if (!(flags & CH_DISPLAY) && pfxw + max <= wraplen)
++  /* only pass through folding machinery if necessary for sending,
++     never wrap From_ headers on sending */
++  if (!(flags & CH_DISPLAY) && (pfxw + max <= wraplen || is_from))
+   {
+     valbuf = mutt_substrdup (start, end);
+     dprint(4,(debugfile,"mwoh: buf[%s%s] short enough, "
+@@ -1738,8 +1741,16 @@ static int write_one_header (FILE *fp, i
+   else
+   {
+     t = strchr (start, ':');
+-    tagbuf = mutt_substrdup (start, t);
+-    valbuf = mutt_substrdup (t + 2, end);
++    if (is_from)
++    {
++      tagbuf = NULL;
++      valbuf = mutt_substrdup (start, end);
++    }
++    else
++    {
++      tagbuf = mutt_substrdup (start, t);
++      valbuf = mutt_substrdup (t + 2, end);
++    }
+     dprint(4,(debugfile,"mwoh: buf[%s%s] too long, "
+ 	      "max width = %d > %dn",
+ 	      NONULL(pfx), valbuf, max, wraplen));

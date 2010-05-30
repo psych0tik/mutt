@@ -15,6 +15,8 @@ mutt (1.5.20-8~unrel) unreleased; urgency=low
       attachments, not existing files. (Closes: #572203)
     + Add upstream/573823-imap_internal_date: Set internaldate of messages
       appended to IMAP mailboxes (Closes: #573823)
+    + Add upstream/542344-dont_fold_From_: Do not wrap From_ header
+      (Closes: #542344)
 
  -- Christoph Berg <myon@debian.org>  Sun, 30 May 2010 23:20:21 +0200
 
