@@ -1,10 +1,12 @@
-mutt (1.5.20-8) unreleased; urgency=low
+mutt (1.5.20-8~unrel) unreleased; urgency=low
 
   * debian/control:
     + Flip Maintainer and Uploaders. I'm pretty inactive these days.
     + Nuke DM-Upload-Allowed.
+  * Explicitely use source format 1.0 due to the quilt magic we are using to
+    built mutt-patched.
 
- -- Christoph Berg <myon@debian.org>  Fri, 26 Mar 2010 10:26:03 +0100
+ -- Christoph Berg <myon@debian.org>  Sun, 30 May 2010 12:36:10 +0200
 
 mutt (1.5.20-7) unstable; urgency=low
 
