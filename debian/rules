@@ -10,9 +10,9 @@ BUILD_PATCHED := yes
 ###
 # header cache backend
 # HCACHE_DB := bdb
-HCACHE_DB := gdbm
+# HCACHE_DB := gdbm
 # HCACHE_DB := qdbm
-# HCACHE_DB := tokyocabinet
+HCACHE_DB := tokyocabinet
 ###
 # GPGME backend
 GPGME := --enable-gpgme

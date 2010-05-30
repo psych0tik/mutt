@@ -4,7 +4,7 @@ Priority: standard
 Maintainer: Antonio Radici <antonio@dyne.org>
 Uploaders: Christoph Berg <myon@debian.org>
 Build-Depends: automake, debhelper (>> 7), docbook-xml, docbook-xsl,
- elinks-lite | elinks, gawk, gettext, libgdbm-dev, libgnutls-dev,
+ elinks-lite | elinks, gawk, gettext, libtokyocabinet-dev, libgnutls-dev,
  libgpgme11-dev, libidn11-dev, libkrb5-dev, libncurses5-dev, libncursesw5-dev,
  libsasl2-dev, pkg-config, quilt, xsltproc, zlib1g-dev
 Standards-Version: 3.8.4
