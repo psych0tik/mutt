@@ -1,3 +1,10 @@
+mutt (1.5.20-9~unrel) UNRELEASED; urgency=low
+
+  * hurd-i386 fixes:
+    + Use libgdbm-dev for this arch until libtokyocabinet-dev is available.
+
+ -- Christoph Berg <myon@debian.org>  Sun, 06 Jun 2010 12:58:59 +0200
+
 mutt (1.5.20-8) unstable; urgency=low
 
   * debian/control:

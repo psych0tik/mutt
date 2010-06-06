@@ -38,6 +38,9 @@ ifeq ($(HCACHE_DB),qdbm)
 endif
 ifeq ($(HCACHE_DB),tokyocabinet)
     hcache_db := --without-gdbm --without-bdb --without-qdbm
+    ifeq ($(shell dpkg --print-architecture),hurd-i386)
+	hcache_db := --without-bdb --without-qdbm
+    endif
 endif
 
 confflags =	--prefix=/usr			\
