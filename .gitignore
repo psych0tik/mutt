@@ -16,6 +16,7 @@ doc/.deps/
 doc/Makefile
 doc/Makefile.in
 doc/instdoc.sh
+doc/smime_keys.man
 hcachever.sh
 imap/.deps/
 imap/Makefile
@@ -28,7 +29,16 @@ po/Makefile
 po/Makefile.in
 po/POTFILES
 stamp-h1
+
+debian/files
+debian/mutt
+debian/mutt-dbg
+debian/mutt-patched
 debian/stamp-patched
+debian/tmp
+debian/*.substvars
+debian/*.debhelper*
+
 obj-i486-linux-gnu-patched/
 obj-i486-linux-gnu/
 tags
