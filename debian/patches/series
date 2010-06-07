@@ -61,6 +61,7 @@ upstream/311296-rand-mktemp.patch
 upstream/573823-imap_internal_date
 upstream/542344-dont_fold_From_
 
+upstream/path_max
 misc/hyphen-as-minus.patch
 #misc/manpage-typos.patch
 misc/smime_keys-manpage.patch

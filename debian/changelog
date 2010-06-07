@@ -2,6 +2,8 @@ mutt (1.5.20-9~unrel) UNRELEASED; urgency=low
 
   * hurd-i386 fixes:
     + Use libgdbm-dev for this arch until libtokyocabinet-dev is available.
+    + #define PATH_MAX _POSIX_PATH_MAX. (Fixed in upstream hg, though
+      differently.)
   * /usr/bin/mutt is an alternative now, instead of a diversion in
     mutt-patched.
 
