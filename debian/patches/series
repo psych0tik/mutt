@@ -2,7 +2,6 @@
 misc/am-maintainer-mode
 misc/hg.pmdef.debugtime
 debian-specific/build_doc_adjustments.diff 
-debian-specific/sort-patchlist
 
 # features
 features/ifdef
