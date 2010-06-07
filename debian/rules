@@ -156,8 +156,11 @@ install: build
 	  grep '^set' contrib/gpg.rc; \
 	  echo ) > debian/tmp/gpg.rc
 	
+	dh_install
+	
+	# prepare files for update-alternatives
+	mv debian/mutt/usr/bin/mutt debian/mutt/usr/bin/mutt-org
 ifeq ($(BUILD_PATCHED),yes)
-	# temporarily call the binary mutt-patched so dh_strip gets the debug file name right
 	install -D $(objdir)-patched/mutt debian/mutt-patched/usr/bin/mutt-patched
 endif
 	
@@ -168,7 +171,6 @@ endif
 
 binary binary-arch: install
 	###################### binary ######################
-	dh_install
 	dh_installman
 	dh_installmenu
 	dh_installmime
@@ -180,9 +182,6 @@ binary binary-arch: install
 	dh_strip --dbg-package=mutt-dbg
 	rm -rf $(CURDIR)/debian/mutt-dbg/usr/share/doc/mutt-dbg \
 		$(CURDIR)/debian/mutt-patched/usr/share/doc/mutt-patched
-ifeq ($(BUILD_PATCHED),yes)
-	mv debian/mutt-patched/usr/bin/mutt-patched debian/mutt-patched/usr/bin/mutt
-endif
 	
 	dh_link
 	dh_compress --exclude usr/share/doc/mutt/README.Patches
