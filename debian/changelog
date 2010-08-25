@@ -1,3 +1,9 @@
+mutt (1.5.20-10~unrel1) UNRELEASED; urgency=low
+
+  * debian/patches: features/imap_fast_trash.
+
+ -- Christoph Berg <myon@debian.org>  Wed, 25 Aug 2010 11:11:43 +0200
+
 mutt (1.5.20-9) unstable; urgency=low
 
   * hurd-i386 fixes:
