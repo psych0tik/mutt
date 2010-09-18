@@ -1,6 +1,7 @@
-mutt (1.5.20-10~unrel1) UNRELEASED; urgency=low
+mutt (1.5.20-10) experimental; urgency=low
 
-  * debian/patches: features/imap_fast_trash.
+  * debian/patches: features/imap_fast_trash: Make "move to trash folder" use
+    IMAP COPY, by Paul Miller (jettero).
 
  -- Christoph Berg <myon@debian.org>  Wed, 25 Aug 2010 11:11:43 +0200
 
