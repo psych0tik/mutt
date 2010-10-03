@@ -1,10 +1,8 @@
 Enable pgp_mime_signature_filename and pgp_mime_signature_description
 
-Index: mutt/globals.h
-===================================================================
---- mutt.orig/globals.h	2009-06-25 12:35:48.000000000 +0200
-+++ mutt/globals.h	2009-06-25 12:36:22.000000000 +0200
-@@ -242,6 +242,8 @@
+--- a/globals.h
++++ b/globals.h
+@@ -243,6 +243,8 @@
  WHERE char *PgpListSecringCommand;
  WHERE char *PgpListPubringCommand;
  WHERE char *PgpGetkeysCommand;
@@ -13,11 +11,9 @@ Index: mutt/globals.h
  
  /*-- formerly in smime.h --*/
  WHERE char *SmimeDefaultKey;
-Index: mutt/init.h
-===================================================================
---- mutt.orig/init.h	2009-06-25 12:35:48.000000000 +0200
-+++ mutt/init.h	2009-06-25 12:36:22.000000000 +0200
-@@ -2541,6 +2541,18 @@
+--- a/init.h
++++ b/init.h
+@@ -2556,6 +2556,18 @@
    ** a line quoted text if it also matches $$smileys. This mostly
    ** happens at the beginning of a line.
    */
@@ -36,12 +32,10 @@ Index: mutt/init.h
  
  
  
-Index: mutt/pgp.c
-===================================================================
---- mutt.orig/pgp.c	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/pgp.c	2009-06-25 12:36:22.000000000 +0200
-@@ -1131,6 +1131,8 @@
-   t->disposition = DISPINLINE;
+--- a/pgp.c
++++ b/pgp.c
+@@ -1129,6 +1129,8 @@
+   t->disposition = DISPNONE;
    t->encoding = ENC7BIT;
    t->unlink = 1; /* ok to remove this file after sending. */
 +  mutt_set_parameter ("name", PgpMimeSignatureFilename, &t->parameter);

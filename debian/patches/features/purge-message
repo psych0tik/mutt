@@ -26,11 +26,9 @@ of having a trash folder feature.
   - Fixed indentation of "purged" in mutt.h.
 
 == END PATCH
-Index: mutt/OPS
-===================================================================
---- mutt.orig/OPS	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/OPS	2009-06-25 12:36:14.000000000 +0200
-@@ -141,6 +141,7 @@
+--- a/OPS
++++ b/OPS
+@@ -142,6 +142,7 @@
  OP_PREV_LINE "scroll up one line"
  OP_PREV_PAGE "move to the previous page"
  OP_PRINT "print the current entry"
@@ -38,11 +36,9 @@ Index: mutt/OPS
  OP_QUERY "query external program for addresses"
  OP_QUERY_APPEND "append new query results to current results"
  OP_QUIT "save changes to mailbox and quit"
-Index: mutt/curs_main.c
-===================================================================
---- mutt.orig/curs_main.c	2009-06-25 12:35:44.000000000 +0200
-+++ mutt/curs_main.c	2009-06-25 12:36:14.000000000 +0200
-@@ -1823,6 +1823,7 @@
+--- a/curs_main.c
++++ b/curs_main.c
+@@ -1843,6 +1843,7 @@
  	MAYBE_REDRAW (menu->redraw);
  	break;
  
@@ -50,7 +46,7 @@ Index: mutt/curs_main.c
        case OP_DELETE:
  
  	CHECK_MSGCOUNT;
-@@ -1833,6 +1834,7 @@
+@@ -1853,6 +1854,7 @@
  	if (tag)
  	{
  	  mutt_tag_set_flag (M_DELETE, 1);
@@ -58,7 +54,7 @@ Index: mutt/curs_main.c
  	  if (option (OPTDELETEUNTAG))
  	    mutt_tag_set_flag (M_TAG, 0);
  	  menu->redraw = REDRAW_INDEX;
-@@ -1840,6 +1842,8 @@
+@@ -1860,6 +1862,8 @@
  	else
  	{
  	  mutt_set_flag (Context, CURHDR, M_DELETE, 1);
@@ -67,7 +63,7 @@ Index: mutt/curs_main.c
  	  if (option (OPTDELETEUNTAG))
  	    mutt_set_flag (Context, CURHDR, M_TAG, 0);
  	  if (option (OPTRESOLVE))
-@@ -2136,11 +2140,13 @@
+@@ -2161,11 +2165,13 @@
  	if (tag)
  	{
  	  mutt_tag_set_flag (M_DELETE, 0);
@@ -81,7 +77,7 @@ Index: mutt/curs_main.c
  	  if (option (OPTRESOLVE) && menu->current < Context->vcount - 1)
  	  {
  	    menu->current++;
-@@ -2161,9 +2167,11 @@
+@@ -2186,9 +2192,11 @@
  	CHECK_ACL(M_ACL_DELETE, _("undelete message(s)"));
  
  	rc = mutt_thread_set_flag (CURHDR, M_DELETE, 0,
@@ -95,10 +91,8 @@ Index: mutt/curs_main.c
  	{
  	  if (option (OPTRESOLVE))
  	  {
-Index: mutt/flags.c
-===================================================================
---- mutt.orig/flags.c	2009-06-25 12:35:48.000000000 +0200
-+++ mutt/flags.c	2009-06-25 12:36:14.000000000 +0200
+--- a/flags.c
++++ b/flags.c
 @@ -104,6 +104,16 @@
        }
        break;
@@ -116,11 +110,9 @@ Index: mutt/flags.c
      case M_NEW:
  
        if (!mutt_bit_isset(ctx->rights,M_ACL_SEEN))
-Index: mutt/functions.h
-===================================================================
---- mutt.orig/functions.h	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/functions.h	2009-06-25 12:36:14.000000000 +0200
-@@ -120,6 +120,7 @@
+--- a/functions.h
++++ b/functions.h
+@@ -121,6 +121,7 @@
    { "toggle-write",		OP_TOGGLE_WRITE,		"%" },
    { "next-thread",		OP_MAIN_NEXT_THREAD,		"\016" },
    { "next-subthread",		OP_MAIN_NEXT_SUBTHREAD,		"\033n" },
@@ -128,7 +120,7 @@ Index: mutt/functions.h
    { "query",			OP_QUERY,			"Q" },
    { "quit",			OP_QUIT,			"q" },
    { "reply",			OP_REPLY,			"r" },
-@@ -209,6 +210,7 @@
+@@ -213,6 +214,7 @@
    { "print-message",	OP_PRINT,			"p" },
    { "previous-thread",	OP_MAIN_PREV_THREAD,		"\020" },
    { "previous-subthread",OP_MAIN_PREV_SUBTHREAD,	"\033p" },
@@ -136,10 +128,8 @@ Index: mutt/functions.h
    { "quit",		OP_QUIT,			"Q" },
    { "exit",		OP_EXIT,			"q" },
    { "reply",		OP_REPLY,			"r" },
-Index: mutt/mutt.h
-===================================================================
---- mutt.orig/mutt.h	2009-06-25 12:35:48.000000000 +0200
-+++ mutt/mutt.h	2009-06-25 12:36:14.000000000 +0200
+--- a/mutt.h
++++ b/mutt.h
 @@ -188,6 +188,7 @@
    M_UNDELETE,
    M_DELETED,
@@ -148,7 +138,7 @@ Index: mutt/mutt.h
    M_FLAG,
    M_TAG,
    M_UNTAG,
-@@ -704,6 +705,7 @@
+@@ -709,6 +710,7 @@
    unsigned int flagged : 1; 		/* marked important? */
    unsigned int tagged : 1;
    unsigned int appended : 1;		/* has been saved */
@@ -156,11 +146,9 @@ Index: mutt/mutt.h
    unsigned int deleted : 1;
    unsigned int changed : 1;
    unsigned int attach_del : 1; 		/* has an attachment marked for deletion */
-Index: mutt/mx.c
-===================================================================
---- mutt.orig/mx.c	2009-06-25 12:36:10.000000000 +0200
-+++ mutt/mx.c	2009-06-25 12:36:14.000000000 +0200
-@@ -803,6 +803,7 @@
+--- a/mx.c
++++ b/mx.c
+@@ -806,6 +806,7 @@
      {
        for (i = 0 ; i < ctx->msgcount ; i++)
  	if (ctx->hdrs[i]->deleted && !ctx->hdrs[i]->appended
@@ -168,11 +156,9 @@ Index: mutt/mx.c
  	    && mutt_append_message (ctx_trash, ctx, ctx->hdrs[i], 0, 0) == -1)
  	  {
  	    mx_close_mailbox (ctx_trash, NULL);
-Index: mutt/pager.c
-===================================================================
---- mutt.orig/pager.c	2009-06-25 12:35:44.000000000 +0200
-+++ mutt/pager.c	2009-06-25 12:36:14.000000000 +0200
-@@ -2316,12 +2316,15 @@
+--- a/pager.c
++++ b/pager.c
+@@ -2343,12 +2343,15 @@
  	MAYBE_REDRAW (redraw);
  	break;
  
@@ -188,7 +174,7 @@ Index: mutt/pager.c
          if (option (OPTDELETEUNTAG))
  	  mutt_set_flag (Context, extra->hdr, M_TAG, 0);
  	redraw = REDRAW_STATUS | REDRAW_INDEX;
-@@ -2648,6 +2651,7 @@
+@@ -2675,6 +2678,7 @@
  	CHECK_ACL(M_ACL_DELETE, _("undelete message"));
  
  	mutt_set_flag (Context, extra->hdr, M_DELETE, 0);
@@ -196,7 +182,7 @@ Index: mutt/pager.c
  	redraw = REDRAW_STATUS | REDRAW_INDEX;
  	if (option (OPTRESOLVE))
  	{
-@@ -2663,9 +2667,11 @@
+@@ -2690,9 +2694,11 @@
  	CHECK_ACL(M_ACL_DELETE, _("undelete message(s)"));
  
  	r = mutt_thread_set_flag (extra->hdr, M_DELETE, 0,
@@ -209,11 +195,9 @@ Index: mutt/pager.c
  	{
  	  if (option (OPTRESOLVE))
  	  {
-Index: mutt/pattern.c
-===================================================================
---- mutt.orig/pattern.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/pattern.c	2009-06-25 12:36:14.000000000 +0200
-@@ -1347,8 +1347,10 @@
+--- a/pattern.c
++++ b/pattern.c
+@@ -1357,8 +1357,10 @@
        {
  	switch (op)
  	{

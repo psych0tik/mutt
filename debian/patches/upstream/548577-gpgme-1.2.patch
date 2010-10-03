@@ -3,9 +3,9 @@ mutt will be able to open pgp crypted/signed message with gpgme
 
 --- a/init.c
 +++ b/init.c
-@@ -51,6 +51,10 @@
- #include <errno.h>
+@@ -53,6 +53,10 @@
  #include <sys/wait.h>
+ #include <sys/time.h>
  
 +#if defined(CRYPT_BACKEND_GPGME)
 +#include <gpgme.h>

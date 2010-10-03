@@ -46,11 +46,9 @@ To sum up, it's more integrated and transparent to the user.
   - Fixed indentation of "appended" in mutt.h.
 
 == END PATCH
-Index: mutt/commands.c
-===================================================================
---- mutt.orig/commands.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/commands.c	2009-06-25 12:35:48.000000000 +0200
-@@ -716,6 +716,7 @@
+--- a/commands.c
++++ b/commands.c
+@@ -717,6 +717,7 @@
      if (option (OPTDELETEUNTAG))
        mutt_set_flag (Context, h, M_TAG, 0);
    }
@@ -58,10 +56,8 @@ Index: mutt/commands.c
    
    return 0;
  }
-Index: mutt/flags.c
-===================================================================
---- mutt.orig/flags.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/flags.c	2009-06-25 12:35:48.000000000 +0200
+--- a/flags.c
++++ b/flags.c
 @@ -65,7 +65,13 @@
        {
  	h->deleted = 0;
@@ -95,10 +91,8 @@ Index: mutt/flags.c
      case M_NEW:
  
        if (!mutt_bit_isset(ctx->rights,M_ACL_SEEN))
-Index: mutt/globals.h
-===================================================================
---- mutt.orig/globals.h	2009-06-25 12:35:44.000000000 +0200
-+++ mutt/globals.h	2009-06-25 12:35:48.000000000 +0200
+--- a/globals.h
++++ b/globals.h
 @@ -139,6 +139,7 @@
  WHERE char *Status;
  WHERE char *Tempdir;
@@ -107,11 +101,9 @@ Index: mutt/globals.h
  WHERE char *Username;
  WHERE char *Visual;
  WHERE char *XtermTitle;
-Index: mutt/imap/message.c
-===================================================================
---- mutt.orig/imap/message.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/imap/message.c	2009-06-25 12:35:48.000000000 +0200
-@@ -867,6 +867,7 @@
+--- a/imap/message.c
++++ b/imap/message.c
+@@ -876,6 +876,7 @@
          if (ctx->hdrs[n]->tagged)
          {
            mutt_set_flag (ctx, ctx->hdrs[n], M_DELETE, 1);
@@ -119,7 +111,7 @@ Index: mutt/imap/message.c
            if (option (OPTDELETEUNTAG))
              mutt_set_flag (ctx, ctx->hdrs[n], M_TAG, 0);
          }
-@@ -874,6 +875,7 @@
+@@ -883,6 +884,7 @@
      else
      {
        mutt_set_flag (ctx, h, M_DELETE, 1);
@@ -127,11 +119,9 @@ Index: mutt/imap/message.c
        if (option (OPTDELETEUNTAG))
          mutt_set_flag (ctx, h, M_TAG, 0);
      }
-Index: mutt/init.h
-===================================================================
---- mutt.orig/init.h	2009-06-25 12:35:44.000000000 +0200
-+++ mutt/init.h	2009-06-25 12:35:48.000000000 +0200
-@@ -3180,6 +3180,16 @@
+--- a/init.h
++++ b/init.h
+@@ -3195,6 +3195,16 @@
    ** by \fIyou\fP.  The sixth character is used to indicate when a mail
    ** was sent to a mailing-list you subscribe to.
    */
@@ -148,10 +138,8 @@ Index: mutt/init.h
  #ifdef USE_SOCKET
    { "tunnel",            DT_STR, R_NONE, UL &Tunnel, UL 0 },
    /*
-Index: mutt/mutt.h
-===================================================================
---- mutt.orig/mutt.h	2009-06-25 12:35:44.000000000 +0200
-+++ mutt/mutt.h	2009-06-25 12:35:48.000000000 +0200
+--- a/mutt.h
++++ b/mutt.h
 @@ -187,6 +187,7 @@
    M_DELETE,
    M_UNDELETE,
@@ -160,7 +148,7 @@ Index: mutt/mutt.h
    M_FLAG,
    M_TAG,
    M_UNTAG,
-@@ -702,6 +703,7 @@
+@@ -707,6 +708,7 @@
    unsigned int mime : 1;    		/* has a MIME-Version header? */
    unsigned int flagged : 1; 		/* marked important? */
    unsigned int tagged : 1;
@@ -168,7 +156,7 @@ Index: mutt/mutt.h
    unsigned int deleted : 1;
    unsigned int changed : 1;
    unsigned int attach_del : 1; 		/* has an attachment marked for deletion */
-@@ -874,6 +876,7 @@
+@@ -879,6 +881,7 @@
    int new;			/* how many new messages? */
    int unread;			/* how many unread messages? */
    int deleted;			/* how many deleted messages */
@@ -176,11 +164,9 @@ Index: mutt/mutt.h
    int flagged;			/* how many flagged messages */
    int msgnotreadyet;		/* which msg "new" in pager, -1 if none */
  
-Index: mutt/muttlib.c
-===================================================================
---- mutt.orig/muttlib.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/muttlib.c	2009-06-25 12:35:48.000000000 +0200
-@@ -1460,7 +1460,9 @@
+--- a/muttlib.c
++++ b/muttlib.c
+@@ -1515,7 +1515,9 @@
  
    if (magic > 0 && !mx_access (s, W_OK))
    {
@@ -191,11 +177,9 @@ Index: mutt/muttlib.c
      {
        snprintf (tmp, sizeof (tmp), _("Append messages to %s?"), s);
        if ((rc = mutt_yesorno (tmp, M_YES)) == M_NO)
-Index: mutt/mx.c
-===================================================================
---- mutt.orig/mx.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/mx.c	2009-06-25 12:35:48.000000000 +0200
-@@ -773,6 +773,53 @@
+--- a/mx.c
++++ b/mx.c
+@@ -776,6 +776,53 @@
    return rc;
  }
  
@@ -249,7 +233,7 @@ Index: mutt/mx.c
  /* save changes and close mailbox */
  int mx_close_mailbox (CONTEXT *ctx, int *index_hint)
  {
-@@ -909,6 +956,7 @@
+@@ -912,6 +959,7 @@
  	  if (mutt_append_message (&f, ctx, ctx->hdrs[i], 0, CH_UPDATE_LEN) == 0)
  	  {
  	    mutt_set_flag (ctx, ctx->hdrs[i], M_DELETE, 1);
@@ -257,7 +241,7 @@ Index: mutt/mx.c
  	  }
  	  else
  	  {
-@@ -931,6 +979,14 @@
+@@ -936,6 +984,14 @@
      return 0;
    }
    
@@ -272,7 +256,7 @@ Index: mutt/mx.c
  #ifdef USE_IMAP
    /* allow IMAP to preserve the deleted flag across sessions */
    if (ctx->magic == M_IMAP)
-@@ -1130,6 +1186,12 @@
+@@ -1133,6 +1189,12 @@
    msgcount = ctx->msgcount;
    deleted = ctx->deleted;
  
@@ -285,11 +269,9 @@ Index: mutt/mx.c
  #ifdef USE_IMAP
    if (ctx->magic == M_IMAP)
      rc = imap_sync_mailbox (ctx, purge, index_hint);
-Index: mutt/postpone.c
-===================================================================
---- mutt.orig/postpone.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/postpone.c	2009-06-25 12:35:48.000000000 +0200
-@@ -276,6 +276,9 @@
+--- a/postpone.c
++++ b/postpone.c
+@@ -277,6 +277,9 @@
    /* finished with this message, so delete it. */
    mutt_set_flag (PostContext, h, M_DELETE, 1);
  

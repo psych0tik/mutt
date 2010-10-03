@@ -5,11 +5,9 @@ This is the sensible browser position patch by Haakon Riiser.
     http://lists.df7cb.de/mutt/message/20050309.162127.a244a894.en.html
 
 == END PATCH
-Index: mutt/menu.c
-===================================================================
---- mutt.orig/menu.c	2009-06-25 12:35:36.000000000 +0200
-+++ mutt/menu.c	2009-06-25 12:36:19.000000000 +0200
-@@ -853,8 +853,17 @@
+--- a/menu.c
++++ b/menu.c
+@@ -852,8 +852,17 @@
  
  int mutt_menuLoop (MUTTMENU *menu)
  {
@@ -27,7 +25,7 @@ Index: mutt/menu.c
    FOREVER
    {
      if (option (OPTMENUCALLER))
-@@ -1082,6 +1091,8 @@
+@@ -1081,6 +1090,8 @@
  	break;
  
        default:
@@ -36,11 +34,9 @@ Index: mutt/menu.c
  	return (i);
      }
    }
-Index: mutt/browser.c
-===================================================================
---- mutt.orig/browser.c	2009-06-25 12:35:37.000000000 +0200
-+++ mutt/browser.c	2009-06-25 12:36:19.000000000 +0200
-@@ -55,6 +55,7 @@
+--- a/browser.c
++++ b/browser.c
+@@ -56,6 +56,7 @@
    int num;
  } FOLDER;
  
@@ -48,7 +44,7 @@ Index: mutt/browser.c
  static char LastDir[_POSIX_PATH_MAX] = "";
  static char LastDirBackup[_POSIX_PATH_MAX] = "";
  
-@@ -519,9 +520,13 @@
+@@ -536,9 +537,13 @@
    menu->tagged = 0;
    
    if (buffy)
@@ -62,7 +58,7 @@ Index: mutt/browser.c
      strfcpy (path, LastDir, sizeof (path));
      mutt_pretty_mailbox (path, sizeof (path));
  #ifdef USE_IMAP
-@@ -530,8 +535,22 @@
+@@ -547,8 +552,22 @@
  	      path, NONULL (Mask.pattern));
    else
  #endif
@@ -87,7 +83,7 @@ Index: mutt/browser.c
    }
    menu->redraw = REDRAW_FULL;
  }
-@@ -714,7 +733,6 @@
+@@ -731,7 +750,6 @@
  #endif
  	    )
  	  {
@@ -95,10 +91,8 @@ Index: mutt/browser.c
  
  	    /* save the old directory */
  	    strfcpy (OldLastDir, LastDir, sizeof (OldLastDir));
-Index: mutt/mutt_menu.h
-===================================================================
---- mutt.orig/mutt_menu.h	2009-06-25 12:35:44.000000000 +0200
-+++ mutt/mutt_menu.h	2009-06-25 12:36:19.000000000 +0200
+--- a/mutt_menu.h
++++ b/mutt_menu.h
 @@ -49,6 +49,7 @@
    int offset;	/* which screen row to start the index */
    int pagelen;	/* number of entries per screen */

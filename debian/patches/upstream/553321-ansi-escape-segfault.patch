@@ -6,7 +6,7 @@ The bug and the patch were forwarded upstream, see http://bugs.mutt.org/3371
 
 --- a/pager.c
 +++ b/pager.c
-@@ -1028,7 +1028,7 @@
+@@ -1053,7 +1053,7 @@
      q = *fmt;
      while (*p)
      {

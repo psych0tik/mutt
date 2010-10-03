@@ -3,7 +3,7 @@ is asked with wrong informaton, see upstream #3240
 
 --- a/account.c
 +++ b/account.c
-@@ -218,7 +218,7 @@
+@@ -222,7 +222,7 @@
    else
    {
      snprintf (prompt, sizeof (prompt), _("Password for %s@%s: "),

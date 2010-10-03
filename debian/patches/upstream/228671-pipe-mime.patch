@@ -6,7 +6,7 @@ Updated in #569279.
 
 --- a/imap/message.c
 +++ b/imap/message.c
-@@ -392,7 +392,7 @@ int imap_fetch_message (MESSAGE *msg, CO
+@@ -398,7 +398,7 @@
    char path[_POSIX_PATH_MAX];
    char *pc;
    long bytes;
@@ -15,7 +15,7 @@ Updated in #569279.
    int uid;
    int cacheno;
    IMAP_CACHE *cache;
-@@ -489,9 +489,15 @@ int imap_fetch_message (MESSAGE *msg, CO
+@@ -495,9 +495,15 @@
  	    imap_error ("imap_fetch_message()", buf);
  	    goto bail;
  	  }

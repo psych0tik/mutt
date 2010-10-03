@@ -40,7 +40,7 @@
  # imitate the old search-body function
  macro index \eb "<search>~b " "search in message bodies"
  
-@@ -23,7 +51,7 @@
+@@ -23,14 +51,14 @@
  "call urlview to extract URLs out of a message"
  
  # Show documentation when pressing F1
@@ -49,8 +49,7 @@
  
  # show the incoming mailboxes list (just like "mutt -y") and back when pressing "y"
  macro index,pager y "<change-folder>?<toggle-mailboxes>" "show incoming mailboxes list"
-@@ -35,7 +63,7 @@
- # append-hook \\.gz$ "gzip -c %t >> %f"
+ bind browser y exit
  
  # If Mutt is unable to determine your site's domain name correctly, you can
 -# set the default here.
@@ -58,7 +57,7 @@
  #
  # set hostname=cs.hmc.edu
  
-@@ -47,6 +75,10 @@
+@@ -42,6 +70,10 @@
  # be undone with unmime_lookup.
  mime_lookup application/octet-stream
  
@@ -69,7 +68,7 @@
  ##
  ## *** DEFAULT SETTINGS FOR THE ATTACHMENTS PATCH ***
  ##
-@@ -101,6 +133,9 @@
+@@ -96,6 +128,9 @@
  attachments   -A message/external-body
  attachments   -I message/external-body
  

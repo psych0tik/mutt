@@ -3,16 +3,16 @@ used, rather than calling gethostbyname() on the actual hostname
 
 --- a/init.c
 +++ b/init.c
-@@ -47,6 +47,7 @@
+@@ -48,6 +48,7 @@
  #include <unistd.h>
  #include <string.h>
  #include <sys/utsname.h>
 +#include <netdb.h>
  #include <errno.h>
  #include <sys/wait.h>
- 
-@@ -2953,6 +2954,31 @@
-   return 0;
+ #include <sys/time.h>
+@@ -2952,6 +2953,31 @@
+   srandom(seed);
  }
  
 +int getmailname(char *s, size_t l)
