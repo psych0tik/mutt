@@ -473,10 +473,6 @@ int mutt_index_menu (void)
        * modified underneath us.)
        */
 
-#ifdef USE_IMAP
-      imap_allow_reopen (Context);
-#endif
-
       index_hint = (Context->vcount && menu->current >= 0 && menu->current < Context->vcount) ? CURHDR->index : 0;
 
       if ((check = mx_check_mailbox (Context, &index_hint, 0)) < 0)
@@ -685,10 +681,6 @@ int mutt_index_menu (void)
 
       mutt_curs_set (1);	/* fallback from the pager */
     }
-
-#ifdef USE_IMAP
-    imap_disallow_reopen (Context);
-#endif
 
     switch (op)
     {
@@ -922,6 +914,11 @@ int mutt_index_menu (void)
 	    resort_index (menu);
 	    set_option (OPTSEARCHINVALID);
 	  }
+	  if (menu->menu == MENU_PAGER)
+	  {
+	    op = OP_DISPLAY_MESSAGE;
+	    continue;
+	  }
 	  menu->redraw |= REDRAW_STATUS;
 	}
 	break;
@@ -991,6 +988,23 @@ int mutt_index_menu (void)
 	if (Context && Context->magic == M_IMAP)
 	  imap_check_mailbox (Context, &index_hint, 1);
         break;
+
+      case OP_MAIN_IMAP_LOGOUT_ALL:
+	if (Context && Context->magic == M_IMAP)
+	{
+	  if (mx_close_mailbox (Context, &index_hint) != 0)
+	  {
+	    set_option (OPTSEARCHINVALID);
+	    menu->redraw = REDRAW_FULL;
+	    break;
+	  }
+	  FREE (&Context);
+	}
+	imap_logout_all();
+	mutt_message _("Logged out of IMAP servers.");
+	set_option (OPTSEARCHINVALID);
+	menu->redraw = REDRAW_FULL;
+	break;
 #endif
 
       case OP_MAIN_SYNC_FOLDER:
@@ -1111,6 +1125,10 @@ int mutt_index_menu (void)
 	}
 	mutt_str_replace (&CurrentFolder, buf);
 
+	/* keepalive failure in mutt_enter_fname may kill connection. #3028 */
+	if (Context && !Context->path)
+	  FREE (&Context);
+
         if (Context)
         {
 	  int check;
@@ -1220,7 +1238,7 @@ int mutt_index_menu (void)
 
         if ((Sort & SORT_MASK) != SORT_THREADS)
 	  mutt_error _("Threading is not enabled.");
-	else
+	else if (CURHDR->env->in_reply_to || CURHDR->env->references)
 	{
 	  {
 	    HEADER *oldcur = CURHDR;
@@ -1241,8 +1259,10 @@ int mutt_index_menu (void)
 	  else
 	    menu->redraw |= REDRAW_INDEX;
 	}
+	else
+	  mutt_error _("Thread cannot be broken, message is not part of a thread");
 
-	  break;
+	break;
 
       case OP_MAIN_LINK_THREADS:
 
@@ -2033,6 +2053,11 @@ int mutt_index_menu (void)
 	    if ((menu->current = (op == OP_MAIN_READ_THREAD ?
 				  mutt_next_thread (CURHDR) : mutt_next_subthread (CURHDR))) == -1)
 	      menu->current = menu->oldcurrent;
+	    else if (menu->menu == MENU_PAGER)
+	    {
+	      op = OP_DISPLAY_MESSAGE;
+	      continue;
+	    }
 	  }
 	  menu->redraw = REDRAW_INDEX | REDRAW_STATUS;
 	}

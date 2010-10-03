@@ -63,8 +63,6 @@
 
 extern char RFC822Specials[];
 
-#define DISPOSITION(X) X==DISPATTACH?"attachment":"inline"
-
 const char MimeSpecials[] = "@.,;:<>[]\\\"()?/= \t";
 
 char B64Chars[64] = {
@@ -355,33 +353,49 @@ int mutt_write_mime_header (BODY *a, FILE *f)
   if (a->description)
     fprintf(f, "Content-Description: %s\n", a->description);
 
-  fprintf (f, "Content-Disposition: %s", DISPOSITION (a->disposition));
-
-  if (a->use_disp)
+  if (a->disposition != DISPNONE)
   {
-    if(!(fn = a->d_filename))
-      fn = a->filename;
+    const char *dispstr[] = {
+      "inline",
+      "attachment",
+      "form-data"
+    };
 
-    if (fn)
+    if (a->disposition < sizeof(dispstr)/sizeof(char*))
     {
-      char *tmp;
+      fprintf (f, "Content-Disposition: %s", dispstr[a->disposition]);
 
-      /* Strip off the leading path... */
-      if ((t = strrchr (fn, '/')))
-	t++;
-      else
-	t = fn;
+      if (a->use_disp)
+      {
+	if (!(fn = a->d_filename))
+	  fn = a->filename;
 
-      buffer[0] = 0;
-      tmp = safe_strdup (t);
-      encode = rfc2231_encode_string (&tmp);
-      rfc822_cat (buffer, sizeof (buffer), tmp, MimeSpecials);
-      FREE (&tmp);
-      fprintf (f, "; filename%s=%s", encode ? "*" : "", buffer);
+	if (fn)
+	{
+	  char *tmp;
+
+	  /* Strip off the leading path... */
+	  if ((t = strrchr (fn, '/')))
+	    t++;
+	  else
+	    t = fn;
+
+	  buffer[0] = 0;
+	  tmp = safe_strdup (t);
+	  encode = rfc2231_encode_string (&tmp);
+	  rfc822_cat (buffer, sizeof (buffer), tmp, MimeSpecials);
+	  FREE (&tmp);
+	  fprintf (f, "; filename%s=%s", encode ? "*" : "", buffer);
+	}
+      }
+
+      fputc ('\n', f);
+    }
+    else
+    {
+      dprint(1, (debugfile, "ERROR: invalid content-disposition %d\n", a->disposition));
     }
   }
-
-  fputc ('\n', f);
 
   if (a->encoding != ENC7BIT)
     fprintf(f, "Content-Transfer-Encoding: %s\n", ENCODING (a->encoding));
@@ -1047,7 +1061,7 @@ void mutt_message_to_7bit (BODY *a, FILE *fp)
     a->length = sb.st_size;
   }
 
-  mutt_mktemp (temp);
+  mutt_mktemp (temp, sizeof (temp));
   if (!(fpout = safe_fopen (temp, "w+")))
   {
     mutt_perror ("fopen");
@@ -1118,7 +1132,7 @@ static void transform_to_7bit (BODY *a, FILE *fpin)
       a->noconv = 1;
       a->force_charset = 1;
 
-      mutt_mktemp (buff);
+      mutt_mktemp (buff, sizeof (buff));
       if ((s.fpout = safe_fopen (buff, "w")) == NULL)
       {
 	mutt_perror ("fopen");
@@ -1261,7 +1275,7 @@ BODY *mutt_make_message_attach (CONTEXT *ctx, HEADER *hdr, int attach_msg)
     }
   }
 
-  mutt_mktemp (buffer);
+  mutt_mktemp (buffer, sizeof (buffer));
   if ((fp = safe_fopen (buffer, "w+")) == NULL)
     return NULL;
 
@@ -1594,12 +1608,21 @@ static int my_width (const char *str, int col, int flags)
   return w;
 }
 
-static int print_val (FILE *fp, const char *pfx, const char *value, int flags)
+static int print_val (FILE *fp, const char *pfx, const char *value,
+		      int flags, size_t col)
 {
   while (value && *value)
   {
     if (fputc (*value, fp) == EOF)
       return -1;
+    /* corner-case: break words longer than 998 chars by force,
+     * mandated by RfC5322 */
+    if (!(flags & CH_DISPLAY) && ++col >= 998)
+    {
+      if (fputs ("\n ", fp) < 0)
+	return -1;
+      col = 1;
+    }
     if (*value == '\n')
     {
       if (*(value + 1) && pfx && *pfx && fputs (pfx, fp) == EOF)
@@ -1630,9 +1653,9 @@ static int fold_one_header (FILE *fp, const char *tag, const char *value,
   dprint(4,(debugfile,"mwoh: pfx=[%s], tag=[%s], flags=%d value=[%s]\n",
 	    pfx, tag, flags, value));
 
-  if (fprintf (fp, "%s%s: ", NONULL (pfx), tag) < 0)
+  if (tag && *tag && fprintf (fp, "%s%s: ", NONULL (pfx), tag) < 0)
     return -1;
-  col = mutt_strlen (tag) + 2 + mutt_strlen (pfx);
+  col = mutt_strlen (tag) + (tag && *tag ? 2 : 0) + mutt_strlen (pfx);
 
   while (p && *p)
   {
@@ -1676,11 +1699,11 @@ static int fold_one_header (FILE *fp, const char *tag, const char *value,
       }
       if (fputc ('\t', fp) == EOF)
 	return -1;
-      if (print_val (fp, pfx, p, flags) < 0)
+      if (print_val (fp, pfx, p, flags, col) < 0)
 	return -1;
       col += 8;
     }
-    else if (print_val (fp, pfx, buf, flags) < 0)
+    else if (print_val (fp, pfx, buf, flags, col) < 0)
       return -1;
     col += w;
 
@@ -1712,14 +1735,46 @@ static int fold_one_header (FILE *fp, const char *tag, const char *value,
   return 0;
 }
 
+static char *unfold_header (char *s)
+{
+  char *p = s, *q = s;
+
+  while (p && *p)
+  {
+    /* remove CRLF prior to FWSP, turn \t into ' ' */
+    if (*p == '\r' && *(p + 1) && *(p + 1) == '\n' && *(p + 2) &&
+	(*(p + 2) == ' ' || *(p + 2) == '\t'))
+    {
+      *q++ = ' ';
+      p += 3;
+      continue;
+    }
+    /* remove LF prior to FWSP, turn \t into ' ' */
+    else if (*p == '\n' && *(p + 1) && (*(p + 1) == ' ' || *(p + 1) == '\t'))
+    {
+      *q++ = ' ';
+      p += 2;
+      continue;
+    }
+    *q++ = *p++;
+  }
+  if (q)
+    *q = 0;
+
+  return s;
+}
+
 static int write_one_header (FILE *fp, int pfxw, int max, int wraplen,
 			     const char *pfx, const char *start, const char *end,
 			     int flags)
 {
   char *tagbuf, *valbuf, *t;
+  int is_from = ((end - start) > 5 &&
+		 ascii_strncasecmp (start, "from ", 5) == 0);
 
-  /* only pass through folding machinery if necessary for sending */
-  if (!(flags & CH_DISPLAY) && pfxw + max <= wraplen)
+  /* only pass through folding machinery if necessary for sending,
+     never wrap From_ headers on sending */
+  if (!(flags & CH_DISPLAY) && (pfxw + max <= wraplen || is_from))
   {
     valbuf = mutt_substrdup (start, end);
     dprint(4,(debugfile,"mwoh: buf[%s%s] short enough, "
@@ -1728,7 +1783,13 @@ static int write_one_header (FILE *fp, int pfxw, int max, int wraplen,
     if (pfx && *pfx)
       if (fputs (pfx, fp) == EOF)
 	return -1;
-    if (print_val (fp, pfx, valbuf, flags) < 0)
+    if (!(t = strchr (valbuf, ':')))
+    {
+      dprint (1, (debugfile, "mwoh: warning: header not in "
+		  "'key: value' format!\n"));
+      return 0;
+    }
+    if (print_val (fp, pfx, valbuf, flags, mutt_strlen (pfx)) < 0)
     {
       FREE(&valbuf);
       return -1;
@@ -1738,10 +1799,26 @@ static int write_one_header (FILE *fp, int pfxw, int max, int wraplen,
   else
   {
     t = strchr (start, ':');
-    tagbuf = mutt_substrdup (start, t);
-    valbuf = mutt_substrdup (t + 2, end);
+    if (t > end)
+    {
+      dprint (1, (debugfile, "mwoh: warning: header not in "
+		  "'key: value' format!\n"));
+      return 0;
+    }
+    if (is_from)
+    {
+      tagbuf = NULL;
+      valbuf = mutt_substrdup (start, end);
+    }
+    else
+    {
+      tagbuf = mutt_substrdup (start, t);
+      ++t; /* skip over the colon separating the header field name and value */
+      SKIPWS(t); /* skip over any leading whitespace */
+      valbuf = mutt_substrdup (t, end);
+    }
     dprint(4,(debugfile,"mwoh: buf[%s%s] too long, "
-	      "max width = %d > %dn",
+	      "max width = %d > %d\n",
 	      NONULL(pfx), valbuf, max, wraplen));
     if (fold_one_header (fp, tagbuf, valbuf, pfx, wraplen, flags) < 0)
       return -1;
@@ -1757,12 +1834,21 @@ int mutt_write_one_header (FILE *fp, const char *tag, const char *value,
 			   const char *pfx, int wraplen, int flags)
 {
   char *p = (char *)value, *last, *line;
-  int max = 0, w;
+  int max = 0, w, rc = -1;
   int pfxw = mutt_strwidth (pfx);
+  char *v = safe_strdup (value);
+
+  if (!(flags & CH_DISPLAY) || option (OPTWEED))
+    v = unfold_header (v);
 
   /* when not displaying, use sane wrap value */
   if (!(flags & CH_DISPLAY))
-    wraplen = 76;
+  {
+    if (WrapHeaders < 78 || WrapHeaders > 998)
+      wraplen = 78;
+    else
+      wraplen = WrapHeaders;
+  }
   else if (wraplen <= 0 || wraplen > COLS)
     wraplen = COLS;
 
@@ -1770,19 +1856,23 @@ int mutt_write_one_header (FILE *fp, const char *tag, const char *value,
   {
     /* if header is short enough, simply print it */
     if (!(flags & CH_DISPLAY) && mutt_strwidth (tag) + 2 + pfxw +
-	mutt_strwidth (value) <= wraplen)
+	mutt_strwidth (v) <= wraplen)
     {
       dprint(4,(debugfile,"mwoh: buf[%s%s: %s] is short enough\n",
-		NONULL(pfx), tag, value));
-      if (fprintf (fp, "%s%s: %s\n", NONULL(pfx), tag, value) <= 0)
-	return -1;
-      return 0;
+		NONULL(pfx), tag, v));
+      if (fprintf (fp, "%s%s: %s\n", NONULL(pfx), tag, v) <= 0)
+	goto out;
+      rc = 0;
+      goto out;
     }
     else
-      return fold_one_header (fp, tag, value, pfx, wraplen, flags);
+    {
+      rc = fold_one_header (fp, tag, v, pfx, wraplen, flags);
+      goto out;
+    }
   }
 
-  p = last = line = (char *)value;
+  p = last = line = (char *)v;
   while (p && *p)
   {
     p = strchr (p, '\n');
@@ -1802,7 +1892,7 @@ int mutt_write_one_header (FILE *fp, const char *tag, const char *value,
     if (*p != ' ' && *p != '\t')
     {
       if (write_one_header (fp, pfxw, max, wraplen, pfx, last, p, flags) < 0)
-	return -1;
+	goto out;
       last = p;
       max = 0;
     }
@@ -1810,9 +1900,13 @@ int mutt_write_one_header (FILE *fp, const char *tag, const char *value,
 
   if (last && *last)
     if (write_one_header (fp, pfxw, max, wraplen, pfx, last, p, flags) < 0)
-      return -1;
+      goto out;
 
-  return 0;
+  rc = 0;
+
+out:
+  FREE (&v);
+  return rc;
 }
 
 
@@ -2076,7 +2170,7 @@ send_msg (const char *path, char **args, const char *msg, char **tempfile)
   {
     char tmp[_POSIX_PATH_MAX];
 
-    mutt_mktemp (tmp);
+    mutt_mktemp (tmp, sizeof (tmp));
     *tempfile = safe_strdup (tmp);
   }
 
@@ -2432,7 +2526,7 @@ static int _mutt_bounce_message (FILE *fp, HEADER *h, ADDRESS *to, const char *r
 
   if (!fp) fp = msg->fp;
 
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if ((f = safe_fopen (tempfile, "w")) != NULL)
   {
     int ch_flags = CH_XMIT | CH_NONEWLINE | CH_NOQFROM;
@@ -2578,6 +2672,7 @@ int mutt_write_fcc (const char *path, HEADER *hdr, const char *msgid, int post, 
   FILE *tempfp = NULL;
   int r, need_buffy_cleanup = 0;
   struct stat st;
+  char buf[SHORT_STRING];
 
   if (post)
     set_noconv_flags (hdr->content, 1);
@@ -2594,7 +2689,7 @@ int mutt_write_fcc (const char *path, HEADER *hdr, const char *msgid, int post, 
    */
   if (f.magic == M_MMDF || f.magic == M_MBOX)
   {
-    mutt_mktemp (tempfile);
+    mutt_mktemp (tempfile, sizeof (tempfile));
     if ((tempfp = safe_fopen (tempfile, "w+")) == NULL)
     {
       mutt_perror (tempfile);
@@ -2632,9 +2727,14 @@ int mutt_write_fcc (const char *path, HEADER *hdr, const char *msgid, int post, 
    */
   if (post && fcc)
     fprintf (msg->fp, "X-Mutt-Fcc: %s\n", fcc);
-  fprintf (msg->fp, "Status: RO\n");
 
+  if (f.magic == M_MMDF || f.magic == M_MBOX)
+    fprintf (msg->fp, "Status: RO\n");
 
+  /* mutt_write_rfc822_header() only writes out a Date: header with
+   * mode == 0, i.e. _not_ postponment; so write out one ourself */
+  if (post)
+    fprintf (msg->fp, "%s", mutt_make_date (buf, sizeof (buf)));
 
   /* (postponment) if the mail is to be signed or encrypted, save this info */
   if ((WithCrypto & APPLICATION_PGP)

@@ -4,7 +4,7 @@ Michael Elkins
 
 <me@cs.hmc.edu>
 
-version 1.5.20 (2009-06-14)
+version 1.5.21 (2010-09-15)
 
 Abstract
 
@@ -21,7 +21,7 @@ Table of Contents
     3. Getting Mutt
     4. Mutt Online Resources
     5. Contributing to Mutt
-    6. Typograhical Conventions
+    6. Typographical Conventions
     7. Copyright
 
 2. Getting Started
@@ -73,8 +73,9 @@ Table of Contents
     9. Using Color and Mono Video Attributes
     10. Message Header Display
 
-        10.1. Selecting Headers
-        10.2. Ordering Displayed Headers
+        10.1. Header Display
+        10.2. Selecting Headers
+        10.3. Ordering Displayed Headers
 
     11. Alternative Addresses
     12. Mailing Lists
@@ -96,6 +97,7 @@ Table of Contents
         26.1. Variable Types
         26.2. Commands
         26.3. User-Defined Variables
+        26.4. Type Conversions
 
     27. Reading Initialization Commands From Another File
     28. Removing Hooks
@@ -108,40 +110,46 @@ Table of Contents
 
 4. Advanced Usage
 
-    1. Regular Expressions
-    2. Patterns: Searching, Limiting and Tagging
+    1. Character Set Handling
+    2. Regular Expressions
+    3. Patterns: Searching, Limiting and Tagging
 
-        2.1. Pattern Modifier
-        2.2. Simple Searches
-        2.3. Nesting and Boolean Operators
-        2.4. Searching by Date
+        3.1. Pattern Modifier
+        3.2. Simple Searches
+        3.3. Nesting and Boolean Operators
+        3.4. Searching by Date
 
-    3. Using Tags
-    4. Using Hooks
+    4. Using Tags
+    5. Using Hooks
 
-        4.1. Message Matching in Hooks
+        5.1. Message Matching in Hooks
 
-    5. External Address Queries
-    6. Mailbox Formats
-    7. Mailbox Shortcuts
-    8. Handling Mailing Lists
-    9. Handling multiple folders
-    10. Editing Threads
+    6. External Address Queries
+    7. Mailbox Formats
+    8. Mailbox Shortcuts
+    9. Handling Mailing Lists
+    10. New Mail Detection
 
-        10.1. Linking Threads
-        10.2. Breaking Threads
+        10.1. How New Mail Detection Works
+        10.2. Polling For New Mail
 
-    11. Delivery Status Notification (DSN) Support
-    12. Start a WWW Browser on URLs
-    13. Miscellany
+    11. Editing Threads
+
+        11.1. Linking Threads
+        11.2. Breaking Threads
+
+    12. Delivery Status Notification (DSN) Support
+    13. Start a WWW Browser on URLs
+    14. Miscellany
 
 5. Mutt's MIME Support
 
     1. Using MIME in Mutt
 
-        1.1. Viewing MIME Messages in the Pager
-        1.2. The Attachment Menu
-        1.3. The Compose Menu
+        1.1. MIME Overview
+        1.2. Viewing MIME Messages in the Pager
+        1.3. The Attachment Menu
+        1.4. The Compose Menu
 
     2. MIME Type Configuration with mime.types
     3. MIME Viewer Configuration with Mailcap
@@ -176,7 +184,8 @@ Table of Contents
 
         7.1. Header Caching
         7.2. Body Caching
-        7.3. Maintenance
+        7.3. Cache Directories
+        7.4. Maintenance
 
     8. Exact Address Generation
     9. Sending Anonymous Messages via Mixmaster
@@ -322,198 +331,200 @@ Table of Contents
         3.116. keep_flagged
         3.117. locale
         3.118. mail_check
-        3.119. mailcap_path
-        3.120. mailcap_sanitize
-        3.121. maildir_header_cache_verify
-        3.122. maildir_trash
-        3.123. mark_old
-        3.124. markers
-        3.125. mask
-        3.126. mbox
-        3.127. mbox_type
-        3.128. menu_context
-        3.129. menu_move_off
-        3.130. menu_scroll
-        3.131. message_cache_clean
-        3.132. message_cachedir
-        3.133. message_format
-        3.134. meta_key
-        3.135. metoo
-        3.136. mh_purge
-        3.137. mh_seq_flagged
-        3.138. mh_seq_replied
-        3.139. mh_seq_unseen
-        3.140. mime_forward
-        3.141. mime_forward_decode
-        3.142. mime_forward_rest
-        3.143. mix_entry_format
-        3.144. mixmaster
-        3.145. move
-        3.146. narrow_tree
-        3.147. net_inc
-        3.148. pager
-        3.149. pager_context
-        3.150. pager_format
-        3.151. pager_index_lines
-        3.152. pager_stop
-        3.153. pgp_auto_decode
-        3.154. pgp_autoinline
-        3.155. pgp_check_exit
-        3.156. pgp_clearsign_command
-        3.157. pgp_decode_command
-        3.158. pgp_decrypt_command
-        3.159. pgp_encrypt_only_command
-        3.160. pgp_encrypt_sign_command
-        3.161. pgp_entry_format
-        3.162. pgp_export_command
-        3.163. pgp_getkeys_command
-        3.164. pgp_good_sign
-        3.165. pgp_ignore_subkeys
-        3.166. pgp_import_command
-        3.167. pgp_list_pubring_command
-        3.168. pgp_list_secring_command
-        3.169. pgp_long_ids
-        3.170. pgp_mime_auto
-        3.171. pgp_replyinline
-        3.172. pgp_retainable_sigs
-        3.173. pgp_show_unusable
-        3.174. pgp_sign_as
-        3.175. pgp_sign_command
-        3.176. pgp_sort_keys
-        3.177. pgp_strict_enc
-        3.178. pgp_timeout
-        3.179. pgp_use_gpg_agent
-        3.180. pgp_verify_command
-        3.181. pgp_verify_key_command
-        3.182. pipe_decode
-        3.183. pipe_sep
-        3.184. pipe_split
-        3.185. pop_auth_try_all
-        3.186. pop_authenticators
-        3.187. pop_checkinterval
-        3.188. pop_delete
-        3.189. pop_host
-        3.190. pop_last
-        3.191. pop_pass
-        3.192. pop_reconnect
-        3.193. pop_user
-        3.194. post_indent_string
-        3.195. postpone
-        3.196. postponed
-        3.197. preconnect
-        3.198. print
-        3.199. print_command
-        3.200. print_decode
-        3.201. print_split
-        3.202. prompt_after
-        3.203. query_command
-        3.204. query_format
-        3.205. quit
-        3.206. quote_regexp
-        3.207. read_inc
-        3.208. read_only
-        3.209. realname
-        3.210. recall
-        3.211. record
-        3.212. reply_regexp
-        3.213. reply_self
-        3.214. reply_to
-        3.215. resolve
-        3.216. reverse_alias
-        3.217. reverse_name
-        3.218. reverse_realname
-        3.219. rfc2047_parameters
-        3.220. save_address
-        3.221. save_empty
-        3.222. save_history
-        3.223. save_name
-        3.224. score
-        3.225. score_threshold_delete
-        3.226. score_threshold_flag
-        3.227. score_threshold_read
-        3.228. search_context
-        3.229. send_charset
-        3.230. sendmail
-        3.231. sendmail_wait
-        3.232. shell
-        3.233. sig_dashes
-        3.234. sig_on_top
-        3.235. signature
-        3.236. simple_search
-        3.237. sleep_time
-        3.238. smart_wrap
-        3.239. smileys
-        3.240. smime_ask_cert_label
-        3.241. smime_ca_location
-        3.242. smime_certificates
-        3.243. smime_decrypt_command
-        3.244. smime_decrypt_use_default_key
-        3.245. smime_default_key
-        3.246. smime_encrypt_command
-        3.247. smime_encrypt_with
-        3.248. smime_get_cert_command
-        3.249. smime_get_cert_email_command
-        3.250. smime_get_signer_cert_command
-        3.251. smime_import_cert_command
-        3.252. smime_is_default
-        3.253. smime_keys
-        3.254. smime_pk7out_command
-        3.255. smime_sign_command
-        3.256. smime_sign_opaque_command
-        3.257. smime_timeout
-        3.258. smime_verify_command
-        3.259. smime_verify_opaque_command
-        3.260. smtp_authenticators
-        3.261. smtp_pass
-        3.262. smtp_url
-        3.263. sort
-        3.264. sort_alias
-        3.265. sort_aux
-        3.266. sort_browser
-        3.267. sort_re
-        3.268. spam_separator
-        3.269. spoolfile
-        3.270. ssl_ca_certificates_file
-        3.271. ssl_client_cert
-        3.272. ssl_force_tls
-        3.273. ssl_min_dh_prime_bits
-        3.274. ssl_starttls
-        3.275. ssl_use_sslv2
-        3.276. ssl_use_sslv3
-        3.277. ssl_use_tlsv1
-        3.278. ssl_usesystemcerts
-        3.279. ssl_verify_dates
-        3.280. ssl_verify_host
-        3.281. status_chars
-        3.282. status_format
-        3.283. status_on_top
-        3.284. strict_threads
-        3.285. suspend
-        3.286. text_flowed
-        3.287. thorough_search
-        3.288. thread_received
-        3.289. tilde
-        3.290. time_inc
-        3.291. timeout
-        3.292. tmpdir
-        3.293. to_chars
-        3.294. tunnel
-        3.295. uncollapse_jump
-        3.296. use_8bitmime
-        3.297. use_domain
-        3.298. use_envelope_from
-        3.299. use_from
-        3.300. use_idn
-        3.301. use_ipv6
-        3.302. user_agent
-        3.303. visual
-        3.304. wait_key
-        3.305. weed
-        3.306. wrap
-        3.307. wrap_search
-        3.308. wrapmargin
-        3.309. write_bcc
-        3.310. write_inc
+        3.119. mail_check_recent
+        3.120. mailcap_path
+        3.121. mailcap_sanitize
+        3.122. maildir_header_cache_verify
+        3.123. maildir_trash
+        3.124. mark_old
+        3.125. markers
+        3.126. mask
+        3.127. mbox
+        3.128. mbox_type
+        3.129. menu_context
+        3.130. menu_move_off
+        3.131. menu_scroll
+        3.132. message_cache_clean
+        3.133. message_cachedir
+        3.134. message_format
+        3.135. meta_key
+        3.136. metoo
+        3.137. mh_purge
+        3.138. mh_seq_flagged
+        3.139. mh_seq_replied
+        3.140. mh_seq_unseen
+        3.141. mime_forward
+        3.142. mime_forward_decode
+        3.143. mime_forward_rest
+        3.144. mix_entry_format
+        3.145. mixmaster
+        3.146. move
+        3.147. narrow_tree
+        3.148. net_inc
+        3.149. pager
+        3.150. pager_context
+        3.151. pager_format
+        3.152. pager_index_lines
+        3.153. pager_stop
+        3.154. pgp_auto_decode
+        3.155. pgp_autoinline
+        3.156. pgp_check_exit
+        3.157. pgp_clearsign_command
+        3.158. pgp_decode_command
+        3.159. pgp_decrypt_command
+        3.160. pgp_encrypt_only_command
+        3.161. pgp_encrypt_sign_command
+        3.162. pgp_entry_format
+        3.163. pgp_export_command
+        3.164. pgp_getkeys_command
+        3.165. pgp_good_sign
+        3.166. pgp_ignore_subkeys
+        3.167. pgp_import_command
+        3.168. pgp_list_pubring_command
+        3.169. pgp_list_secring_command
+        3.170. pgp_long_ids
+        3.171. pgp_mime_auto
+        3.172. pgp_replyinline
+        3.173. pgp_retainable_sigs
+        3.174. pgp_show_unusable
+        3.175. pgp_sign_as
+        3.176. pgp_sign_command
+        3.177. pgp_sort_keys
+        3.178. pgp_strict_enc
+        3.179. pgp_timeout
+        3.180. pgp_use_gpg_agent
+        3.181. pgp_verify_command
+        3.182. pgp_verify_key_command
+        3.183. pipe_decode
+        3.184. pipe_sep
+        3.185. pipe_split
+        3.186. pop_auth_try_all
+        3.187. pop_authenticators
+        3.188. pop_checkinterval
+        3.189. pop_delete
+        3.190. pop_host
+        3.191. pop_last
+        3.192. pop_pass
+        3.193. pop_reconnect
+        3.194. pop_user
+        3.195. post_indent_string
+        3.196. postpone
+        3.197. postponed
+        3.198. preconnect
+        3.199. print
+        3.200. print_command
+        3.201. print_decode
+        3.202. print_split
+        3.203. prompt_after
+        3.204. query_command
+        3.205. query_format
+        3.206. quit
+        3.207. quote_regexp
+        3.208. read_inc
+        3.209. read_only
+        3.210. realname
+        3.211. recall
+        3.212. record
+        3.213. reply_regexp
+        3.214. reply_self
+        3.215. reply_to
+        3.216. resolve
+        3.217. reverse_alias
+        3.218. reverse_name
+        3.219. reverse_realname
+        3.220. rfc2047_parameters
+        3.221. save_address
+        3.222. save_empty
+        3.223. save_history
+        3.224. save_name
+        3.225. score
+        3.226. score_threshold_delete
+        3.227. score_threshold_flag
+        3.228. score_threshold_read
+        3.229. search_context
+        3.230. send_charset
+        3.231. sendmail
+        3.232. sendmail_wait
+        3.233. shell
+        3.234. sig_dashes
+        3.235. sig_on_top
+        3.236. signature
+        3.237. simple_search
+        3.238. sleep_time
+        3.239. smart_wrap
+        3.240. smileys
+        3.241. smime_ask_cert_label
+        3.242. smime_ca_location
+        3.243. smime_certificates
+        3.244. smime_decrypt_command
+        3.245. smime_decrypt_use_default_key
+        3.246. smime_default_key
+        3.247. smime_encrypt_command
+        3.248. smime_encrypt_with
+        3.249. smime_get_cert_command
+        3.250. smime_get_cert_email_command
+        3.251. smime_get_signer_cert_command
+        3.252. smime_import_cert_command
+        3.253. smime_is_default
+        3.254. smime_keys
+        3.255. smime_pk7out_command
+        3.256. smime_sign_command
+        3.257. smime_sign_opaque_command
+        3.258. smime_timeout
+        3.259. smime_verify_command
+        3.260. smime_verify_opaque_command
+        3.261. smtp_authenticators
+        3.262. smtp_pass
+        3.263. smtp_url
+        3.264. sort
+        3.265. sort_alias
+        3.266. sort_aux
+        3.267. sort_browser
+        3.268. sort_re
+        3.269. spam_separator
+        3.270. spoolfile
+        3.271. ssl_ca_certificates_file
+        3.272. ssl_client_cert
+        3.273. ssl_force_tls
+        3.274. ssl_min_dh_prime_bits
+        3.275. ssl_starttls
+        3.276. ssl_use_sslv2
+        3.277. ssl_use_sslv3
+        3.278. ssl_use_tlsv1
+        3.279. ssl_usesystemcerts
+        3.280. ssl_verify_dates
+        3.281. ssl_verify_host
+        3.282. status_chars
+        3.283. status_format
+        3.284. status_on_top
+        3.285. strict_threads
+        3.286. suspend
+        3.287. text_flowed
+        3.288. thorough_search
+        3.289. thread_received
+        3.290. tilde
+        3.291. time_inc
+        3.292. timeout
+        3.293. tmpdir
+        3.294. to_chars
+        3.295. tunnel
+        3.296. uncollapse_jump
+        3.297. use_8bitmime
+        3.298. use_domain
+        3.299. use_envelope_from
+        3.300. use_from
+        3.301. use_idn
+        3.302. use_ipv6
+        3.303. user_agent
+        3.304. visual
+        3.305. wait_key
+        3.306. weed
+        3.307. wrap
+        3.308. wrap_headers
+        3.309. wrap_search
+        3.310. wrapmargin
+        3.311. write_bcc
+        3.312. write_inc
 
     4. Functions
 
@@ -522,13 +533,13 @@ Table of Contents
         4.3. Pager Menu
         4.4. Alias Menu
         4.5. Query Menu
-        4.6. Attach Menu
+        4.6. Attachment Menu
         4.7. Compose Menu
         4.8. Postpone Menu
         4.9. Browser Menu
         4.10. Pgp Menu
         4.11. Smime Menu
-        4.12. Mix Menu
+        4.12. Mixmaster Menu
         4.13. Editor Menu
 
 10. Miscellany
@@ -559,26 +570,28 @@ List of Tables
 4.4. Pattern modifiers
 4.5. Simple search keywords
 4.6. Date units
+4.7. Mailbox shortcuts
+5.1. Supported MIME types
 9.1. Command line options
-9.2. Default generic Function Bindings
-9.3. Default index Function Bindings
-9.4. Default pager Function Bindings
-9.5. Default alias Function Bindings
-9.6. Default query Function Bindings
-9.7. Default attach Function Bindings
-9.8. Default compose Function Bindings
-9.9. Default postpone Function Bindings
-9.10. Default browser Function Bindings
-9.11. Default pgp Function Bindings
-9.12. Default smime Function Bindings
-9.13. Default mix Function Bindings
-9.14. Default editor Function Bindings
+9.2. Default Generic Menu Bindings
+9.3. Default Index Menu Bindings
+9.4. Default Pager Menu Bindings
+9.5. Default Alias Menu Bindings
+9.6. Default Query Menu Bindings
+9.7. Default Attachment Menu Bindings
+9.8. Default Compose Menu Bindings
+9.9. Default Postpone Menu Bindings
+9.10. Default Browser Menu Bindings
+9.11. Default Pgp Menu Bindings
+9.12. Default Smime Menu Bindings
+9.13. Default Mixmaster Menu Bindings
+9.14. Default Editor Menu Bindings
 
 List of Examples
 
 3.1. Multiple configuration commands per line
 3.2. Commenting configuration files
-3.3. Escaping quotes in congfiguration files
+3.3. Escaping quotes in configuration files
 3.4. Splitting long configuration commands over several lines
 3.5. Using external command's output in configuration files
 3.6. Using environment variables in configuration files
@@ -593,11 +606,13 @@ List of Examples
 3.15. Using user-defined variables for config file readability
 3.16. Using user-defined variables for backing up other config option values
 3.17. Deferring user-defined variable expansion to runtime
-3.18. Using external filters in format strings
+3.18. Type conversions using variables
+3.19. Using external filters in format strings
 4.1. Matching all addresses in address lists
 4.2. Using boolean operators in patterns
-4.3. Specifying a default hook
-5.1. Attachment counting
+4.3. Specifying a ?default? hook
+5.1. mime.types
+5.2. Attachment counting
 6.1. URLs
 6.2. Managing multiple accounts
 
@@ -610,7 +625,7 @@ Table of Contents
 3. Getting Mutt
 4. Mutt Online Resources
 5. Contributing to Mutt
-6. Typograhical Conventions
+6. Typographical Conventions
 7. Copyright
 
 Mutt is a small but very powerful text-based MIME mail client. Mutt is highly
@@ -627,13 +642,11 @@ The official homepage can be found at http://www.mutt.org/.
 To subscribe to one of the following mailing lists, send a message with the
 word subscribe in the body to list-name-request@mutt.org.
 
-  * <mutt-announce-request@mutt.org> -- low traffic list for announcements
+  * <mutt-announce-request@mutt.org> ? low traffic list for announcements
 
-  * <mutt-users-request@mutt.org> -- help, bug reports and feature requests
+  * <mutt-users-request@mutt.org> ? help, bug reports and feature requests
 
-  * <mutt-dev-request@mutt.org> -- development mailing list
-
-Note
+  * <mutt-dev-request@mutt.org> ? development mailing list
 
 All messages posted to mutt-announce are automatically forwarded to mutt-users,
 so you do not need to be subscribed to both lists.
@@ -678,7 +691,7 @@ continue to maintain stale translations.
 For contributing code patches for new features and bug fixes, please refer to
 the developer pages at http://dev.mutt.org/ for more details.
 
-6. Typograhical Conventions
+6. Typographical Conventions
 
 This section lists typographical conventions followed throughout this manual.
 See table Table 1.1, ?Typographical conventions for special terms? for
@@ -815,7 +828,7 @@ messages or to limit the index to show only matching messages.
 Mutt supports a ?hook? concept which allows the user to execute arbitrary
 configuration commands and functions in certain situations such as entering a
 folder, starting a new message or replying to an existing one. These hooks can
-be used to highly customize Mutt's behaviour including managing multiple
+be used to highly customize Mutt's behavior including managing multiple
 identities, customizing the display for a folder or even implementing
 auto-archiving based on a per-folder basis and much more.
 
@@ -834,7 +847,7 @@ emails, each with its number on the left, its flags (new email, important
 email, email that has been forwarded or replied to, tagged email, ...), the
 date when email was sent, its sender, the email size, and the subject.
 Additionally, the index also shows thread hierarchies: when you reply to an
-email, and the other person replies back, you can see the other's person email
+email, and the other person replies back, you can see the other person's email
 in a "sub-tree" below. This is especially useful for personal email between a
 group of people or when you've subscribed to mailing lists.
 
@@ -937,7 +950,7 @@ Table 2.2. Most common navigation keys in page-based menus
 |----------------------+---------------+----------------------|
 |J or <Return>         |<next-line>    |scroll down one line  |
 |----------------------+---------------+----------------------|
-|<Backspace>           |<previous-line>|sroll up one line     |
+|<Backspace>           |<previous-line>|scroll up one line    |
 |----------------------+---------------+----------------------|
 |K, <Space> or <PageDn>|<next-page>    |move to the next page |
 |----------------------+---------------+----------------------|
@@ -1159,6 +1172,10 @@ Table 2.5. Message status flags
 |!   |message is flagged                                           |
 |----+-------------------------------------------------------------|
 |*   |message is tagged                                            |
+|----+-------------------------------------------------------------|
+|n   |thread contains new messages (only if collapsed)             |
+|----+-------------------------------------------------------------|
+|o   |thread contains old messages (only if collapsed)             |
 +------------------------------------------------------------------+
 
 
@@ -1169,9 +1186,9 @@ Table 2.6. Message recipient flags
 |----+-------------------------------------------------|
 |+   |message is to you and you only                   |
 |----+-------------------------------------------------|
-|T   |message is to you, but also to or cc'ed to others|
+|T   |message is to you, but also to or CC'ed to others|
 |----+-------------------------------------------------|
-|C   |message is cc'ed to you                          |
+|C   |message is CC'ed to you                          |
 |----+-------------------------------------------------|
 |F   |message is from you                              |
 |----+-------------------------------------------------|
@@ -1181,8 +1198,8 @@ Table 2.6. Message recipient flags
 
 5.2. The Pager
 
-By default, Mutt uses its builtin pager to display the contents of messages (an
-external pager such as less(1) can be configured, see $pager variable). The
+By default, Mutt uses its built-in pager to display the contents of messages
+(an external pager such as less(1) can be configured, see $pager variable). The
 pager is very similar to the Unix program less(1) though not nearly as
 featureful.
 
@@ -1635,6 +1652,11 @@ generate a References: field, which allows you to create a new message thread,
 for example to create a new message to a mailing list without having to enter
 the mailing list's address.
 
+If you intend to start a new thread by replying, please make really sure you
+remove the In-Reply-To: header in your editor. Otherwise, though you'll produce
+a technically valid reply, some netiquette guardians will be annoyed by this
+so-called ?thread hijacking?.
+
 6.3. Sending Cryptographically Signed/Encrypted Messages
 
 If you have told Mutt to PGP or S/MIME encrypt a message, it will guide you
@@ -1712,7 +1734,7 @@ outgoing messages if the $text_flowed variable is set, specifically it does not
 add the trailing spaces.
 
 After editing the initial message text and before entering the compose menu,
-Mutt properly space-stuffes the message. Space-stuffing is required by RfC3676
+Mutt properly space-stuffs the message. Space-stuffing is required by RfC3676
 defining format=flowed and means to prepend a space to:
 
   * all lines starting with a space
@@ -1806,8 +1828,9 @@ Table of Contents
 9. Using Color and Mono Video Attributes
 10. Message Header Display
 
-    10.1. Selecting Headers
-    10.2. Ordering Displayed Headers
+    10.1. Header Display
+    10.2. Selecting Headers
+    10.3. Ordering Displayed Headers
 
 11. Alternative Addresses
 12. Mailing Lists
@@ -1829,6 +1852,7 @@ Table of Contents
     26.1. Variable Types
     26.2. Commands
     26.3. User-Defined Variables
+    26.4. Type Conversions
 
 27. Reading Initialization Commands From Another File
 28. Removing Hooks
@@ -1895,7 +1919,7 @@ backticks are evaluated inside of double quotes, but not for single quotes.
 example, if want to put quotes ?"? inside of a string, you can use ?\? to force
 the next character to be a literal instead of interpreted character.
 
-Example 3.3. Escaping quotes in congfiguration files
+Example 3.3. Escaping quotes in configuration files
 
 set realname="Michael \"MuttDude\" Elkins"
 
@@ -1974,21 +1998,45 @@ Usage:
 group [ -group name ...] { -rx expr ... | -addr expr ... }
 ungroup [ -group name ...] { * | -rx expr ... | -addr expr ... }
 
-group is used to directly add either addresses or regular expressions to the
-specified group or groups. The different categories of arguments to the group
-command can be in any order. The flags -rx and -addr specify what the following
-strings (that cannot begin with a hyphen) should be interpreted as: either a
-regular expression or an email address, respectively.
+Mutt supports grouping addresses logically into named groups. An address or
+address pattern can appear in several groups at the same time. These groups can
+be used in patterns (for searching, limiting and tagging) and in hooks by using
+group patterns. This can be useful to classify mail and take certain actions
+depending on in what groups the message is. For example, the mutt user's
+mailing list would fit into the categories ?mailing list? and ?mutt-related?.
+Using send-hook, the sender can be set to a dedicated one for writing mailing
+list messages, and the signature could be set to a mutt-related one for writing
+to a mutt list ? for other lists, the list sender setting still applies but a
+different signature can be selected. Or, given a group only containing
+recipients known to accept encrypted mail, ?auto-encryption? can be achieved
+easily.
+
+The group command is used to directly add either addresses or regular
+expressions to the specified group or groups. The different categories of
+arguments to the group command can be in any order. The flags -rx and -addr
+specify what the following strings (that cannot begin with a hyphen) should be
+interpreted as: either a regular expression or an email address, respectively.
 
 These address groups can also be created implicitly by the alias, lists,
-subscribe and alternates commands by specifying the optional -group option.
+subscribe and alternates commands by specifying the optional -group option. For
+example,
 
-Once defined, these address groups can be used in patterns to search for and
-limit the display to messages matching a group.
+alternates -group me address1 address2
+alternates -group me -group work address3
 
-ungroup is used to remove addresses or regular expressions from the specified
-group or groups. The syntax is similar to the group command, however the
-special character * can be used to empty a group of all of its contents.
+would create a group named ?me? which contains all your addresses and a group
+named ?work? which contains only your work address address3. Besides many other
+possibilities, this could be used to automatically mark your own messages in a
+mailing list folder as read or use a special signature for work-related
+messages.
+
+The ungroup command is used to remove addresses or regular expressions from the
+specified group or groups. The syntax is similar to the group command, however
+the special character * can be used to empty a group of all of its contents. As
+soon as a group gets empty because all addresses and regular expressions have
+been removed, it'll internally be removed, too (i.e. there cannot be an empty
+group). When removing regular expressions from a group, the pattern must be
+specified exactly as given to the group command or -group argument.
 
 4. Defining/Using Aliases
 
@@ -2020,7 +2068,7 @@ this file is sourced. Consequently, you can have multiple alias files, or you
 can have all aliases defined in your .muttrc.
 
 On the other hand, the <create-alias> function can use only one file, the one
-pointed to by the $alias_file variable (which is ?/.muttrc by default). This
+pointed to by the $alias_file variable (which is ~/.muttrc by default). This
 file is not special either, in the sense that Mutt will happily append aliases
 to any file, but in order for the new aliases to take effect you need to
 explicitly source this file too.
@@ -2085,7 +2133,8 @@ browser
 
 editor
 
-    The editor is the line-based editor the user enters text data.
+    The editor is used to allow the user to enter a single line of text, such
+    as the To or Subject prompts in the compose menu.
 
 index
 
@@ -2185,12 +2234,14 @@ Table 3.1. Symbolic key names
 +---------------------------------+
 
 
-key does not need to be enclosed in quotes unless it contains a space (???) or
+key does not need to be enclosed in quotes unless it contains a space (? ?) or
 semi-colon (?;?).
 
 function specifies which action to take when key is pressed. For a complete
-list of functions, see the reference. The special function <noop> unbinds the
-specified key sequence.
+list of functions, see the reference. Note that the bind expects function to be
+specified without angle brackets.
+
+The special function <noop> unbinds the specified key sequence.
 
 6. Defining Aliases for Character Sets
 
@@ -2298,14 +2349,14 @@ specify both a foreground color and a background color (it is not possible to
 only specify one or the other).
 
 header and body match regexp in the header/body of a message, index matches
-pattern (see Section 2, ?Patterns: Searching, Limiting and Tagging?) in the
+pattern (see Section 3, ?Patterns: Searching, Limiting and Tagging?) in the
 message index.
 
 object can be one of:
 
   * attachment
 
-  * bold (hiliting bold patterns in the body of messages)
+  * bold (highlighting bold patterns in the body of messages)
 
   * error (error messages printed by Mutt)
 
@@ -2323,17 +2374,17 @@ object can be one of:
 
   * quoted1, quoted2, ..., quotedN (higher levels of quoting)
 
-  * search (hiliting of words in the pager)
+  * search (highlighting of words in the pager)
 
   * signature
 
   * status (mode lines used to display info about the mailbox or message)
 
-  * tilde (the ??? used to pad blank lines in the pager)
+  * tilde (the ?~? used to pad blank lines in the pager)
 
   * tree (thread tree drawn in the message index and attachment menu)
 
-  * underline (hiliting underlined patterns in the body of messages)
+  * underline (highlighting underlined patterns in the body of messages)
 
 foreground and background can be one of the following:
 
@@ -2381,7 +2432,7 @@ It removes entries from the list. You must specify the same pattern specified
 in the color command for it to be removed. The pattern ?*? is a special token
 which means to clear the color list of all entries.
 
-Mutt also recognizes the keywords color0, color1, ?, colorN-1 (N being the
+Mutt also recognizes the keywords color0, color1, ..., colorN-1 (N being the
 number of colors supported by your terminal). This is useful when you remap the
 colors for your display (for example by changing the color associated with
 color2 for your xterm), since color names may then lose their normal meaning.
@@ -2408,7 +2459,14 @@ For object, see the color command. attribute can be one of the following:
 
 10. Message Header Display
 
-10.1. Selecting Headers
+10.1. Header Display
+
+When displaying a message in the pager, Mutt folds long header lines at $wrap
+columns. Though there're precise rules about where to break and how, Mutt
+always folds headers using a tab for readability. (Note that the sending side
+is not affected by this, Mutt tries to implement standards compliant folding.)
+
+10.2. Selecting Headers
 
 Usage:
 
@@ -2438,7 +2496,7 @@ unignore organization organisation x-mailer: x-newsreader: x-mailing-list:
 unignore posted-to:
 
 
-10.2. Ordering Displayed Headers
+10.3. Ordering Displayed Headers
 
 Usage:
 
@@ -2506,9 +2564,9 @@ will be removed.
 Usage:
 
 lists [ -group name ...] regexp [ regexp ...]
-unlists [ -group name ...] { * | regexp ... }
+unlists { * | regexp ... }
 subscribe [ -group name ...] regexp [ regexp ...]
-unsubscribe [ -group name ...] { * | regexp ... }
+unsubscribe { * | regexp ... }
 
 Mutt has a few nice features for handling mailing lists. In order to take
 advantage of them, you must specify which addresses belong to mailing lists,
@@ -2527,7 +2585,7 @@ The Mail-Followup-To header is a non-standard extension which is not supported
 by all mail user agents. Adding it is not bullet-proof against receiving
 personal CCs of list messages. Also note that the generation of the
 Mail-Followup-To header is controlled by the $followup_to configuration
-variable since it's common practice on some mailing lists to send Cc upons
+variable since it's common practice on some mailing lists to send Cc upon
 replies (which is more a group- than a list-reply).
 
 More precisely, Mutt maintains lists of patterns for the addresses of known and
@@ -2541,8 +2599,7 @@ mail, for instance, you could say
 
 subscribe [0-9]*.*@bugs.debian.org
 
-as it's often, it's sufficient to just give a portion of the list's e-mail
-address.
+as it's often sufficient to just give a portion of the list's e-mail address.
 
 Specify as much of the address as you need to to remove ambiguity. For example,
 if you've subscribed to the Mutt mailing list, you will receive mail addressed
@@ -2554,7 +2611,7 @@ mutt-users@example.com, you could use lists ^mutt-users@mutt\\.org$ or
 subscribe ^mutt-users@mutt\\.org$ to match only mail from the actual list.
 
 The -group flag adds all of the subsequent regular expressions to the named
-group.
+address group in addition to adding to the specified address list.
 
 The ?unlists? command is used to remove a token from the list of known and
 subscribed mailing-lists. Use ?unlists *? to remove all tokens.
@@ -2593,8 +2650,8 @@ IMAP are described in Section 3, ?POP3 Support? and Section 4, ?IMAP Support?
 respectively.
 
 Mutt provides a number of advanced features for handling (possibly many)
-folders and new mail within them, please refer to Section 9, ?Handling multiple
-folders? for details (including in what situations and how often Mutt checks
+folders and new mail within them, please refer to Section 10, ?New Mail
+Detection? for details (including in what situations and how often Mutt checks
 for new mail).
 
 The ?unmailboxes? command is used to remove a token from the list of folders
@@ -2605,23 +2662,10 @@ Note
 The folders in the mailboxes command are resolved when the command is executed,
 so if these names contain shortcut characters (such as ?=? and ?!?), any
 variable definition that affects these characters (like $folder and $spoolfile)
-should be set before the mailboxes command. If none of these shorcuts are used,
-a local path should be absolute as otherwise Mutt tries to find it relative to
-the directory from where Mutt was started which may not always be desired.
-
-For Mbox and Mmdf folders, new mail is detected by comparing access and/or
-modification times of files: Mutt assumes a folder has new mail if it wasn't
-accessed after it was last modified. Utilities like biff or frm or any other
-program which accesses the mailbox might cause Mutt to never detect new mail
-for that mailbox if they do not properly reset the access time. Other possible
-causes of Mutt not detecting new mail in these folders are backup tools
-(updating access times) or filesystems mounted without access time update
-support.
-
-In cases where new mail detection for Mbox or Mmdf folders appears to be
-unreliable, the $check_mbox_size option can be used to make Mutt track and
-consult file sizes for new mail detection instead which won't work for
-size-neutral changes.
+should be set before the mailboxes command. If none of these shortcuts are
+used, a local path should be absolute as otherwise Mutt tries to find it
+relative to the directory from where Mutt was started which may not always be
+desired.
 
 15. User-Defined Headers
 
@@ -2759,7 +2803,7 @@ Note
 
 send-hook's are only executed once after getting the initial list of
 recipients. Adding a recipient after replying or editing the message will not
-cause any send-hook to be executed, similarily if $autoedit is set (as then the
+cause any send-hook to be executed, similarly if $autoedit is set (as then the
 initial list of recipients is empty). Also note that my_hdr commands which
 modify recipient headers, or the message's subject, don't have any effect on
 the current message when executed from a send-hook.
@@ -2817,6 +2861,21 @@ Example 3.13. Embedding push in folder-hook
 folder-hook . 'push <collapse-all>'
 
 
+For using functions like shown in the example, it's important to use angle
+brackets (?<? and ?>?) to make Mutt recognize the input as a function name.
+Otherwise it will simulate individual just keystrokes, i.e. ?push collapse-all?
+would be interpreted as if you had typed ?c?, followed by ?o?, followed by ?l?,
+..., which is not desired and may lead to very unexpected behavior.
+
+Keystrokes can be used, too, but are less portable because of potentially
+changed key bindings. With default bindings, this is equivalent to the above
+example:
+
+folder-hook . 'push \eV'
+
+because it simulates that Esc+V was pressed (which is the default binding of
+<collapse-all>).
+
 23. Executing Functions
 
 Usage:
@@ -2824,7 +2883,7 @@ Usage:
 exec function [ function ...]
 
 This command can be used to execute any function. Functions are listed in the
-function reference. ?execfunction? is equivalent to ?push <function>?.
+function reference. ?exec function? is equivalent to ?push <function>?.
 
 24. Message Scoring
 
@@ -2836,7 +2895,7 @@ unscore { * | pattern ... }
 The score commands adds value to a message's score if pattern matches it.
 pattern is a string in the format described in the patterns section (note: For
 efficiency reasons, patterns which scan information not available in the index,
-such as ?b, ?B or ?h, may not be used). value is a positive or negative
+such as ~b, ~B or ~h, may not be used). value is a positive or negative
 integer. A message's final score is the sum total of all matching score
 entries. However, you may optionally prefix value with an equal sign (?=?) to
 cause evaluation to stop at a particular entry if there is a match. Negative
@@ -2904,7 +2963,7 @@ supersedes the previous one. Instead of getting joined format strings, you'll
 get only the last one to match.
 
 The spam tag is what will be displayed in the index when you use %H in the
-$index_format variable. It's also the string that the ?H pattern-matching
+$index_format variable. It's also the string that the ~H pattern-matching
 expression matches against for <search> and <limit> functions. And it's what
 sorting by spam attribute will use as a sort key.
 
@@ -2963,7 +3022,7 @@ string
 path
 
     A specialized string for representing paths including support for mailbox
-    shortcuts (see Section 7, ?Mailbox Shortcuts?) as well as tilde (???) for a
+    shortcuts (see Section 8, ?Mailbox Shortcuts?) as well as tilde (?~?) for a
     user's home directory and more.
 
 quadoption
@@ -2978,7 +3037,7 @@ sort order
 
 regular expression
 
-    A regular expression, see Section 1, ?Regular Expressions? for an
+    A regular expression, see Section 2, ?Regular Expressions? for an
     introduction.
 
 folder magic
@@ -3111,6 +3170,51 @@ macro pager <PageDown> "\
 Note that there is a space between <enter-command> and the set configuration
 command, preventing Mutt from recording the macro's commands into its history.
 
+26.4. Type Conversions
+
+Variables are always assigned string values which Mutt parses into its internal
+representation according to the type of the variable, for example an integer
+number for numeric types. For all queries (including $-expansion) the value is
+converted from its internal type back into string. As a result, any variable
+can be assigned any value given that its content is valid for the target. This
+also counts for custom variables which are of type string. In case of parsing
+errors, Mutt will print error messages. Example 3.18, ?Type conversions using
+variables? demonstrates type conversions.
+
+Example 3.18. Type conversions using variables
+
+set my_lines = "5"                # value is string "5"
+set pager_index_lines = $my_lines # value is integer 5
+
+set my_sort = "date-received"     # value is string "date-received"
+set sort = "last-$my_sort"        # value is sort last-date-received
+
+set my_inc = $read_inc            # value is string "10" (default of $read_inc)
+set my_foo = $my_inc              # value is string "10"
+
+
+These assignments are all valid. If, however, the value of $my_lines would have
+been ?five? (or something else that cannot be parsed into a number), the
+assignment to $pager_index_lines would have produced an error message.
+
+Type conversion applies to all configuration commands which take arguments. But
+please note that every expanded value of a variable is considered just a single
+token. A working example is:
+
+set my_pattern = "~A"
+set my_number = "10"
+
+# same as: score ~A +10
+score $my_pattern +$my_number
+
+What does not work is:
+
+set my_mx = "+mailbox1 +mailbox2"
+mailboxes $my_mx +mailbox3
+
+because the value of $my_mx is interpreted as a single mailbox named ?+mailbox1
++mailbox2? and not two distinct mailboxes.
+
 27. Reading Initialization Commands From Another File
 
 Usage:
@@ -3118,14 +3222,15 @@ Usage:
 source filename
 
 This command allows the inclusion of initialization commands from other files.
-For example, I place all of my aliases in ?/.mail_aliases so that I can make my
-?/.muttrc readable and keep my aliases private.
+For example, I place all of my aliases in ~/.mail_aliases so that I can make my
+~/.muttrc readable and keep my aliases private.
 
-If the filename begins with a tilde (???), it will be expanded to the path of
+If the filename begins with a tilde (?~?), it will be expanded to the path of
 your home directory.
 
 If the filename ends with a vertical bar (?|?), then filename is considered to
-be an executable program from which to read input (eg. source ?/bin/myscript|).
+be an executable program from which to read input (e.g. source ~/bin/myscript
+|).
 
 28. Removing Hooks
 
@@ -3216,7 +3321,7 @@ a replacement format string including % expandos.
 All % expandos in a format string are expanded before the script is called so
 that:
 
-Example 3.18. Using external filters in format strings
+Example 3.19. Using external filters in format strings
 
 set status_format="script.sh '%r %f (%L)'|"
 
@@ -3270,34 +3375,95 @@ Chapter 4. Advanced Usage
 
 Table of Contents
 
-1. Regular Expressions
-2. Patterns: Searching, Limiting and Tagging
+1. Character Set Handling
+2. Regular Expressions
+3. Patterns: Searching, Limiting and Tagging
 
-    2.1. Pattern Modifier
-    2.2. Simple Searches
-    2.3. Nesting and Boolean Operators
-    2.4. Searching by Date
+    3.1. Pattern Modifier
+    3.2. Simple Searches
+    3.3. Nesting and Boolean Operators
+    3.4. Searching by Date
 
-3. Using Tags
-4. Using Hooks
+4. Using Tags
+5. Using Hooks
 
-    4.1. Message Matching in Hooks
+    5.1. Message Matching in Hooks
 
-5. External Address Queries
-6. Mailbox Formats
-7. Mailbox Shortcuts
-8. Handling Mailing Lists
-9. Handling multiple folders
-10. Editing Threads
+6. External Address Queries
+7. Mailbox Formats
+8. Mailbox Shortcuts
+9. Handling Mailing Lists
+10. New Mail Detection
 
-    10.1. Linking Threads
-    10.2. Breaking Threads
+    10.1. How New Mail Detection Works
+    10.2. Polling For New Mail
 
-11. Delivery Status Notification (DSN) Support
-12. Start a WWW Browser on URLs
-13. Miscellany
+11. Editing Threads
 
-1. Regular Expressions
+    11.1. Linking Threads
+    11.2. Breaking Threads
+
+12. Delivery Status Notification (DSN) Support
+13. Start a WWW Browser on URLs
+14. Miscellany
+
+1. Character Set Handling
+
+A ?character set? is basically a mapping between bytes and glyphs and implies a
+certain character encoding scheme. For example, for the ISO 8859 family of
+character sets, an encoding of 8bit per character is used. For the Unicode
+character set, different character encodings may be used, UTF-8 being the most
+popular. In UTF-8, a character is represented using a variable number of bytes
+ranging from 1 to 4.
+
+Since Mutt is a command-line tool run from a shell, and delegates certain tasks
+to external tools (such as an editor for composing/editing messages), all of
+these tools need to agree on a character set and encoding. There exists no way
+to reliably deduce the character set a plain text file has. Interoperability is
+gained by the use of well-defined environment variables. The full set can be
+printed by issuing locale on the command line.
+
+Upon startup, Mutt determines the character set on its own using routines that
+inspect locale-specific environment variables. Therefore, it is generally not
+necessary to set the $charset variable in Mutt. It may even be
+counter-productive as Mutt uses system and library functions that derive the
+character set themselves and on which Mutt has no influence. It's safest to let
+Mutt work out the locale setup itself.
+
+If you happen to work with several character sets on a regular basis, it's
+highly advisable to use Unicode and an UTF-8 locale. Unicode can represent
+nearly all characters in a message at the same time. When not using a Unicode
+locale, it may happen that you receive messages with characters not
+representable in your locale. When displaying such a message, or replying to or
+forwarding it, information may get lost possibly rendering the message unusable
+(not only for you but also for the recipient, this breakage is not reversible
+as lost information cannot be guessed).
+
+A Unicode locale makes all conversions superfluous which eliminates the risk of
+conversion errors. It also eliminates potentially wrong expectations about the
+character set between Mutt and external programs.
+
+The terminal emulator used also must be properly configured for the current
+locale. Terminal emulators usually do not derive the locale from environment
+variables, they need to be configured separately. If the terminal is
+incorrectly configured, Mutt may display random and unexpected characters
+(question marks, octal codes, or just random glyphs), format strings may not
+work as expected, you may not be abled to enter non-ascii characters, and
+possible more. Data is always represented using bytes and so a correct setup is
+very important as to the machine, all character sets ?look? the same.
+
+Warning: A mismatch between what system and library functions think the locale
+is and what Mutt was told what the locale is may make it behave badly with
+non-ascii input: it will fail at seemingly random places. This warning is to be
+taken seriously since not only local mail handling may suffer: sent messages
+may carry wrong character set information the receiver has too deal with. The
+need to set $charset directly in most cases points at terminal and environment
+variable setup problems, not Mutt problems.
+
+A list of officially assigned and known character sets can be found at IANA, a
+list of locally supported locales can be obtained by running locale -a.
+
+2. Regular Expressions
 
 All string patterns in Mutt including those in more complex patterns must be
 specified using regular expressions (regexp) in the ?POSIX extended? syntax
@@ -3405,8 +3571,9 @@ Equivalence Classes
 
     An equivalence class is a locale-specific name for a list of characters
     that are equivalent. The name is enclosed in ?[=? and ?=]?. For example,
-    the name ?e? might be used to represent all of ??? ??? and ?e?. In this
-    case, [[=e=]] is a regexp that matches any of ???, ??? and ?e?.
+    the name ?e? might be used to represent all of ?e? with grave (???), ?e?
+    with acute (???) and ?e?. In this case, [[=e=]] is a regexp that matches
+    any of: ?e? with grave (???), ?e? with acute (???) and ?e?.
 
 A regular expression matching a single character may be followed by one of
 several repetition operators described in Table 4.2, ?Regular expression
@@ -3479,9 +3646,9 @@ Table 4.3. GNU regular expression extensions
 Please note however that these operators are not defined by POSIX, so they may
 or may not be available in stock libraries on various systems.
 
-2. Patterns: Searching, Limiting and Tagging
+3. Patterns: Searching, Limiting and Tagging
 
-2.1. Pattern Modifier
+3.1. Pattern Modifier
 
 Many of Mutt's commands allow you to specify a pattern to match (limit,
 tag-pattern, delete-pattern, etc.). Table 4.4, ?Pattern modifiers? shows
@@ -3603,7 +3770,7 @@ Table 4.4. Pattern modifiers
 +-----------------------------------------------------------------------------+
 
 
-Where EXPR is a regular expression.
+Where EXPR is a regular expression, and GROUP is an address group.
 
 *) The forms ?<[MAX]?, ?>[MIN]?, ?[MIN]-? and ?-[MAX]? are allowed, too.
 
@@ -3615,7 +3782,7 @@ patterns. Specifically, Mutt's parser for these patterns will strip one level
 of backslash (?\?), which is normally used for quoting. If it is your intention
 to use a backslash in the regular expression, you will need to use two
 backslashes instead (?\\?). You can force Mutt to treat EXPR as a simple string
-instead of a regular expression by using = instead of ? in the pattern name.
+instead of a regular expression by using = instead of ~ in the pattern name.
 For example, =b *.* will find all messages that contain the literal string
 ?*.*?. Simple string matches are less powerful than regular expressions but can
 be considerably faster. This is especially true for IMAP folders, because
@@ -3635,12 +3802,12 @@ Example 4.1. Matching all addresses in address lists
 ^~C \.de$
 
 
-2.2. Simple Searches
+3.2. Simple Searches
 
 Mutt supports two versions of so called ?simple searches?. These are issued if
 the query entered for searching, limiting and similar operations does not seem
 to contain a valid pattern modifier (i.e. it does not contain one of these
-characters: ???, ?=? or ?%?). If the query is supposed to contain one of these
+characters: ?~?, ?=? or ?%?). If the query is supposed to contain one of these
 special characters, they must be escaped by prepending a backslash (?\?).
 
 The first type is by checking whether the query string equals a keyword
@@ -3684,7 +3851,7 @@ The second type of simple search is to build a complex search pattern using
 $simple_search as a template. Mutt will insert your query properly quoted and
 search for the composed complex query.
 
-2.3. Nesting and Boolean Operators
+3.3. Nesting and Boolean Operators
 
 Logical AND is performed by specifying more than one criterion. For example:
 
@@ -3711,11 +3878,12 @@ Example 4.2. Using boolean operators in patterns
 !(~t mutt|~c mutt) ~f elkins
 
 
-Here is an example using white space in the regular expression (note the ' and
-" delimiters). For this to match, the mail's subject must match the ?^Junk
-+From +Me$? and it must be from either ?Jim +Somebody? or ?Ed +SomeoneElse?:
+Here is an example using white space in the regular expression (note the ?'?
+and ?"? delimiters). For this to match, the mail's subject must match the ?^
+Junk +From +Me$? and it must be from either ?Jim +Somebody? or ?Ed
++SomeoneElse?:
 
- '~s "^Junk +From +Me$" ~f ("Jim +Somebody"|"Ed +SomeoneElse")'
+'~s "^Junk +From +Me$" ~f ("Jim +Somebody"|"Ed +SomeoneElse")'
 
 Note
 
@@ -3723,14 +3891,14 @@ If a regular expression contains parenthesis, or a vertical bar ("|"), you must
 enclose the expression in double or single quotes since those characters are
 also used to separate different parts of Mutt's pattern language. For example:
 ~f "me@(mutt\.org|cs\.hmc\.edu)" Without the quotes, the parenthesis wouldn't
-end. This would be separated to two OR'd patterns: ?f me@(mutt\.org and cs\.hmc
+end. This would be separated to two OR'd patterns: ~f me@(mutt\.org and cs\.hmc
 \.edu). They are never what you want.
 
-2.4. Searching by Date
+3.4. Searching by Date
 
 Mutt supports two types of dates, absolute and relative.
 
-2.4.1. Absolute Dates
+3.4.1. Absolute Dates
 
 Dates must be in DD/MM/YY format (month and year are optional, defaulting to
 the current month and year). An example of a valid range of dates is:
@@ -3768,7 +3936,7 @@ the following pattern:
 
 Limit to messages matching: ~d 15/1/2001*2w
 
-2.4.2. Relative Dates
+3.4.2. Relative Dates
 
 This type of date is relative to the current date, and may be specified as:
 
@@ -3791,7 +3959,7 @@ All dates used when searching are relative to the local time zone, so unless
 you change the setting of your $index_format to include a %[...] format, these
 are not the dates shown in the main index.
 
-3. Using Tags
+4. Using Tags
 
 Sometimes it is desirable to perform an operation on a group of messages all at
 once rather than one at a time. An example might be to save messages to a
@@ -3814,7 +3982,7 @@ it's execution. Mutt will stop ?eating? the macro when it encounters the
 <end-cond> operator; after this operator the rest of the macro will be executed
 as normal.
 
-4. Using Hooks
+5. Using Hooks
 
 A hook is a concept found in many other programs which allows you to execute
 arbitrary commands before performing some operation. For example, you may wish
@@ -3863,11 +4031,11 @@ send-hook . 'unmy_hdr From:'
 send-hook ~C'^b@b\.b$' my_hdr from: c@c.c
 
 
-In Example 4.3, ?Specifying a default hook?, by default the value of $from and
-$realname is not overridden. When sending messages either To: or Cc: to
+In Example 4.3, ?Specifying a ?default? hook?, by default the value of $from
+and $realname is not overridden. When sending messages either To: or Cc: to
 <b@b.b>, the From: header is changed to <c@c.c>.
 
-4.1. Message Matching in Hooks
+5.1. Message Matching in Hooks
 
 Hooks that act upon messages (message-hook, reply-hook, send-hook, send2-hook,
 save-hook, fcc-hook) are evaluated in a slightly different manner. For the
@@ -3895,14 +4063,14 @@ language, using the translation specified by the $default_hook variable. The
 pattern is translated at the time the hook is declared, so the value of
 $default_hook that is in effect at that time will be used.
 
-5. External Address Queries
+6. External Address Queries
 
 Mutt supports connecting to external directory databases such as LDAP, ph/qi,
 bbdb, or NIS through a wrapper script which connects to Mutt using a simple
 interface. Using the $query_command variable, you specify the wrapper command
 to use. For example:
 
-set query_command = "mutt_ldap_query.pl '%s'"
+set query_command = "mutt_ldap_query.pl %s"
 
 The wrapper script should accept the query on the command-line. It should
 return a one line message, then each matching response on a single line, each
@@ -3933,10 +4101,10 @@ Mutt will expand the address in place. If there are multiple responses, Mutt
 will activate the query menu. At the query menu, you can select one or more
 addresses to be added to the prompt.
 
-6. Mailbox Formats
+7. Mailbox Formats
 
 Mutt supports reading and writing of four different local mailbox formats:
-mbox, MMDF, MH and Maildir. The mailbox type is autodetected, so there is no
+mbox, MMDF, MH and Maildir. The mailbox type is auto detected, so there is no
 need to use a flag for different mailbox types. When creating new mailboxes,
 Mutt uses the default specified with the $mbox_type variable. A short
 description of the formats follows.
@@ -3953,9 +4121,9 @@ the environment, new mail detection can be unreliable. Mbox folders are fast to
 open and easy to archive.
 
 MMDF. This is a variant of the mbox format. Each message is surrounded by lines
-containing ?^A^A^A^A? (four control-A's). The same problems as for mbox apply
-(also with finding the right message separator as four control-A's may appear
-in message bodies).
+containing ?^A^A^A^A? (four times control-A's). The same problems as for mbox
+apply (also with finding the right message separator as four control-A's may
+appear in message bodies).
 
 MH. A radical departure from mbox and MMDF, a mailbox consists of a directory
 and each message is stored in a separate file. The filename indicates the
@@ -3981,36 +4149,42 @@ files are used for metadata (which is embedded in the message filenames) and
 Maildir is locking-free, it's easy to sync across different machines using
 file-level synchronization tools.
 
-7. Mailbox Shortcuts
+8. Mailbox Shortcuts
 
 There are a number of built in shortcuts which refer to specific mailboxes.
 These shortcuts can be used anywhere you are prompted for a file or mailbox
 path or in path-related configuration variables. Note that these only work at
 the beginning of a string.
 
-  * ! ? refers to your $spoolfile (incoming) mailbox
+Table 4.7. Mailbox shortcuts
 
-  * > ? refers to your $mbox file
++-----------------------------------------------------------------------------+
+|Shortcut|                            Refers to...                            |
+|--------+--------------------------------------------------------------------|
+|!       |your $spoolfile (incoming) mailbox                                  |
+|--------+--------------------------------------------------------------------|
+|>       |your $mbox file                                                     |
+|--------+--------------------------------------------------------------------|
+|<       |your $record file                                                   |
+|--------+--------------------------------------------------------------------|
+|^       |the current mailbox                                                 |
+|--------+--------------------------------------------------------------------|
+|- or !! |the file you've last visited                                        |
+|--------+--------------------------------------------------------------------|
+|~       |your home directory                                                 |
+|--------+--------------------------------------------------------------------|
+|= or +  |your $folder directory                                              |
+|--------+--------------------------------------------------------------------|
+|@alias  |to the default save folder as determined by the address of the alias|
++-----------------------------------------------------------------------------+
 
-  * < ? refers to your $record file
-
-  * ^ ? refers to the current mailbox
-
-  * - or !! ? refers to the file you've last visited
-
-  * ? ? refers to your home directory
-
-  * = or + ? refers to your $folder directory
-
-  * @alias ? refers to the default save folder as determined by the address of
-    the alias
 
 For example, to store a copy of outgoing messages in the folder they were
 composed in, a folder-hook can be used to set $record:
 
 folder-hook . 'set record=^'
 
-8. Handling Mailing Lists
+9. Handling Mailing Lists
 
 Mutt has a few configuration options that make dealing with large amounts of
 mail easier. The first thing you must do is to let Mutt know what addresses you
@@ -4070,7 +4244,7 @@ The ?X-Label:? header field can be used to further identify mailing lists or
 list subject matter (or just to annotate messages individually). The
 $index_format variable's ?%y? and ?%Y? expandos can be used to expand
 ?X-Label:? fields in the index, and Mutt's pattern-matcher can match regular
-expressions to ?X-Label:? fields with the ??y? selector. ?X-Label:? is not a
+expressions to ?X-Label:? fields with the ?~y? selector. ?X-Label:? is not a
 standard message header field, but it can easily be inserted by procmail and
 other mail filtering agents.
 
@@ -4082,11 +4256,47 @@ the same concept. It makes dealing with large volume mailing lists easier
 because you can easily delete uninteresting threads and quickly find topics of
 value.
 
-9. Handling multiple folders
+10. New Mail Detection
 
 Mutt supports setups with multiple folders, allowing all of them to be
 monitored for new mail (see Section 14, ?Monitoring Incoming Mail? for
 details).
+
+10.1. How New Mail Detection Works
+
+For Mbox and Mmdf folders, new mail is detected by comparing access and/or
+modification times of files: Mutt assumes a folder has new mail if it wasn't
+accessed after it was last modified. Utilities like biff or frm or any other
+program which accesses the mailbox might cause Mutt to never detect new mail
+for that mailbox if they do not properly reset the access time. Other possible
+causes of Mutt not detecting new mail in these folders are backup tools
+(updating access times) or filesystems mounted without access time update
+support (for Linux systems, see the relatime option).
+
+Note
+
+Contrary to older Mutt releases, it now maintains the new mail status of a
+folder by properly resetting the access time if the folder contains at least
+one message which is neither read, nor deleted, nor marked as old.
+
+In cases where new mail detection for Mbox or Mmdf folders appears to be
+unreliable, the $check_mbox_size option can be used to make Mutt track and
+consult file sizes for new mail detection instead which won't work for
+size-neutral changes.
+
+New mail for Maildir is assumed if there is one message in the new/
+subdirectory which is not marked deleted (see $maildir_trash). For MH folders,
+a mailbox is considered having new mail if there's at least one message in the
+?unseen? sequence as specified by $mh_seq_unseen.
+
+Mutt does not poll POP3 folders for new mail, it only periodically checks the
+currently opened folder (if it's a POP3 folder).
+
+For IMAP, by default Mutt uses recent message counts provided by the server to
+detect new mail. If the $imap_idle option is set, it'll use the IMAP IDLE
+extension if advertised by the server.
+
+10.2. Polling For New Mail
 
 When in the index menu and being idle (also see $timeout), Mutt periodically
 checks for new mail in all folders which have been configured via the mailboxes
@@ -4107,17 +4317,19 @@ For the index, by default Mutt displays the number of mailboxes with new mail
 in the status bar, please refer to the $status_format variable for details.
 
 When changing folders, Mutt fills the prompt with the first folder from the
-mailboxes list containing new mail (if any), pressing space will cycle through
-folders with new mail.
+mailboxes list containing new mail (if any), pressing <Space> will cycle
+through folders with new mail. The (by default unbound) function
+<next-unread-mailbox> in the index can be used to immediately open the next
+folder with unread mail (if any).
 
-10. Editing Threads
+11. Editing Threads
 
 Mutt has the ability to dynamically restructure threads that are broken either
 by misconfigured software or bad behavior from some correspondents. This allows
 to clean your mailboxes from these annoyances which make it hard to follow a
 discussion.
 
-10.1. Linking Threads
+11.1. Linking Threads
 
 Some mailers tend to ?forget? to correctly set the ?In-Reply-To:? and
 ?References:? headers when replying to a message. This results in broken
@@ -4127,9 +4339,9 @@ message and using the <link-threads> function (bound to & by default). The
 reply will then be connected to this parent message.
 
 You can also connect multiple children at once, tagging them and using the
-<tag-prefix> command (';') or the $auto_tag option.
+<tag-prefix> command (?;?) or the $auto_tag option.
 
-10.2. Breaking Threads
+11.2. Breaking Threads
 
 On mailing lists, some people are in the bad habit of starting a new discussion
 by hitting ?reply? to any message from the list and changing the subject to a
@@ -4137,7 +4349,7 @@ totally unrelated one. You can fix such threads by using the <break-thread>
 function (bound by default to #), which will turn the subthread starting from
 the current message into a whole different thread.
 
-11. Delivery Status Notification (DSN) Support
+12. Delivery Status Notification (DSN) Support
 
 RFC1894 defines a set of MIME content types for relaying information about the
 status of electronic mail messages. These can be thought of as ?return
@@ -4157,7 +4369,7 @@ consider your MTA documentation whether DSN is supported.
 For SMTP delivery using $smtp_url, it depends on the capabilities announced by
 the server whether Mutt will attempt to request DSN or not.
 
-12. Start a WWW Browser on URLs
+13. Start a WWW Browser on URLs
 
 If a message contains URLs, it is efficient to get a menu with all the URLs and
 start a WWW browser on one of them. This functionality is provided by the
@@ -4167,7 +4379,7 @@ contrib/ and the configuration commands:
 macro index \cb |urlview\n
 macro pager \cb |urlview\n
 
-13. Miscellany
+14. Miscellany
 
 This section documents various features that fit nowhere else.
 
@@ -4196,9 +4408,10 @@ Table of Contents
 
 1. Using MIME in Mutt
 
-    1.1. Viewing MIME Messages in the Pager
-    1.2. The Attachment Menu
-    1.3. The Compose Menu
+    1.1. MIME Overview
+    1.2. Viewing MIME Messages in the Pager
+    1.3. The Attachment Menu
+    1.4. The Compose Menu
 
 2. MIME Type Configuration with mime.types
 3. MIME Viewer Configuration with Mailcap
@@ -4224,16 +4437,48 @@ types.
 
 1. Using MIME in Mutt
 
-There are three areas/menus in Mutt which deal with MIME, they are the pager
-(while viewing a message), the attachment menu and the compose menu.
+1.1. MIME Overview
 
-1.1. Viewing MIME Messages in the Pager
+MIME is short for ?Multipurpose Internet Mail Extension? and describes
+mechanisms to internationalize and structure mail messages. Before the
+introduction of MIME, messages had a single text part and were limited to
+us-ascii header and content. With MIME, messages can have attachments (and even
+attachments which itself have attachments and thus form a tree structure),
+nearly arbitrary characters can be used for sender names, recipients and
+subjects.
+
+Besides the handling of non-ascii characters in message headers, to Mutt the
+most important aspect of MIME are so-called MIME types. These are constructed
+using a major and minor type separated by a forward slash. These specify
+details about the content that follows. Based upon these, Mutt decides how to
+handle this part. The most popular major type is ?text? with minor types for
+plain text, HTML and various other formats. Major types also exist for images,
+audio, video and of course general application data (e.g. to separate
+cryptographically signed data with a signature, send office documents, and in
+general arbitrary binary data). There's also the multipart major type which
+represents the root of a subtree of MIME parts. A list of supported MIME types
+can be found in Table 5.1, ?Supported MIME types?.
+
+MIME also defines a set of encoding schemes for transporting MIME content over
+the network: 7bit, 8bit, quoted-printable, base64 and binary. There're some
+rules when to choose what for encoding headers and/or body (if needed), and
+Mutt will in general make a good choice.
+
+Mutt does most of MIME encoding/decoding behind the scenes to form messages
+conforming to MIME on the sending side. On reception, it can be flexibly
+configured as to how what MIME structure is displayed (and if it's displayed):
+these decisions are based on the content's MIME type. There are three areas/
+menus in dealing with MIME: the pager (while viewing a message), the attachment
+menu and the compose menu.
+
+1.2. Viewing MIME Messages in the Pager
 
 When you select a message from the index and view it in the pager, Mutt decodes
-the message to a text representation. Mutt internally supports a number of MIME
-types, including text/plain, text/enriched, message/rfc822, and message/news.
-In addition, the export controlled version of Mutt recognizes a variety of PGP
-MIME types, including PGP/MIME and application/pgp.
+as much of a message as possible to a text representation. Mutt internally
+supports a number of MIME types, including the text major type (with all minor
+types), the message/rfc822 (mail messages) type and some multipart types. In
+addition, it recognizes a variety of PGP MIME types, including PGP/MIME and
+application/pgp.
 
 Mutt will denote attachments with a couple lines describing them. These lines
 are of the form:
@@ -4242,13 +4487,13 @@ are of the form:
 [-- Type: text/plain, Encoding: 7bit, Size: 10000 --]
 
 Where the Description is the description or filename given for the attachment,
-and the Encoding is one of 7bit/8bit/quoted-printable/base64/binary.
+and the Encoding is one of the already mentioned content encodings.
 
 If Mutt cannot deal with a MIME type, it will display a message like:
 
 [-- image/gif is unsupported (use 'v' to view this part) --]
 
-1.2. The Attachment Menu
+1.3. The Attachment Menu
 
 The default binding for <view-attachments> is ?v?, which displays the
 attachment menu for a message. The attachment menu displays a list of the
@@ -4258,15 +4503,16 @@ attachments at once, by tagging the attachments and by using the <tag-prefix>
 operator. You can also reply to the current message from this menu, and only
 the current attachment (or the attachments tagged) will be quoted in your
 reply. You can view attachments as text, or view them using the mailcap viewer
-definition.
+definition (the mailcap mechanism is explained later in detail).
 
 Finally, you can apply the usual message-related functions (like
 <resend-message>, and the <reply> and <forward> functions) to attachments of
 type message/rfc822.
 
-See the help on the attachment menu for more information.
+See table Table 9.7, ?Default Attachment Menu Bindings? for all available
+functions.
 
-1.3. The Compose Menu
+1.4. The Compose Menu
 
 The compose menu is the menu you see before you send a message. It allows you
 to edit the recipient list, the subject, and other aspects of your message. It
@@ -4276,12 +4522,12 @@ and rename an attachment or a list of tagged attachments. You can also
 modifying the attachment information, notably the type, encoding and
 description.
 
-Attachments appear as follows:
+Attachments appear as follows by default:
 
 - 1 [text/plain, 7bit, 1K]           /tmp/mutt-euler-8082-0 <no description>
   2 [applica/x-gunzip, base64, 422K] ~/src/mutt-0.85.tar.gz <no description>
 
-The '-' denotes that Mutt will delete the file after sending (or postponing, or
+The ?-? denotes that Mutt will delete the file after sending (or postponing, or
 canceling) the message. It can be toggled with the <toggle-unlink> command
 (default: u). The next field is the MIME content-type, and can be changed with
 the <edit-type> command (default: ^T). The next field is the encoding for the
@@ -4291,52 +4537,86 @@ The next field is the size of the attachment, rounded to kilobytes or
 megabytes. The next field is the filename, which can be changed with the
 <rename-file> command (default: R). The final field is the description of the
 attachment, and can be changed with the <edit-description> command (default:
-d).
+d). See $attach_format for a full list of available expandos to format this
+display to your needs.
 
 2. MIME Type Configuration with mime.types
 
-When you add an attachment to your mail message, Mutt searches your personal
-mime.types file at ${HOME}/.mime.types, and then the system mime.types file at
-/usr/local/share/mutt/mime.types or /etc/mime.types
+To get most out of MIME, it's important that a MIME part's content type matches
+the content as closely as possible so that the recipient's client can
+automatically select the right viewer for the content. However, there's no
+reliable for Mutt to know how to detect every possible file type. Instead, it
+uses a simple plain text mapping file that specifies what file extension
+corresponds to what MIME type. This file is called mime.types.
 
-The mime.types file consist of lines containing a MIME type and a space
-separated list of extensions. For example:
+When you add an attachment to your mail message, Mutt searches your personal
+mime.types file at $HOME/.mime.types, and then the system mime.types file at /
+usr/local/share/mutt/mime.types or /etc/mime.types
+
+Each line starts with the full MIME type, followed by a space and
+space-separated list of file extensions. For example you could use:
+
+Example 5.1. mime.types
 
 application/postscript          ps eps
 application/pgp                 pgp
 audio/x-aiff                    aif aifc aiff
 
+
 A sample mime.types file comes with the Mutt distribution, and should contain
 most of the MIME types you are likely to use.
 
-If Mutt can not determine the mime type by the extension of the file you
+If Mutt can not determine the MIME type by the extension of the file you
 attach, it will look at the file. If the file is free of binary information,
 Mutt will assume that the file is plain text, and mark it as text/plain. If the
 file contains binary information, then Mutt will mark it as application/
 octet-stream. You can change the MIME type that Mutt assigns to an attachment
-by using the <edit-type> command from the compose menu (default: ^T). The MIME
-type is actually a major mime type followed by the sub-type, separated by a '/
-'. 6 major types: application, text, image, video, audio, and model have been
-approved after various internet discussions. Mutt recognizes all of these if
-the appropriate entry is found in the mime.types file. It also recognizes other
-major mime types, such as the chemical type that is widely used in the
-molecular modeling community to pass molecular data in various forms to various
-molecular viewers. Non-recognized mime types should only be used if the
-recipient of the message is likely to be expecting such attachments.
+by using the <edit-type> command from the compose menu (default: ^T), see
+Table 5.1, ?Supported MIME types? for supported major types. Mutt recognizes
+all of these if the appropriate entry is found in the mime.types file.
+Non-recognized mime types should only be used if the recipient of the message
+is likely to be expecting such attachments.
+
+Table 5.1. Supported MIME types
+
++------------------------------------------------------------------+
+|MIME major type|Standard|               Description               |
+|---------------+--------+-----------------------------------------|
+|application    |yes     |General application data                 |
+|---------------+--------+-----------------------------------------|
+|audio          |yes     |Audio data                               |
+|---------------+--------+-----------------------------------------|
+|image          |yes     |Image data                               |
+|---------------+--------+-----------------------------------------|
+|message        |yes     |Mail messages, message status information|
+|---------------+--------+-----------------------------------------|
+|model          |yes     |VRML and other modeling data             |
+|---------------+--------+-----------------------------------------|
+|multipart      |yes     |Container for other MIME parts           |
+|---------------+--------+-----------------------------------------|
+|text           |yes     |Text data                                |
+|---------------+--------+-----------------------------------------|
+|video          |yes     |Video data                               |
+|---------------+--------+-----------------------------------------|
+|chemical       |no      |Mostly molecular data                    |
++------------------------------------------------------------------+
+
+
+MIME types are not arbitrary, they need to be assigned by IANA.
 
 3. MIME Viewer Configuration with Mailcap
 
 Mutt supports RFC 1524 MIME Configuration, in particular the Unix specific
 format specified in Appendix A of RFC 1524. This file format is commonly
-referred to as the mailcap format. Many MIME compliant programs utilize the
+referred to as the ?mailcap? format. Many MIME compliant programs utilize the
 mailcap format, allowing you to specify handling for all MIME types in one
 place for all programs. Programs known to use this format include Firefox, lynx
 and metamail.
 
-In order to handle various MIME types that Mutt can not handle internally, Mutt
-parses a series of external configuration files to find an external handler.
-The default search string for these files is a colon delimited list containing
-the following files:
+In order to handle various MIME types that Mutt doesn't have built-in support
+for, it parses a series of external configuration files to find an external
+handler. The default search string for these files is a colon delimited list
+containing the following files:
 
  1. $HOME/.mailcap
 
@@ -4371,14 +4651,14 @@ A comment line consists of a # character followed by anything you want.
 A blank line is blank.
 
 A definition line consists of a content type, a view command, and any number of
-optional fields. Each field of a definition line is divided by a semicolon ';'
+optional fields. Each field of a definition line is divided by a semicolon ?;?
 character.
 
-The content type is specified in the MIME standard type/subtype method. For
+The content type is specified in the MIME standard ?type/subtype? notation. For
 example, text/plain, text/html, image/gif, etc. In addition, the mailcap format
-includes two formats for wildcards, one using the special '*' subtype, the
+includes two formats for wildcards, one using the special ?*? subtype, the
 other is the implicit wild, where you only include the major type. For example,
-image/*, or video, will match all image types and video types, respectively.
+image/*, or video will match all image types and video types, respectively.
 
 The view command is a Unix command for viewing the type specified. There are
 two different types of commands supported. The default is to send the body of
@@ -4387,10 +4667,13 @@ the MIME message to the command on stdin. You can change this behavior by using
 of the MIME message to a temporary file, and then call the view command with
 the %s replaced by the name of the temporary file. In both cases, Mutt will
 turn over the terminal to the view program until the program quits, at which
-time Mutt will remove the temporary file if it exists.
+time Mutt will remove the temporary file if it exists. This means that mailcap
+does not work out of the box with programs which detach themselves from the
+terminal right after starting, like open on Mac OS X. In order to nevertheless
+use these programs with mailcap, you probably need custom shell scripts.
 
 So, in the simplest form, you can send a text/plain message to the external
-pager more on stdin:
+pager more on standard input:
 
 text/plain; more
 
@@ -4402,8 +4685,8 @@ Perhaps you would like to use lynx to interactively view a text/html message:
 
 text/html; lynx %s
 
-In this case, lynx does not support viewing a file from stdin, so you must use
-the %s syntax.
+In this case, lynx does not support viewing a file from standard input, so you
+must use the %s syntax.
 
 Note
 
@@ -4422,8 +4705,6 @@ text formats, then you would use the following:
 text/html; lynx %s
 text/*; more
 
-This is the simplest form of a mailcap file.
-
 3.2. Secure Use of Mailcap
 
 The interpretation of shell meta-characters embedded in MIME parameters can
@@ -4438,8 +4719,8 @@ Therefore you should pay attention to the following rules:
 Keep the %-expandos away from shell quoting. Don't quote them with single or
 double quotes. Mutt does this for you, the right way, as should any other
 program which interprets mailcap. Don't put them into backtick expansions. Be
-highly careful with eval statements, and avoid them if possible at all. Trying
-to fix broken behavior with quotes introduces new leaks - there is no
+highly careful with evil statements, and avoid them if possible at all. Trying
+to fix broken behavior with quotes introduces new leaks ? there is no
 alternative to correct quoting in the first place.
 
 If you have to use the %-expandos' values in context where you need quoting or
@@ -4456,22 +4737,26 @@ text/test-mailcap-bug; cat %s; copiousoutput; test=charset=%{charset} \
 3.3.1. Optional Fields
 
 In addition to the required content-type and view command fields, you can add
-semi-colon ';' separated fields to set flags and other options. Mutt recognizes
+semi-colon ?;? separated fields to set flags and other options. Mutt recognizes
 the following optional fields:
 
 copiousoutput
 
     This flag tells Mutt that the command passes possibly large amounts of text
-    on stdout. This causes Mutt to invoke a pager (either the internal pager or
-    the external pager defined by the pager variable) on the output of the view
-    command. Without this flag, Mutt assumes that the command is interactive.
-    One could use this to replace the pipe to more in the lynx -dump example in
-    the Basic section:
+    on standard output. This causes Mutt to invoke a pager (either the internal
+    pager or the external pager defined by the pager variable) on the output of
+    the view command. Without this flag, Mutt assumes that the command is
+    interactive. One could use this to replace the pipe to more in the lynx
+    -dump example in the Basic section:
 
     text/html; lynx -dump %s ; copiousoutput
 
     This will cause lynx to format the text/html output as text/plain and Mutt
     will use your standard pager to display the results.
+
+    Note that when using the built-in pager, only entries with this flag will
+    be considered a handler for a MIME type ? all other entries will be
+    ignored.
 
 needsterminal
 
@@ -4505,7 +4790,7 @@ edit=<command>
 
     This flag specifies the command to use to edit a specific MIME type. Mutt
     supports this from the compose menu, and also uses it to compose new
-    attachments. Mutt will default to the defined editor for text attachments.
+    attachments. Mutt will default to the defined $editor for text attachments.
 
 nametemplate=<template>
 
@@ -4531,7 +4816,7 @@ test=<command>
 
     In this example, Mutt will run the program RunningX which will return 0 if
     the X Window manager is running, and non-zero if it isn't. If RunningX
-    returns 0, then Mutt will call firefox to display the text/html object. If
+    returns 0, then Mutt will run firefox to display the text/html object. If
     RunningX doesn't return 0, then Mutt will go on to the next entry and use
     lynx to display the text/html object.
 
@@ -4551,9 +4836,9 @@ command.
 
 In addition, you can use this with auto_view to denote two commands for viewing
 an attachment, one to be viewed automatically, the other to be viewed
-interactively from the attachment menu. In addition, you can then use the test
-feature to determine which viewer to use interactively depending on your
-environment.
+interactively from the attachment menu using the <view-mailcap> function (bound
+to ?m? by default). In addition, you can then use the test feature to determine
+which viewer to use interactively depending on your environment.
 
 text/html;      firefox -remote 'openURL(%s)' ; test=RunningX
 text/html;      lynx %s; nametemplate=%s.html
@@ -4562,7 +4847,16 @@ text/html;      lynx -dump %s; nametemplate=%s.html; copiousoutput
 For auto_view, Mutt will choose the third entry because of the copiousoutput
 tag. For interactive viewing, Mutt will run the program RunningX to determine
 if it should use the first entry. If the program returns non-zero, Mutt will
-use the second entry for interactive viewing.
+use the second entry for interactive viewing. The last entry is for inline
+display in the pager and the <view-attach> function in the attachment menu.
+
+Entries with the copiousoutput tag should always be specified as the last one
+per type. For non-interactive use, the last entry will then actually be the
+first matching one with the tag set. For non-interactive use, only
+copiousoutput-tagged entries are considered. For interactive use, Mutt ignores
+this tag and treats all entries equally. Therefore, if not specified last, all
+following entries without this tag would never be considered for <view-attach>
+because the copiousoutput before them matched already.
 
 3.3.3. Command Expansion
 
@@ -4584,23 +4878,23 @@ The keywords Mutt expands are:
 
     Mutt will expand %t to the text representation of the content type of the
     message in the same form as the first parameter of the mailcap definition
-    line, ie text/html or image/gif.
+    line, i.e. text/html or image/gif.
 
 %{<parameter>}
 
     Mutt will expand this to the value of the specified parameter from the
-    Content-Type: line of the mail message. For instance, if Your mail message
+    Content-Type: line of the mail message. For instance, if your mail message
     contains:
 
     Content-Type: text/plain; charset=iso-8859-1
 
-    then Mutt will expand %{charset} to iso-8859-1. The default metamail
+    then Mutt will expand %{charset} to ?iso-8859-1?. The default metamail
     mailcap file uses this feature to test the charset to spawn an xterm using
     the right charset to view the message.
 
 \%
 
-    This will be replaced by a %
+    This will be replaced by a literal %.
 
 Mutt does not currently support the %F and %n keywords specified in RFC 1524.
 The main purpose of these parameters is for multipart messages, which is
@@ -4659,26 +4953,26 @@ application/ms-excel; open.pl %s
 
 Usage:
 
-auto-view mimetype [ mimetype ...]
-unauto-view { * | mimetype ... }
+auto_view mimetype [ mimetype ...]
+unauto_view { * | mimetype ... }
 
 In addition to explicitly telling Mutt to view an attachment with the MIME
-viewer defined in the mailcap file, Mutt has support for automatically viewing
-MIME attachments while in the pager.
+viewer defined in the mailcap file from the attachments menu, Mutt has support
+for automatically viewing MIME attachments while in the pager.
 
-To work, you must define a viewer in the mailcap file which uses the
+For this to work, you must define a viewer in the mailcap file which uses the
 copiousoutput option to denote that it is non-interactive. Usually, you also
 use the entry to convert the attachment to a text representation which you can
 view in the pager.
 
-You then use the auto_view .muttrc command to list the content-types that you
-wish to view automatically. For instance, if you set it to:
+You then use the auto_view configuration command to list the content-types that
+you wish to view automatically. For instance, if you set it to:
 
 auto_view text/html application/x-gunzip \
   application/postscript image/gif application/x-tar-gz
 
-Mutt could use the following mailcap entries to automatically view attachments
-of these types.
+...Mutt would try to find corresponding entries for rendering attachments of
+these types as text. A corresponding mailcap could look like:
 
 text/html;      lynx -dump %s; copiousoutput; nametemplate=%s.html
 image/*;        anytopnm %s | pnmscale -xsize 80 -ysize 50 | ppmtopgm | \
@@ -4687,23 +4981,32 @@ application/x-gunzip;   gzcat; copiousoutput
 application/x-tar-gz; gunzip -c %s | tar -tf - ; copiousoutput
 application/postscript; ps2ascii %s; copiousoutput
 
-unauto_view can be used to remove previous entries from the autoview list. This
-can be used with message-hook to autoview messages based on size, etc. ?
+unauto_view can be used to remove previous entries from the auto_view list.
+This can be used with message-hook to autoview messages based on size, etc. ?
 unauto_view *? will remove all previous entries.
 
 5. MIME Multipart/Alternative
 
+The multipart/alternative container type only has child MIME parts which
+represent the same content in an alternative way. This is often used to send
+HTML messages which contain an alternative plain text representation.
+
 Mutt has some heuristics for determining which attachment of a multipart/
-alternative type to display. First, Mutt will check the alternative_order list
-to determine if one of the available types is preferred. It consists of a
-number of mimetypes in order, including support for implicit and explicit
-wildcards, for example:
+alternative type to display:
 
-alternative_order text/enriched text/plain text application/postscript image/*
+ 1. First, Mutt will check the alternative_order list to determine if one of
+    the available types is preferred. It consists of a number of MIME types in
+    order, including support for implicit and explicit wildcards. For example:
 
-Next, Mutt will check if any of the types have a defined auto_view, and use
-that. Failing that, Mutt will look for any text type. As a last attempt, Mutt
-will look for any type it knows how to handle.
+    alternative_order text/enriched text/plain text \
+      application/postscript image/*
+
+ 2. Next, Mutt will check if any of the types have a defined auto_view, and use
+    that.
+
+ 3. Failing that, Mutt will look for any text type.
+
+ 4. As a last attempt, Mutt will look for any type it knows how to handle.
 
 To remove a MIME type from the alternative_order list, use the
 unalternative_order command.
@@ -4720,7 +5023,8 @@ commands.
 In order to provide this information, Mutt needs to fully MIME-parse all
 messages affected first. This can slow down operation especially for remote
 mail folders such as IMAP because all messages have to be downloaded first
-regardless whether the user really wants to view them or not.
+regardless whether the user really wants to view them or not though using
+Section 7.2, ?Body Caching? usually means to download the message just once.
 
 The syntax is:
 
@@ -4731,17 +5035,18 @@ attachments ?
 disposition is the attachment's Content-Disposition type ? either inline or
 attachment. You can abbreviate this to I or A.
 
-Disposition is prefixed by either a + symbol or a - symbol. If it's a +, you're
-saying that you want to allow this disposition and MIME type to qualify. If
-it's a -, you're saying that this disposition and MIME type is an exception to
-previous + rules. There are examples below of how this is useful.
+Disposition is prefixed by either a ?+? symbol or a ?-? symbol. If it's a ?+?,
+you're saying that you want to allow this disposition and MIME type to qualify.
+If it's a ?-?, you're saying that this disposition and MIME type is an
+exception to previous ?+? rules. There are examples below of how this is
+useful.
 
-mime-type is, unsurprisingly, the MIME type of the attachment you want to
-affect. A MIME type is always of the format major/minor, where major describes
-the broad category of document you're looking at, and minor describes the
-specific type within that category. The major part of mime-type must be literal
-text (or the special token ?*?), but the minor part may be a regular
-expression. (Therefore, ?*/.*? matches any MIME type.)
+mime-type is the MIME type of the attachment you want the command to affect. A
+MIME type is always of the format major/minor, where major describes the broad
+category of document you're looking at, and minor describes the specific type
+within that category. The major part of mime-type must be literal text (or the
+special token ?*?), but the minor part may be a regular expression. (Therefore,
+?*/.*? matches any MIME type.)
 
 The MIME types you give to the attachments directive are a kind of pattern.
 When you use the attachments directive, the patterns you specify are added to a
@@ -4753,50 +5058,54 @@ message.
 Some examples might help to illustrate. The examples that are not commented out
 define the default configuration of the lists.
 
-Example 5.1. Attachment counting
-
-## Removing a pattern from a list removes that pattern literally. It
-## does not remove any type matching the pattern.
-##
-##  attachments   +A */.*
-##  attachments   +A image/jpeg
-##  unattachments +A */.*
-##
-## This leaves "attached" image/jpeg files on the allowed attachments
-## list. It does not remove all items, as you might expect, because the
-## second */.* is not a matching expression at this time.
-##
-## Remember: "unattachments" only undoes what "attachments" has done!
-## It does not trigger any matching on actual messages.
+Example 5.2. Attachment counting
 
 
-## Qualify any MIME part with an "attachment" disposition, EXCEPT for
-## text/x-vcard and application/pgp parts. (PGP parts are already known
-## to mutt, and can be searched for with ~g, ~G, and ~k.)
-##
-## I've added x-pkcs7 to this, since it functions (for S/MIME)
-## analogously to PGP signature attachments. S/MIME isn't supported
-## in a stock mutt build, but we can still treat it specially here.
-##
+# Removing a pattern from a list removes that pattern literally. It
+# does not remove any type matching the pattern.
+#
+#  attachments   +A */.*
+#  attachments   +A image/jpeg
+#  unattachments +A */.*
+#
+# This leaves "attached" image/jpeg files on the allowed attachments
+# list. It does not remove all items, as you might expect, because the
+# second */.* is not a matching expression at this time.
+#
+# Remember: "unattachments" only undoes what "attachments" has done!
+# It does not trigger any matching on actual messages.
+
+# Qualify any MIME part with an "attachment" disposition, EXCEPT for
+# text/x-vcard and application/pgp parts. (PGP parts are already known
+# to mutt, and can be searched for with ~g, ~G, and ~k.)
+#
+# I've added x-pkcs7 to this, since it functions (for S/MIME)
+# analogously to PGP signature attachments. S/MIME isn't supported
+# in a stock mutt build, but we can still treat it specially here.
+#
+
 attachments   +A */.*
 attachments   -A text/x-vcard application/pgp.*
 attachments   -A application/x-pkcs7-.*
 
-## Discount all MIME parts with an "inline" disposition, unless they're
-## text/plain. (Why inline a text/plain part unless it's external to the
-## message flow?)
-##
+
+# Discount all MIME parts with an "inline" disposition, unless they're
+# text/plain. (Why inline a text/plain part unless it's external to the
+# message flow?)
+
 attachments   +I text/plain
 
-## These two lines make Mutt qualify MIME containers.  (So, for example,
-## a message/rfc822 forward will count as an attachment.)  The first
-## line is unnecessary if you already have "attach-allow */.*", of
-## course.  These are off by default!  The MIME elements contained
-## within a message/* or multipart/* are still examined, even if the
-## containers themseves don't qualify.
-##
+
+# These two lines make Mutt qualify MIME containers.  (So, for example,
+# a message/rfc822 forward will count as an attachment.)  The first
+# line is unnecessary if you already have "attach-allow */.*", of
+# course.  These are off by default!  The MIME elements contained
+# within a message/* or multipart/* are still examined, even if the
+# containers themselves don't qualify.
+
 #attachments  +A message/.* multipart/.*
 #attachments  +I message/.* multipart/.*
+
 
 ## You probably don't really care to know about deleted attachments.
 attachments   -A message/external-body
@@ -4813,11 +5122,11 @@ Usage:
 mime-lookup mimetype [ mimetype ...]
 unmime-lookup { * | mimetype ... }
 
-Mutt's mime_lookup list specifies a list of mime-types that should not be
+Mutt's mime_lookup list specifies a list of MIME types that should not be
 treated according to their mailcap entry. This option is designed to deal with
-binary types such as application/octet-stream. When an attachment's mime-type
+binary types such as application/octet-stream. When an attachment's MIME type
 is listed in mime_lookup, then the extension of the filename will be compared
-to the list of extensions in the mime.types file. The mime-type associated with
+to the list of extensions in the mime.types file. The MIME type associated with
 this extension will then be used to process the attachment according to the
 rules in the mailcap file and according to any other configuration options
 (such as auto_view) specified. Common usage would be:
@@ -4825,7 +5134,7 @@ rules in the mailcap file and according to any other configuration options
 mime_lookup application/octet-stream application/X-Lotus-Manuscript
 
 In addition, the unmime_lookup command may be used to disable this feature for
-any particular mime-type if it had been set, for example, in a global .muttrc.
+any particular MIME type if it had been set, for example, in a global .muttrc.
 
 Chapter 6. Optional Features
 
@@ -4849,7 +5158,8 @@ Table of Contents
 
     7.1. Header Caching
     7.2. Body Caching
-    7.3. Maintenance
+    7.3. Cache Directories
+    7.4. Maintenance
 
 8. Exact Address Generation
 9. Sending Anonymous Messages via Mixmaster
@@ -4875,7 +5185,7 @@ Mutt optionally supports the IMAP, POP3 and SMTP protocols which require to
 access servers using URLs. The canonical syntax for specifying URLs in Mutt is
 (an item enclosed in [] means it is optional and may be omitted):
 
-proto[s]://[username[:password]@]server[:port]/[path]
+proto[s]://[username[:password]@]server[:port][/path]
 
 proto is the communication protocol: imap for IMAP, pop for POP3 and smtp for
 SMTP. If ?s? for ?secure communication? is appended, Mutt will attempt to
@@ -4885,13 +5195,17 @@ Since all protocols supported by Mutt support/require authentication, login
 credentials may be specified in the URL. This has the advantage that multiple
 IMAP, POP3 or SMTP servers may be specified (which isn't possible using, for
 example, $imap_user). The username may contain the ?@? symbol being used by
-many mail systems as part of the login name. A password can be given, too but
-is not recommended if the URL is specified in a configuration file on disk.
+many mail systems as part of the login name. The special characters ?/? (%2F),
+?:? (%3A) and ?%? (%25) have to be URL-encoded in usernames using the
+%-notation.
+
+A password can be given, too but is not recommended if the URL is specified in
+a configuration file on disk.
 
 If no port number is given, Mutt will use the system's default for the given
 protocol (usually consulting /etc/services).
 
-The optional path is only relevant for IMAP.
+The optional path is only relevant for IMAP and ignored elsewhere.
 
 Example 6.1. URLs
 
@@ -4948,7 +5262,7 @@ remote IMAP server.
 
 You can access the remote inbox by selecting the folder by its URL (see
 Section 1.2, ?URL Syntax? for details) using the imap or imaps protocol.
-Alternatively, a pine-compatible notation is also supported, ie {[username@]
+Alternatively, a pine-compatible notation is also supported, i.e. {[username@]
 imapserver[:port][/ssl]}path/to/folder
 
 Note that not all servers use ?/? as the hierarchy separator. Mutt should
@@ -5018,7 +5332,7 @@ There are a few variables which control authentication:
 
   * $imap_user - controls the username under which you request authentication
     on the IMAP server, for all authenticators. This is overridden by an
-    explicit username in the mailbox path (ie by using a mailbox name of the
+    explicit username in the mailbox path (i.e. by using a mailbox name of the
     form {user@host}).
 
   * $imap_pass - a password which you may preset, used by all authentication
@@ -5087,7 +5401,7 @@ using mailboxes so Mutt polls them for new mail. Each folder-hook triggers when
 one mailbox below each IMAP account is opened and sets $folder to the account's
 root folder. Next, it sets $record to the INBOX/Sent folder below the newly set
 $folder. Please notice that the value the ?+? mailbox shortcut refers to
-depends on the current value of $folder and therefore has to be set separatedly
+depends on the current value of $folder and therefore has to be set separately
 per account. Setting other values like $from or $signature is analogous to
 setting $record.
 
@@ -5103,11 +5417,11 @@ always enabled if Mutt is compiled with POP and/or IMAP support as these use it
 7.1. Header Caching
 
 Mutt provides optional support for caching message headers for the following
-types of folders: IMAP, POP, Maildir and MH. Header caching greatly improves
-speed because for remote folders, headers usually only need to be downloaded
-once. For Maildir and MH, reading the headers from a single file is much faster
-than looking at possibly thousands of single files (since Maildir and MH use
-one file per message.)
+types of folders: IMAP, POP, Maildir and MH. Header caching greatly speeds up
+opening large folders because for remote folders, headers usually only need to
+be downloaded once. For Maildir and MH, reading the headers from a single file
+is much faster than looking at possibly thousands of single files (since
+Maildir and MH use one file per message.)
 
 Header caching can be enabled via the configure script and the --enable-hcache
 option. It's not turned on by default because external database libraries are
@@ -5129,13 +5443,25 @@ bodies. This results in faster display of messages for POP and IMAP folders
 because messages usually have to be downloaded only once.
 
 For configuration, the variable $message_cachedir must point to a directory.
-There, Mutt will create a hierarchy of subdirectories named like:
-proto:user@hostname where proto is either ?pop? or ?imap.? Within there for
-each folder, Mutt stores messages in single files. All files can be removed as
-needed if the consumed disk space becomes an issue as Mutt will silently fetch
-missing items again.
+There, Mutt will create a hierarchy of subdirectories named like the account
+and mailbox path the cache is for.
 
-7.3. Maintenance
+7.3. Cache Directories
+
+For using both, header and body caching, $header_cache and $message_cachedir
+can be safely set to the same value.
+
+In a header or body cache directory, Mutt creates a directory hierarchy named
+like: proto:user@hostname where proto is either ?pop? or ?imap.? Within there,
+for each folder, Mutt stores messages in single files and header caches in
+files with the ?.hcache? extension. All files can be removed as needed if the
+consumed disk space becomes an issue as Mutt will silently fetch missing items
+again. Pathnames are always stored in UTF-8 encoding.
+
+For Maildir and MH, the header cache files are named after the MD5 checksum of
+the path.
+
+7.4. Maintenance
 
 Mutt does not (yet) support maintenance features for header cache database
 files so that files have to be removed in case they grow too big. It depends on
@@ -5162,10 +5488,7 @@ mutt -v indicates whether it's supported.
 
 You may also have compiled Mutt to co-operate with Mixmaster, an anonymous
 remailer. Mixmaster permits you to send your messages anonymously using a chain
-of remailers. Mixmaster support in Mutt is for mixmaster version 2.04 (beta 45
-appears to be the latest) and 2.03. It does not support earlier versions or the
-later so-called version 3 betas, of which the latest appears to be called
-2.9b23.
+of remailers. Mixmaster support in Mutt is for mixmaster version 2.04 or later.
 
 To use it, you'll have to obey certain restrictions. Most important, you cannot
 use the Cc and Bcc headers. To tell Mutt to use mixmaster, you have to select a
@@ -5235,7 +5558,7 @@ Message-Id: headers contain a local part that is to be created in a unique
 fashion. In order to do so, Mutt will ?leak? some information to the outside
 world when sending messages: the generation of this header includes a step
 counter which is increased (and rotated) with every message sent. In a longer
-running mutt session, others can make assumptions about your mailing habbits
+running mutt session, others can make assumptions about your mailing habits
 depending on the number of messages sent. If this is not desired, the header
 can be manually provided using $edit_headers (though not recommended).
 
@@ -5244,7 +5567,7 @@ can be manually provided using $edit_headers (though not recommended).
 As Mutt be can be set up to be the mail client to handle mailto: style links in
 websites, there're security considerations, too. Arbitrary header fields can be
 embedded in these links which could override existing header fields or attach
-arbitrary files using the Attach: psuedoheader. This may be problematic if the
+arbitrary files using the Attach: pseudoheader. This may be problematic if the
 $edit-headers variable is unset, i.e. the user doesn't want to see header
 fields while editing the message and doesn't pay enough attention to the
 compose menu's listing of attachments.
@@ -5323,7 +5646,7 @@ Mutt's so-called body caching for details.
 
 When searching mailboxes either via a search or a limit action, for some
 patterns Mutt distinguishes between regular expression and string searches. For
-regular expressions, patterns are prefixed with ??? and with ?=? for string
+regular expressions, patterns are prefixed with ?~? and with ?=? for string
 searches.
 
 Even though a regular expression search is fast, it's several times slower than
@@ -5333,12 +5656,12 @@ search if the user already knows enough about the search pattern.
 
 For example, when limiting a large folder to all messages sent to or by an
 author, it's much faster to search for the initial part of an e-mail address
-via =Luser@ instead of ?Luser@. This is especially true for searching message
+via =Luser@ instead of ~Luser@. This is especially true for searching message
 bodies since a larger amount of input has to be searched.
 
 As for regular expressions, a lower case string search pattern makes Mutt
 perform a case-insensitive search except for IMAP (because for IMAP Mutt
-performs server-side searches which don't support case-insensivity).
+performs server-side searches which don't support case-insensitivity).
 
 Chapter 9. Reference
 
@@ -5466,198 +5789,200 @@ Table of Contents
     3.116. keep_flagged
     3.117. locale
     3.118. mail_check
-    3.119. mailcap_path
-    3.120. mailcap_sanitize
-    3.121. maildir_header_cache_verify
-    3.122. maildir_trash
-    3.123. mark_old
-    3.124. markers
-    3.125. mask
-    3.126. mbox
-    3.127. mbox_type
-    3.128. menu_context
-    3.129. menu_move_off
-    3.130. menu_scroll
-    3.131. message_cache_clean
-    3.132. message_cachedir
-    3.133. message_format
-    3.134. meta_key
-    3.135. metoo
-    3.136. mh_purge
-    3.137. mh_seq_flagged
-    3.138. mh_seq_replied
-    3.139. mh_seq_unseen
-    3.140. mime_forward
-    3.141. mime_forward_decode
-    3.142. mime_forward_rest
-    3.143. mix_entry_format
-    3.144. mixmaster
-    3.145. move
-    3.146. narrow_tree
-    3.147. net_inc
-    3.148. pager
-    3.149. pager_context
-    3.150. pager_format
-    3.151. pager_index_lines
-    3.152. pager_stop
-    3.153. pgp_auto_decode
-    3.154. pgp_autoinline
-    3.155. pgp_check_exit
-    3.156. pgp_clearsign_command
-    3.157. pgp_decode_command
-    3.158. pgp_decrypt_command
-    3.159. pgp_encrypt_only_command
-    3.160. pgp_encrypt_sign_command
-    3.161. pgp_entry_format
-    3.162. pgp_export_command
-    3.163. pgp_getkeys_command
-    3.164. pgp_good_sign
-    3.165. pgp_ignore_subkeys
-    3.166. pgp_import_command
-    3.167. pgp_list_pubring_command
-    3.168. pgp_list_secring_command
-    3.169. pgp_long_ids
-    3.170. pgp_mime_auto
-    3.171. pgp_replyinline
-    3.172. pgp_retainable_sigs
-    3.173. pgp_show_unusable
-    3.174. pgp_sign_as
-    3.175. pgp_sign_command
-    3.176. pgp_sort_keys
-    3.177. pgp_strict_enc
-    3.178. pgp_timeout
-    3.179. pgp_use_gpg_agent
-    3.180. pgp_verify_command
-    3.181. pgp_verify_key_command
-    3.182. pipe_decode
-    3.183. pipe_sep
-    3.184. pipe_split
-    3.185. pop_auth_try_all
-    3.186. pop_authenticators
-    3.187. pop_checkinterval
-    3.188. pop_delete
-    3.189. pop_host
-    3.190. pop_last
-    3.191. pop_pass
-    3.192. pop_reconnect
-    3.193. pop_user
-    3.194. post_indent_string
-    3.195. postpone
-    3.196. postponed
-    3.197. preconnect
-    3.198. print
-    3.199. print_command
-    3.200. print_decode
-    3.201. print_split
-    3.202. prompt_after
-    3.203. query_command
-    3.204. query_format
-    3.205. quit
-    3.206. quote_regexp
-    3.207. read_inc
-    3.208. read_only
-    3.209. realname
-    3.210. recall
-    3.211. record
-    3.212. reply_regexp
-    3.213. reply_self
-    3.214. reply_to
-    3.215. resolve
-    3.216. reverse_alias
-    3.217. reverse_name
-    3.218. reverse_realname
-    3.219. rfc2047_parameters
-    3.220. save_address
-    3.221. save_empty
-    3.222. save_history
-    3.223. save_name
-    3.224. score
-    3.225. score_threshold_delete
-    3.226. score_threshold_flag
-    3.227. score_threshold_read
-    3.228. search_context
-    3.229. send_charset
-    3.230. sendmail
-    3.231. sendmail_wait
-    3.232. shell
-    3.233. sig_dashes
-    3.234. sig_on_top
-    3.235. signature
-    3.236. simple_search
-    3.237. sleep_time
-    3.238. smart_wrap
-    3.239. smileys
-    3.240. smime_ask_cert_label
-    3.241. smime_ca_location
-    3.242. smime_certificates
-    3.243. smime_decrypt_command
-    3.244. smime_decrypt_use_default_key
-    3.245. smime_default_key
-    3.246. smime_encrypt_command
-    3.247. smime_encrypt_with
-    3.248. smime_get_cert_command
-    3.249. smime_get_cert_email_command
-    3.250. smime_get_signer_cert_command
-    3.251. smime_import_cert_command
-    3.252. smime_is_default
-    3.253. smime_keys
-    3.254. smime_pk7out_command
-    3.255. smime_sign_command
-    3.256. smime_sign_opaque_command
-    3.257. smime_timeout
-    3.258. smime_verify_command
-    3.259. smime_verify_opaque_command
-    3.260. smtp_authenticators
-    3.261. smtp_pass
-    3.262. smtp_url
-    3.263. sort
-    3.264. sort_alias
-    3.265. sort_aux
-    3.266. sort_browser
-    3.267. sort_re
-    3.268. spam_separator
-    3.269. spoolfile
-    3.270. ssl_ca_certificates_file
-    3.271. ssl_client_cert
-    3.272. ssl_force_tls
-    3.273. ssl_min_dh_prime_bits
-    3.274. ssl_starttls
-    3.275. ssl_use_sslv2
-    3.276. ssl_use_sslv3
-    3.277. ssl_use_tlsv1
-    3.278. ssl_usesystemcerts
-    3.279. ssl_verify_dates
-    3.280. ssl_verify_host
-    3.281. status_chars
-    3.282. status_format
-    3.283. status_on_top
-    3.284. strict_threads
-    3.285. suspend
-    3.286. text_flowed
-    3.287. thorough_search
-    3.288. thread_received
-    3.289. tilde
-    3.290. time_inc
-    3.291. timeout
-    3.292. tmpdir
-    3.293. to_chars
-    3.294. tunnel
-    3.295. uncollapse_jump
-    3.296. use_8bitmime
-    3.297. use_domain
-    3.298. use_envelope_from
-    3.299. use_from
-    3.300. use_idn
-    3.301. use_ipv6
-    3.302. user_agent
-    3.303. visual
-    3.304. wait_key
-    3.305. weed
-    3.306. wrap
-    3.307. wrap_search
-    3.308. wrapmargin
-    3.309. write_bcc
-    3.310. write_inc
+    3.119. mail_check_recent
+    3.120. mailcap_path
+    3.121. mailcap_sanitize
+    3.122. maildir_header_cache_verify
+    3.123. maildir_trash
+    3.124. mark_old
+    3.125. markers
+    3.126. mask
+    3.127. mbox
+    3.128. mbox_type
+    3.129. menu_context
+    3.130. menu_move_off
+    3.131. menu_scroll
+    3.132. message_cache_clean
+    3.133. message_cachedir
+    3.134. message_format
+    3.135. meta_key
+    3.136. metoo
+    3.137. mh_purge
+    3.138. mh_seq_flagged
+    3.139. mh_seq_replied
+    3.140. mh_seq_unseen
+    3.141. mime_forward
+    3.142. mime_forward_decode
+    3.143. mime_forward_rest
+    3.144. mix_entry_format
+    3.145. mixmaster
+    3.146. move
+    3.147. narrow_tree
+    3.148. net_inc
+    3.149. pager
+    3.150. pager_context
+    3.151. pager_format
+    3.152. pager_index_lines
+    3.153. pager_stop
+    3.154. pgp_auto_decode
+    3.155. pgp_autoinline
+    3.156. pgp_check_exit
+    3.157. pgp_clearsign_command
+    3.158. pgp_decode_command
+    3.159. pgp_decrypt_command
+    3.160. pgp_encrypt_only_command
+    3.161. pgp_encrypt_sign_command
+    3.162. pgp_entry_format
+    3.163. pgp_export_command
+    3.164. pgp_getkeys_command
+    3.165. pgp_good_sign
+    3.166. pgp_ignore_subkeys
+    3.167. pgp_import_command
+    3.168. pgp_list_pubring_command
+    3.169. pgp_list_secring_command
+    3.170. pgp_long_ids
+    3.171. pgp_mime_auto
+    3.172. pgp_replyinline
+    3.173. pgp_retainable_sigs
+    3.174. pgp_show_unusable
+    3.175. pgp_sign_as
+    3.176. pgp_sign_command
+    3.177. pgp_sort_keys
+    3.178. pgp_strict_enc
+    3.179. pgp_timeout
+    3.180. pgp_use_gpg_agent
+    3.181. pgp_verify_command
+    3.182. pgp_verify_key_command
+    3.183. pipe_decode
+    3.184. pipe_sep
+    3.185. pipe_split
+    3.186. pop_auth_try_all
+    3.187. pop_authenticators
+    3.188. pop_checkinterval
+    3.189. pop_delete
+    3.190. pop_host
+    3.191. pop_last
+    3.192. pop_pass
+    3.193. pop_reconnect
+    3.194. pop_user
+    3.195. post_indent_string
+    3.196. postpone
+    3.197. postponed
+    3.198. preconnect
+    3.199. print
+    3.200. print_command
+    3.201. print_decode
+    3.202. print_split
+    3.203. prompt_after
+    3.204. query_command
+    3.205. query_format
+    3.206. quit
+    3.207. quote_regexp
+    3.208. read_inc
+    3.209. read_only
+    3.210. realname
+    3.211. recall
+    3.212. record
+    3.213. reply_regexp
+    3.214. reply_self
+    3.215. reply_to
+    3.216. resolve
+    3.217. reverse_alias
+    3.218. reverse_name
+    3.219. reverse_realname
+    3.220. rfc2047_parameters
+    3.221. save_address
+    3.222. save_empty
+    3.223. save_history
+    3.224. save_name
+    3.225. score
+    3.226. score_threshold_delete
+    3.227. score_threshold_flag
+    3.228. score_threshold_read
+    3.229. search_context
+    3.230. send_charset
+    3.231. sendmail
+    3.232. sendmail_wait
+    3.233. shell
+    3.234. sig_dashes
+    3.235. sig_on_top
+    3.236. signature
+    3.237. simple_search
+    3.238. sleep_time
+    3.239. smart_wrap
+    3.240. smileys
+    3.241. smime_ask_cert_label
+    3.242. smime_ca_location
+    3.243. smime_certificates
+    3.244. smime_decrypt_command
+    3.245. smime_decrypt_use_default_key
+    3.246. smime_default_key
+    3.247. smime_encrypt_command
+    3.248. smime_encrypt_with
+    3.249. smime_get_cert_command
+    3.250. smime_get_cert_email_command
+    3.251. smime_get_signer_cert_command
+    3.252. smime_import_cert_command
+    3.253. smime_is_default
+    3.254. smime_keys
+    3.255. smime_pk7out_command
+    3.256. smime_sign_command
+    3.257. smime_sign_opaque_command
+    3.258. smime_timeout
+    3.259. smime_verify_command
+    3.260. smime_verify_opaque_command
+    3.261. smtp_authenticators
+    3.262. smtp_pass
+    3.263. smtp_url
+    3.264. sort
+    3.265. sort_alias
+    3.266. sort_aux
+    3.267. sort_browser
+    3.268. sort_re
+    3.269. spam_separator
+    3.270. spoolfile
+    3.271. ssl_ca_certificates_file
+    3.272. ssl_client_cert
+    3.273. ssl_force_tls
+    3.274. ssl_min_dh_prime_bits
+    3.275. ssl_starttls
+    3.276. ssl_use_sslv2
+    3.277. ssl_use_sslv3
+    3.278. ssl_use_tlsv1
+    3.279. ssl_usesystemcerts
+    3.280. ssl_verify_dates
+    3.281. ssl_verify_host
+    3.282. status_chars
+    3.283. status_format
+    3.284. status_on_top
+    3.285. strict_threads
+    3.286. suspend
+    3.287. text_flowed
+    3.288. thorough_search
+    3.289. thread_received
+    3.290. tilde
+    3.291. time_inc
+    3.292. timeout
+    3.293. tmpdir
+    3.294. to_chars
+    3.295. tunnel
+    3.296. uncollapse_jump
+    3.297. use_8bitmime
+    3.298. use_domain
+    3.299. use_envelope_from
+    3.300. use_from
+    3.301. use_idn
+    3.302. use_ipv6
+    3.303. user_agent
+    3.304. visual
+    3.305. wait_key
+    3.306. weed
+    3.307. wrap
+    3.308. wrap_headers
+    3.309. wrap_search
+    3.310. wrapmargin
+    3.311. write_bcc
+    3.312. write_inc
 
 4. Functions
 
@@ -5666,13 +5991,13 @@ Table of Contents
     4.3. Pager Menu
     4.4. Alias Menu
     4.5. Query Menu
-    4.6. Attach Menu
+    4.6. Attachment Menu
     4.7. Compose Menu
     4.8. Postpone Menu
     4.9. Browser Menu
     4.10. Pgp Menu
     4.11. Smime Menu
-    4.12. Mix Menu
+    4.12. Mixmaster Menu
     4.13. Editor Menu
 
 1. Command-Line Options
@@ -5739,15 +6064,15 @@ mutt [-nz] [-F muttrc ] [-m type ] [-f mailbox ]
 To compose a new message
 
 mutt [-n] [-F muttrc ] [-c address ] [-i filename ] [-s subject ] [ -a file
-[...] -- ] address ...
+[...] -- ] address | mailto_url ...
 
 Mutt also supports a ?batch? mode to send prepared messages. Simply redirect
 input from the file you wish to send. For example,
 
-mutt -s "data set for run #2" professor@bigschool.edu < ?/run2.dat
+mutt -s "data set for run #2" professor@bigschool.edu < ~/run2.dat
 
 will send a message to <professor@bigschool.edu> with a subject of ?data set
-for run #2?. In the body of the message will be the contents of the file ??/
+for run #2?. In the body of the message will be the contents of the file ?~/
 run2.dat?.
 
 All files passed with -a file will be attached as a MIME part to the message.
@@ -5763,6 +6088,12 @@ mutt -a *.png -- some@one.org
 Note
 
 The -a option must be last in the option list.
+
+In addition to accepting a list of email addresses, Mutt also accepts a URL
+with the mailto: schema as specified in RFC2368. This is useful when
+configuring a web browser to launch Mutt when clicking on mailto links.
+
+mutt mailto:some@one.org?subject=test&cc=other@one.org
 
 2. Configuration Commands
 
@@ -5782,8 +6113,8 @@ The following are the commands understood by Mutt:
   * attachments { + | - }disposition mime-type
     unattachments { + | - }disposition mime-type
 
-  * auto-view mimetype [ mimetype ...]
-    unauto-view { * | mimetype ... }
+  * auto_view mimetype [ mimetype ...]
+    unauto_view { * | mimetype ... }
 
   * bind map key function
 
@@ -5889,7 +6220,7 @@ first edit of the file). When set to no, composition will never be aborted.
 3.3. alias_file
 
 Type: path
-Default: ??/.muttrc?
+Default: ?~/.muttrc?
 
 The default file in which to save aliases created by the <create-alias>
 function. Entries added to this file are encoded in the character set specified
@@ -5899,7 +6230,7 @@ Note: Mutt will not automatically source this file; you must explicitly use the
 ?source? command for it to be executed in case this option points to a
 dedicated alias file.
 
-The default for this option is the currently used muttrc file, or ??/.muttrc?
+The default for this option is the currently used muttrc file, or ?~/.muttrc?
 if no user muttrc was found.
 
 3.4. alias_format
@@ -6168,7 +6499,7 @@ the cursor invisible.
 3.24. certificate_file
 
 Type: path
-Default: ??/.mutt_certificates?
+Default: ?~/.mutt_certificates?
 
 This variable specifies the file where the certificates you trust are saved.
 When an unknown certificate is encountered, you are asked if you accept it or
@@ -6194,7 +6525,7 @@ the fallback for $send_charset.
 Upon startup Mutt tries to derive this value from environment variables such as
 $LC_CTYPE or $LANG.
 
-Note: It should only be set in case Mutt isn't abled to determine the character
+Note: It should only be set in case Mutt isn't able to determine the character
 set used correctly.
 
 3.26. check_mbox_size
@@ -6418,7 +6749,7 @@ Type: quadoption
 Default: yes
 
 If ?yes?, always attempt to verify PGP or S/MIME signatures. If ?ask-*?, ask
-whether or not to verify the signature. If \Fi?no?, never attempt to verify
+whether or not to verify the signature. If ?no?, never attempt to verify
 cryptographic signatures. (Crypto only)
 
 3.47. date_format
@@ -6439,7 +6770,7 @@ C locale (that is in US English).
 3.48. default_hook
 
 Type: string
-Default: ??f %s !?P | (?P ?C %s)?
+Default: ?~f %s !~P | (~P ~C %s)?
 
 This variable controls how ?message-hook?, ?reply-hook?, ?send-hook?, ?
 send2-hook?, ?save-hook?, and ?fcc-hook? will be interpreted if they are
@@ -6514,7 +6845,7 @@ set dsn_notify="failure,delay"
 Note: when using $sendmail for delivery, you should not enable this unless you
 are either using Sendmail 8.8.x or greater or a MTA providing a sendmail(1)
 -compatible interface supporting the -N option for DSN. For SMTP delivery, DSN
-support is autodetected so that it depends on the server whether DSN will be
+support is auto-detected so that it depends on the server whether DSN will be
 used or not.
 
 3.55. dsn_return
@@ -6533,7 +6864,7 @@ set dsn_return=hdrs
 Note: when using $sendmail for delivery, you should not enable this unless you
 are either using Sendmail 8.8.x or greater or a MTA providing a sendmail(1)
 -compatible interface supporting the -R option for DSN. For SMTP delivery, DSN
-support is autodetected so that it depends on the server whether DSN will be
+support is auto-detected so that it depends on the server whether DSN will be
 used or not.
 
 3.56. duplicate_threads
@@ -6596,9 +6927,9 @@ if $use_envelope_from is unset.
 3.62. escape
 
 Type: string
-Default: ???
+Default: ?~?
 
-Escape character to use for functions in the builtin editor.
+Escape character to use for functions in the built-in editor.
 
 3.63. fast_reply
 
@@ -6630,7 +6961,7 @@ when the actual message is encrypted and/or signed. (PGP only)
 3.66. folder
 
 Type: path
-Default: ??/Mail?
+Default: ?~/Mail?
 
 Specifies the default location of your mailboxes. A ?+? or ?=? at the beginning
 of a pathname will be expanded to the value of this variable. Note that if you
@@ -6651,6 +6982,8 @@ taste. This string is similar to $index_format, but has its own set of printf
 |%C |current file number                                                      |
 |---+-------------------------------------------------------------------------|
 |%d |date/time folder was last modified                                       |
+|---+-------------------------------------------------------------------------|
+|%D |date/time folder was last modified using $date_format.                   |
 |---+-------------------------------------------------------------------------|
 |%f |filename (?/? is appended to directory names, ?@? to symbolic links and  |
 |   |?*? to executable files)                                                 |
@@ -6819,7 +7152,7 @@ Default: yes
 When mutt is compiled with qdbm or tokyocabinet as header cache backend, this
 option determines whether the database will be compressed. Compression results
 in database files roughly being one fifth of the usual diskspace, but the
-uncompression can result in a slower opening of cached folder(s) which in
+decompression can result in a slower opening of cached folder(s) which in
 general is still much faster than opening non header cached folders.
 
 3.81. header_cache_pagesize
@@ -6908,7 +7241,7 @@ set.
 3.90. history_file
 
 Type: path
-Default: ??/.mutthistory?
+Default: ?~/.mutthistory?
 
 The file in which Mutt will save its history.
 
@@ -6965,7 +7298,7 @@ divided into multiple lines.
 Type: boolean
 Default: no
 
-Affects the behaviour of the <reply> function when replying to messages from
+Affects the behavior of the <reply> function when replying to messages from
 mailing lists (as defined by the ?subscribe? or ?lists? commands). When set, if
 the ?Reply-To:? field is set to the same value as the ?To:? field, Mutt assumes
 that the ?Reply-To:? field was set by the mailing list to automate responses to
@@ -6981,8 +7314,8 @@ Default: (empty)
 This is a colon-delimited list of authentication methods mutt may attempt to
 use to log in to an IMAP server, in the order mutt should try them.
 Authentication methods are either ?login? or the right side of an IMAP ?AUTH=
-xxx? capability string, eg ?digest-md5?, ?gssapi? or ?cram-md5?. This option is
-case-insensitive. If it's unset (the default) mutt will try all available
+xxx? capability string, e.g. ?digest-md5?, ?gssapi? or ?cram-md5?. This option
+is case-insensitive. If it's unset (the default) mutt will try all available
 methods, in order from most-secure to least-secure.
 
 Example:
@@ -7234,8 +7567,8 @@ defined in Mutt:
 |%O   |original save folder where mutt would formerly have stashed the        |
 |     |message: list name or recipient name if not sent to a list             |
 |-----+-----------------------------------------------------------------------|
-|%P   |progress indicator for the builtin pager (how much of the file has been|
-|     |displayed)                                                             |
+|%P   |progress indicator for the built-in pager (how much of the file has    |
+|     |been displayed)                                                        |
 |-----+-----------------------------------------------------------------------|
 |%s   |subject of the message                                                 |
 |-----+-----------------------------------------------------------------------|
@@ -7323,7 +7656,20 @@ Default: 5
 This variable configures how often (in seconds) mutt should look for new mail.
 Also see the $timeout variable.
 
-3.119. mailcap_path
+3.119. mail_check_recent
+
+Type: boolean
+Default: yes
+
+When set, Mutt will only notify you about new mail that has been received since
+the last time you opened the mailbox. When unset, Mutt will notify you if any
+new mail exists in the mailbox, regardless of whether you have visited it
+recently.
+
+When $mark_old is set, Mutt does not consider the mailbox to contain new mail
+if only old messages exist.
+
+3.120. mailcap_path
 
 Type: string
 Default: (empty)
@@ -7331,7 +7677,7 @@ Default: (empty)
 This variable specifies which files to consult when attempting to display MIME
 bodies not directly supported by Mutt.
 
-3.120. mailcap_sanitize
+3.121. mailcap_sanitize
 
 Type: boolean
 Default: yes
@@ -7342,7 +7688,7 @@ sure it doesn't break some more advanced MIME stuff.
 
 DON'T CHANGE THIS SETTING UNLESS YOU ARE REALLY SURE WHAT YOU ARE DOING!
 
-3.121. maildir_header_cache_verify
+3.122. maildir_header_cache_verify
 
 Type: boolean
 Default: yes
@@ -7351,7 +7697,7 @@ Check for Maildir unaware programs other than mutt having modified maildir
 files when the header cache is in use. This incurs one stat(2) per message
 every time the folder is opened (which can be very slow for NFS folders).
 
-3.122. maildir_trash
+3.123. maildir_trash
 
 Type: boolean
 Default: no
@@ -7360,7 +7706,7 @@ If set, messages marked as deleted will be saved with the maildir trashed flag
 instead of unlinked. Note: this only applies to maildir-style mailboxes.
 Setting it will have no effect on other mailbox types.
 
-3.123. mark_old
+3.124. mark_old
 
 Type: boolean
 Default: yes
@@ -7370,7 +7716,7 @@ mailbox without reading them. With this option set, the next time you start
 mutt, the messages will show up with an ?O? next to them in the index menu,
 indicating that they are old.
 
-3.124. markers
+3.125. markers
 
 Type: boolean
 Default: yes
@@ -7380,7 +7726,7 @@ marker is displayed at the beginning of wrapped lines.
 
 Also see the $smart_wrap variable.
 
-3.125. mask
+3.126. mask
 
 Type: regular expression
 Default: ?!^\.[^.]?
@@ -7389,25 +7735,25 @@ A regular expression used in the file browser, optionally preceded by the not
 operator ?!?. Only files whose names match this mask will be shown. The match
 is always case-sensitive.
 
-3.126. mbox
+3.127. mbox
 
 Type: path
-Default: ??/mbox?
+Default: ?~/mbox?
 
 This specifies the folder into which read mail in your $spoolfile folder will
 be appended.
 
 Also see the $move variable.
 
-3.127. mbox_type
+3.128. mbox_type
 
 Type: folder magic
 Default: mbox
 
 The default mailbox type used when creating new folders. May be any of ?mbox?,
-?MMDF?, ?MH? and ?Maildir?. This is overriden by the -m command-line option.
+?MMDF?, ?MH? and ?Maildir?. This is overridden by the -m command-line option.
 
-3.128. menu_context
+3.129. menu_context
 
 Type: number
 Default: 0
@@ -7415,7 +7761,7 @@ Default: 0
 This variable controls the number of lines of context that are given when
 scrolling through menus. (Similar to $pager_context.)
 
-3.129. menu_move_off
+3.130. menu_move_off
 
 Type: boolean
 Default: yes
@@ -7424,7 +7770,7 @@ When unset, the bottom entry of menus will never scroll up past the bottom of
 the screen, unless there are less entries than lines. When set, the bottom
 entry may move off the bottom.
 
-3.130. menu_scroll
+3.131. menu_scroll
 
 Type: boolean
 Default: no
@@ -7434,7 +7780,7 @@ across a screen boundary. If unset, the screen is cleared and the next or
 previous page of the menu is displayed (useful for slow links to avoid many
 redraws).
 
-3.131. message_cache_clean
+3.132. message_cache_clean
 
 Type: boolean
 Default: no
@@ -7443,7 +7789,7 @@ If set, mutt will clean out obsolete entries from the message cache when the
 mailbox is synchronized. You probably only want to set it every once in a
 while, since it can be a little slow (especially for large folders).
 
-3.132. message_cachedir
+3.133. message_cachedir
 
 Type: path
 Default: (empty)
@@ -7457,7 +7803,7 @@ local folders.
 
 Also see the $message_cache_clean variable.
 
-3.133. message_format
+3.134. message_format
 
 Type: string
 Default: ?%s?
@@ -7466,7 +7812,7 @@ This is the string displayed in the ?attachment? menu for attachments of type
 message/rfc822. For a full listing of defined printf(3)-like sequences see the
 section on $index_format.
 
-3.134. meta_key
+3.135. meta_key
 
 Type: boolean
 Default: no
@@ -7478,7 +7824,7 @@ this is treated as if the user had pressed Esc then ?x?. This is because the
 result of removing the high bit from 0xf8 is 0x78, which is the ASCII character
 ?x?.
 
-3.135. metoo
+3.136. metoo
 
 Type: boolean
 Default: no
@@ -7486,40 +7832,40 @@ Default: no
 If unset, Mutt will remove your address (see the ?alternates? command) from the
 list of recipients when replying to a message.
 
-3.136. mh_purge
+3.137. mh_purge
 
 Type: boolean
 Default: no
 
-When unset, mutt will mimic mh's behaviour and rename deleted messages to ,<old
+When unset, mutt will mimic mh's behavior and rename deleted messages to ,<old
 file name> in mh folders instead of really deleting them. This leaves the
 message on disk but makes programs reading the folder ignore it. If the
 variable is set, the message files will simply be deleted.
 
 This option is similar to $maildir_trash for Maildir folders.
 
-3.137. mh_seq_flagged
+3.138. mh_seq_flagged
 
 Type: string
 Default: ?flagged?
 
 The name of the MH sequence used for flagged messages.
 
-3.138. mh_seq_replied
+3.139. mh_seq_replied
 
 Type: string
 Default: ?replied?
 
 The name of the MH sequence used to tag replied messages.
 
-3.139. mh_seq_unseen
+3.140. mh_seq_unseen
 
 Type: string
 Default: ?unseen?
 
 The name of the MH sequence used for unseen messages.
 
-3.140. mime_forward
+3.141. mime_forward
 
 Type: quadoption
 Default: no
@@ -7532,7 +7878,7 @@ MIME from mail to mail, set this variable to ?ask-no? or ?ask-yes?.
 
 Also see $forward_decode and $mime_forward_decode.
 
-3.141. mime_forward_decode
+3.142. mime_forward_decode
 
 Type: boolean
 Default: no
@@ -7541,7 +7887,7 @@ Controls the decoding of complex MIME messages into text/plain when forwarding
 a message while $mime_forward is set. Otherwise $forward_decode is used
 instead.
 
-3.142. mime_forward_rest
+3.143. mime_forward_rest
 
 Type: quadoption
 Default: yes
@@ -7550,7 +7896,7 @@ When forwarding multiple attachments of a MIME message from the attachment
 menu, attachments which cannot be decoded in a reasonable manner will be
 attached to the newly composed message if this option is set.
 
-3.143. mix_entry_format
+3.144. mix_entry_format
 
 Type: string
 Default: ?%4n %c %-16s %a?
@@ -7568,7 +7914,7 @@ selection screen. The following printf(3)-like sequences are supported:
 |%a|The remailer's e-mail address. |
 +----------------------------------+
 
-3.144. mixmaster
+3.145. mixmaster
 
 Type: path
 Default: ?mixmaster?
@@ -7577,7 +7923,7 @@ This variable contains the path to the Mixmaster binary on your system. It is
 used with various sets of parameters to gather the list of known remailers, and
 to finally send a message through the mixmaster chain.
 
-3.145. move
+3.146. move
 
 Type: quadoption
 Default: no
@@ -7585,7 +7931,7 @@ Default: no
 Controls whether or not Mutt will move read messages from your spool mailbox to
 your $mbox mailbox, or as a result of a ?mbox-hook? command.
 
-3.146. narrow_tree
+3.147. narrow_tree
 
 Type: boolean
 Default: no
@@ -7593,7 +7939,7 @@ Default: no
 This variable, when set, makes the thread tree narrower, allowing deeper
 threads to fit on the screen.
 
-3.147. net_inc
+3.148. net_inc
 
 Type: number
 Default: 10
@@ -7604,13 +7950,13 @@ messages will be displayed.
 
 See also $read_inc, $write_inc and $net_inc.
 
-3.148. pager
+3.149. pager
 
 Type: path
 Default: ?builtin?
 
 This variable specifies which pager you would like to use to view messages. The
-value ?builtin? means to use the builtin pager, otherwise this variable should
+value ?builtin? means to use the built-in pager, otherwise this variable should
 specify the pathname of the external pager you would like to use.
 
 Using an external pager may have some disadvantages: Additional keystrokes are
@@ -7618,7 +7964,7 @@ necessary because you can't call mutt functions directly from the pager, and
 screen resizes cause lines longer than the screen width to be badly formatted
 in the help menu.
 
-3.149. pager_context
+3.150. pager_context
 
 Type: number
 Default: 0
@@ -7632,7 +7978,7 @@ This variable also specifies the amount of context given for search results. If
 positive, this many lines will be given before a match, if 0, the match will be
 top-aligned.
 
-3.150. pager_format
+3.151. pager_format
 
 Type: string
 Default: ?-%Z- %C/%m: %-20.20n   %s%*  -- (%P)?
@@ -7641,7 +7987,7 @@ This variable controls the format of the one-line message ?status? displayed
 before each message in either the internal or an external pager. The valid
 sequences are listed in the $index_format section.
 
-3.151. pager_index_lines
+3.152. pager_index_lines
 
 Type: number
 Default: 0
@@ -7657,7 +8003,7 @@ in no index being shown. If the number of messages in the current folder is
 less than $pager_index_lines, then the index will only use as many lines as it
 needs.
 
-3.152. pager_stop
+3.153. pager_stop
 
 Type: boolean
 Default: no
@@ -7665,7 +8011,7 @@ Default: no
 When set, the internal-pager will not move to the next message when you are at
 the end of a message and invoke the <next-page> function.
 
-3.153. pgp_auto_decode
+3.154. pgp_auto_decode
 
 Type: boolean
 Default: no
@@ -7677,7 +8023,7 @@ pgp-traditional message which has not been manually checked with the
 <check-traditional-pgp> function, mutt will automatically check the message for
 traditional pgp.
 
-3.154. pgp_autoinline
+3.155. pgp_autoinline
 
 Type: boolean
 Default: no
@@ -7695,7 +8041,7 @@ Also see the $pgp_mime_auto variable.
 Also note that using the old-style PGP message format is strongly deprecated.
 (PGP only)
 
-3.155. pgp_check_exit
+3.156. pgp_check_exit
 
 Type: boolean
 Default: yes
@@ -7703,7 +8049,7 @@ Default: yes
 If set, mutt will check the exit code of the PGP subprocess when signing or
 encrypting. A non-zero exit code means that the subprocess failed. (PGP only)
 
-3.156. pgp_clearsign_command
+3.157. pgp_clearsign_command
 
 Type: string
 Default: (empty)
@@ -7714,7 +8060,7 @@ the use of this format is strongly deprecated.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.157. pgp_decode_command
+3.158. pgp_decode_command
 
 Type: string
 Default: (empty)
@@ -7743,7 +8089,7 @@ which are floating around, see the pgp and gpg sample configuration files in
 the samples/ subdirectory which has been installed on your system alongside the
 documentation. (PGP only)
 
-3.158. pgp_decrypt_command
+3.159. pgp_decrypt_command
 
 Type: string
 Default: (empty)
@@ -7753,7 +8099,7 @@ This command is used to decrypt a PGP encrypted message.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.159. pgp_encrypt_only_command
+3.160. pgp_encrypt_only_command
 
 Type: string
 Default: (empty)
@@ -7763,7 +8109,7 @@ This command is used to encrypt a body part without signing it.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.160. pgp_encrypt_sign_command
+3.161. pgp_encrypt_sign_command
 
 Type: string
 Default: (empty)
@@ -7773,7 +8119,7 @@ This command is used to both sign and encrypt a body part.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.161. pgp_entry_format
+3.162. pgp_entry_format
 
 Type: string
 Default: ?%4n %t%f %4l/0x%k %-4a %2c %u?
@@ -7804,7 +8150,7 @@ printf(3)-like sequences:
 
 (PGP only)
 
-3.162. pgp_export_command
+3.163. pgp_export_command
 
 Type: string
 Default: (empty)
@@ -7814,7 +8160,7 @@ This command is used to export a public key from the user's key ring.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.163. pgp_getkeys_command
+3.164. pgp_getkeys_command
 
 Type: string
 Default: (empty)
@@ -7823,7 +8169,7 @@ This command is invoked whenever mutt will need public key information. Of the
 sequences supported by $pgp_decode_command, %r is the only printf(3)-like
 sequence used with this format. (PGP only)
 
-3.164. pgp_good_sign
+3.165. pgp_good_sign
 
 Type: regular expression
 Default: (empty)
@@ -7833,7 +8179,7 @@ verified if the output from $pgp_verify_command contains the text. Use this
 variable if the exit code from the command is 0 even for bad signatures. (PGP
 only)
 
-3.165. pgp_ignore_subkeys
+3.166. pgp_ignore_subkeys
 
 Type: boolean
 Default: yes
@@ -7842,7 +8188,7 @@ Setting this variable will cause Mutt to ignore OpenPGP subkeys. Instead, the
 principal key will inherit the subkeys' capabilities. Unset this if you want to
 play interesting key selection games. (PGP only)
 
-3.166. pgp_import_command
+3.167. pgp_import_command
 
 Type: string
 Default: (empty)
@@ -7853,7 +8199,7 @@ ring.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.167. pgp_list_pubring_command
+3.168. pgp_list_pubring_command
 
 Type: string
 Default: (empty)
@@ -7868,7 +8214,7 @@ This format is also generated by the pgpring utility which comes with mutt.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.168. pgp_list_secring_command
+3.169. pgp_list_secring_command
 
 Type: string
 Default: (empty)
@@ -7883,7 +8229,7 @@ This format is also generated by the pgpring utility which comes with mutt.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.169. pgp_long_ids
+3.170. pgp_long_ids
 
 Type: boolean
 Default: no
@@ -7891,7 +8237,7 @@ Default: no
 If set, use 64 bit PGP key IDs, if unset use the normal 32 bit key IDs. (PGP
 only)
 
-3.170. pgp_mime_auto
+3.171. pgp_mime_auto
 
 Type: quadoption
 Default: ask-yes
@@ -7903,7 +8249,7 @@ any reason).
 Also note that using the old-style PGP message format is strongly deprecated.
 (PGP only)
 
-3.171. pgp_replyinline
+3.172. pgp_replyinline
 
 Type: boolean
 Default: no
@@ -7924,7 +8270,7 @@ Also see the $pgp_mime_auto variable.
 Also note that using the old-style PGP message format is strongly deprecated.
 (PGP only)
 
-3.172. pgp_retainable_sigs
+3.173. pgp_retainable_sigs
 
 Type: boolean
 Default: no
@@ -7936,7 +8282,7 @@ This is useful for applications like encrypted and signed mailing lists, where
 the outer layer (multipart/encrypted) can be easily removed, while the inner
 multipart/signed part is retained. (PGP only)
 
-3.173. pgp_show_unusable
+3.174. pgp_show_unusable
 
 Type: boolean
 Default: yes
@@ -7945,7 +8291,7 @@ If set, mutt will display non-usable keys on the PGP key selection menu. This
 includes keys which have been revoked, have expired, or have been marked as
 ?disabled? by the user. (PGP only)
 
-3.174. pgp_sign_as
+3.175. pgp_sign_as
 
 Type: string
 Default: (empty)
@@ -7954,7 +8300,7 @@ If you have more than one key pair, this option allows you to specify which of
 your private keys to use. It is recommended that you use the keyid form to
 specify your key (e.g. 0x00112233). (PGP only)
 
-3.175. pgp_sign_command
+3.176. pgp_sign_command
 
 Type: string
 Default: (empty)
@@ -7965,7 +8311,7 @@ signed PGP/MIME body part.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.176. pgp_sort_keys
+3.177. pgp_sort_keys
 
 Type: sort order
 Default: address
@@ -7986,7 +8332,7 @@ values:
 If you prefer reverse order of the above values, prefix it with ?reverse-?.
 (PGP only)
 
-3.177. pgp_strict_enc
+3.178. pgp_strict_enc
 
 Type: boolean
 Default: yes
@@ -7996,7 +8342,7 @@ quoted-printable. Please note that unsetting this variable may lead to problems
 with non-verifyable PGP signatures, so only change this if you know what you
 are doing. (PGP only)
 
-3.178. pgp_timeout
+3.179. pgp_timeout
 
 Type: number
 Default: 300
@@ -8004,14 +8350,14 @@ Default: 300
 The number of seconds after which a cached passphrase will expire if not used.
 (PGP only)
 
-3.179. pgp_use_gpg_agent
+3.180. pgp_use_gpg_agent
 
 Type: boolean
 Default: no
 
 If set, mutt will use a possibly-running gpg-agent(1) process. (PGP only)
 
-3.180. pgp_verify_command
+3.181. pgp_verify_command
 
 Type: string
 Default: (empty)
@@ -8021,7 +8367,7 @@ This command is used to verify PGP signatures.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.181. pgp_verify_key_command
+3.182. pgp_verify_key_command
 
 Type: string
 Default: (empty)
@@ -8031,7 +8377,7 @@ This command is used to verify key information from the key selection menu.
 This is a format string, see the $pgp_decode_command command for possible
 printf(3)-like sequences. (PGP only)
 
-3.182. pipe_decode
+3.183. pipe_decode
 
 Type: boolean
 Default: no
@@ -8040,7 +8386,7 @@ Used in connection with the <pipe-message> command. When unset, Mutt will pipe
 the messages without any preprocessing. When set, Mutt will weed headers and
 will attempt to decode the messages first.
 
-3.183. pipe_sep
+3.184. pipe_sep
 
 Type: string
 Default: ?\n?
@@ -8048,7 +8394,7 @@ Default: ?\n?
 The separator to add between messages when piping a list of tagged messages to
 an external Unix command.
 
-3.184. pipe_split
+3.185. pipe_split
 
 Type: boolean
 Default: no
@@ -8059,7 +8405,7 @@ concatenate the messages and will pipe them all concatenated. When set, Mutt
 will pipe the messages one by one. In both cases the messages are piped in the
 current sorted order, and the $pipe_sep separator is added after each message.
 
-3.185. pop_auth_try_all
+3.186. pop_auth_try_all
 
 Type: boolean
 Default: yes
@@ -8069,14 +8415,14 @@ will only fall back to other authentication methods if the previous methods are
 unavailable. If a method is available but authentication fails, Mutt will not
 connect to the POP server.
 
-3.186. pop_authenticators
+3.187. pop_authenticators
 
 Type: string
 Default: (empty)
 
 This is a colon-delimited list of authentication methods mutt may attempt to
 use to log in to an POP server, in the order mutt should try them.
-Authentication methods are either ?user?, ?apop? or any SASL mechanism, eg
+Authentication methods are either ?user?, ?apop? or any SASL mechanism, e.g.
 ?digest-md5?, ?gssapi? or ?cram-md5?. This option is case-insensitive. If this
 option is unset (the default) mutt will try all available methods, in order
 from most-secure to least-secure.
@@ -8085,7 +8431,7 @@ Example:
 
 set pop_authenticators="digest-md5:apop:user"
 
-3.187. pop_checkinterval
+3.188. pop_checkinterval
 
 Type: number
 Default: 60
@@ -8093,7 +8439,7 @@ Default: 60
 This variable configures how often (in seconds) mutt should look for new mail
 in the currently selected mailbox if it is a POP mailbox.
 
-3.188. pop_delete
+3.189. pop_delete
 
 Type: quadoption
 Default: ask-no
@@ -8102,19 +8448,19 @@ If set, Mutt will delete successfully downloaded messages from the POP server
 when using the <fetch-mail> function. When unset, Mutt will download messages
 but also leave them on the POP server.
 
-3.189. pop_host
+3.190. pop_host
 
 Type: string
 Default: (empty)
 
 The name of your POP server for the <fetch-mail> function. You can also specify
-an alternative port, username and password, ie:
+an alternative port, username and password, i.e.:
 
 [pop[s]://][username[:password]@]popserver[:port]
 
 where ?[...]? denotes an optional part.
 
-3.190. pop_last
+3.191. pop_last
 
 Type: boolean
 Default: no
@@ -8123,7 +8469,7 @@ If this variable is set, mutt will try to use the ?LAST? POP command for
 retrieving only unread messages from the POP server when using the <fetch-mail>
 function.
 
-3.191. pop_pass
+3.192. pop_pass
 
 Type: string
 Default: (empty)
@@ -8135,7 +8481,7 @@ Warning: you should only use this option when you are on a fairly secure
 machine, because the superuser can read your muttrc even if you are the only
 one who can read the file.
 
-3.192. pop_reconnect
+3.193. pop_reconnect
 
 Type: quadoption
 Default: ask-yes
@@ -8143,7 +8489,7 @@ Default: ask-yes
 Controls whether or not Mutt will try to reconnect to the POP server if the
 connection is lost.
 
-3.193. pop_user
+3.194. pop_user
 
 Type: string
 Default: (empty)
@@ -8152,7 +8498,7 @@ Your login name on the POP server.
 
 This variable defaults to your user name on the local machine.
 
-3.194. post_indent_string
+3.195. post_indent_string
 
 Type: string
 Default: (empty)
@@ -8160,7 +8506,7 @@ Default: (empty)
 Similar to the $attribution variable, Mutt will append this string after the
 inclusion of a message which is being replied to.
 
-3.195. postpone
+3.196. postpone
 
 Type: quadoption
 Default: ask-yes
@@ -8170,10 +8516,10 @@ elect not to send immediately.
 
 Also see the $recall variable.
 
-3.196. postponed
+3.197. postponed
 
 Type: path
-Default: ??/postponed?
+Default: ?~/postponed?
 
 Mutt allows you to indefinitely ?postpone sending a message? which you are
 editing. When you choose to postpone a message, Mutt saves it in the mailbox
@@ -8181,7 +8527,7 @@ specified by this variable.
 
 Also see the $postpone variable.
 
-3.197. preconnect
+3.198. preconnect
 
 Type: string
 Default: (empty)
@@ -8199,7 +8545,7 @@ Mailbox ?foo? on ?mailhost.net? can now be reached as ?{localhost:1234}foo?.
 Note: For this example to work, you must be able to log in to the remote
 machine without having to enter a password.
 
-3.198. print
+3.199. print
 
 Type: quadoption
 Default: ask-no
@@ -8207,14 +8553,14 @@ Default: ask-no
 Controls whether or not Mutt really prints messages. This is set to ?ask-no? by
 default, because some people accidentally hit ?p? often.
 
-3.199. print_command
+3.200. print_command
 
 Type: path
 Default: ?lpr?
 
 This specifies the command pipe that should be used to print messages.
 
-3.200. print_decode
+3.201. print_decode
 
 Type: boolean
 Default: yes
@@ -8226,7 +8572,7 @@ message when printing it. The latter setting may be useful if you are using
 some advanced printer filter which is able to properly format e-mail messages
 for printing.
 
-3.201. print_split
+3.202. print_split
 
 Type: boolean
 Default: no
@@ -8240,7 +8586,7 @@ as the message separator.
 Those who use the enscript(1) program's mail-printing mode will most likely
 want to set this option.
 
-3.202. prompt_after
+3.203. prompt_after
 
 Type: boolean
 Default: yes
@@ -8249,16 +8595,19 @@ If you use an external $pager, setting this variable will cause Mutt to prompt
 you for a command when the pager exits rather than returning to the index menu.
 If unset, Mutt will return to the index menu when the external pager exits.
 
-3.203. query_command
+3.204. query_command
 
 Type: path
 Default: (empty)
 
-This specifies the command that mutt will use to make external address queries.
-The string should contain a ?%s?, which will be substituted with the query
-string the user types. See ?query? for more information.
+This specifies the command Mutt will use to make external address queries. The
+string may contain a ?%s?, which will be substituted with the query string the
+user types. Mutt will add quotes around the string substituted for ?%s?
+automatically according to shell quoting rules, so you should avoid adding your
+own. If no ?%s? is found in the string, Mutt will append the user's query to
+the end of the string. See ?query? for more information.
 
-3.204. query_format
+3.205. query_format
 
 Type: string
 Default: ?%4c %t %-25.25a %-25.25n %?e?(%e)??
@@ -8288,7 +8637,7 @@ For an explanation of ?soft-fill?, see the $index_format documentation.
 
 * = can be optionally printed if nonzero, see the $status_format documentation.
 
-3.205. quit
+3.206. quit
 
 Type: quadoption
 Default: yes
@@ -8298,7 +8647,7 @@ this option is set, they do quit, if it is unset, they have no effect, and if
 it is set to ask-yes or ask-no, you are prompted for confirmation when you try
 to quit.
 
-3.206. quote_regexp
+3.207. quote_regexp
 
 Type: regular expression
 Default: ?^([ \t]*[|>:}#])+?
@@ -8315,7 +8664,7 @@ it fails to produce a match.
 
 Match detection may be overridden by the $smileys regular expression.
 
-3.207. read_inc
+3.208. read_inc
 
 Type: number
 Default: 10
@@ -8332,14 +8681,14 @@ the mailbox.
 Also see the $write_inc, $net_inc and $time_inc variables and the ?tuning?
 section of the manual for performance considerations.
 
-3.208. read_only
+3.209. read_only
 
 Type: boolean
 Default: no
 
 If set, all folders are opened in read-only mode.
 
-3.209. realname
+3.210. realname
 
 Type: string
 Default: (empty)
@@ -8350,7 +8699,7 @@ sending messages.
 By default, this is the GECOS field from /etc/passwd. Note that this variable
 will not be used when the user has set a real name in the $from variable.
 
-3.210. recall
+3.211. recall
 
 Type: quadoption
 Default: ask-yes
@@ -8362,10 +8711,10 @@ Setting this variable to is not generally useful, and thus not recommended.
 
 Also see $postponed variable.
 
-3.211. record
+3.212. record
 
 Type: path
-Default: ??/sent?
+Default: ?~/sent?
 
 This specifies the file into which your outgoing messages should be appended.
 (This is meant as the primary method for saving a copy of your messages, but
@@ -8375,7 +8724,7 @@ with your email address in it.)
 The value of $record is overridden by the $force_name and $save_name variables,
 and the ?fcc-hook? command.
 
-3.212. reply_regexp
+3.213. reply_regexp
 
 Type: regular expression
 Default: ?^(re([\[0-9\]+])*|aw):[ \t]*?
@@ -8384,7 +8733,7 @@ A regular expression used to recognize reply messages when threading and
 replying. The default value corresponds to the English "Re:" and the German
 "Aw:".
 
-3.213. reply_self
+3.214. reply_self
 
 Type: boolean
 Default: no
@@ -8394,7 +8743,7 @@ you want to reply to the recipients of that message rather than to yourself.
 
 Also see the ?alternates? command.
 
-3.214. reply_to
+3.215. reply_to
 
 Type: quadoption
 Default: ask-yes
@@ -8405,7 +8754,7 @@ address in the From: header field instead. This option is useful for reading a
 mailing list that sets the Reply-To: header field to the list address and you
 want to send a private message to the author of a message.
 
-3.215. resolve
+3.216. resolve
 
 Type: boolean
 Default: yes
@@ -8414,7 +8763,7 @@ When set, the cursor will be automatically advanced to the next (possibly
 undeleted) message whenever a command that modifies the current message is
 executed.
 
-3.216. reverse_alias
+3.217. reverse_alias
 
 Type: boolean
 Default: no
@@ -8433,7 +8782,7 @@ It would be displayed in the index menu as ?Joe User? instead of
 ?abd30425@somewhere.net.? This is useful when the person's e-mail address is
 not human friendly.
 
-3.217. reverse_name
+3.218. reverse_name
 
 Type: boolean
 Default: no
@@ -8448,17 +8797,17 @@ on the current machine.
 
 Also see the ?alternates? command.
 
-3.218. reverse_realname
+3.219. reverse_realname
 
 Type: boolean
 Default: yes
 
-This variable fine-tunes the behaviour of the $reverse_name feature. When it is
+This variable fine-tunes the behavior of the $reverse_name feature. When it is
 set, mutt will use the address from incoming messages as-is, possibly including
 eventual real names. When it is unset, mutt will override any such real names
 with the setting of the $realname variable.
 
-3.219. rfc2047_parameters
+3.220. rfc2047_parameters
 
 Type: boolean
 Default: no
@@ -8479,7 +8828,7 @@ Also note that setting this parameter will not have the effect that mutt
 generates this kind of encoding. Instead, mutt will unconditionally use the
 encoding specified in RFC2231.
 
-3.220. save_address
+3.221. save_address
 
 Type: boolean
 Default: no
@@ -8488,7 +8837,7 @@ If set, mutt will take the sender's full address when choosing a default folder
 for saving a mail. If $save_name or $force_name is set too, the selection of
 the Fcc folder will be changed as well.
 
-3.221. save_empty
+3.222. save_empty
 
 Type: boolean
 Default: yes
@@ -8500,7 +8849,7 @@ are never removed.
 Note: This only applies to mbox and MMDF folders, Mutt does not delete MH and
 Maildir directories.
 
-3.222. save_history
+3.223. save_history
 
 Type: number
 Default: 0
@@ -8508,7 +8857,7 @@ Default: 0
 This variable controls the size of the history (per category) saved in the
 $history_file file.
 
-3.223. save_name
+3.224. save_name
 
 Type: boolean
 Default: no
@@ -8522,7 +8871,7 @@ $record mailbox.
 
 Also see the $force_name variable.
 
-3.224. score
+3.225. score
 
 Type: boolean
 Default: yes
@@ -8531,7 +8880,7 @@ When this variable is unset, scoring is turned off. This can be useful to
 selectively disable scoring for certain folders when the
 $score_threshold_delete variable and related are used.
 
-3.225. score_threshold_delete
+3.226. score_threshold_delete
 
 Type: number
 Default: -1
@@ -8541,7 +8890,7 @@ this variable are automatically marked for deletion by mutt. Since mutt scores
 are always greater than or equal to zero, the default setting of this variable
 will never mark a message for deletion.
 
-3.226. score_threshold_flag
+3.227. score_threshold_flag
 
 Type: number
 Default: 9999
@@ -8549,7 +8898,7 @@ Default: 9999
 Messages which have been assigned a score greater than or equal to this
 variable's value are automatically marked "flagged".
 
-3.227. score_threshold_read
+3.228. score_threshold_read
 
 Type: number
 Default: -1
@@ -8559,7 +8908,7 @@ this variable are automatically marked as read by mutt. Since mutt scores are
 always greater than or equal to zero, the default setting of this variable will
 never mark a message read.
 
-3.228. search_context
+3.229. search_context
 
 Type: number
 Default: 0
@@ -8567,7 +8916,7 @@ Default: 0
 For the pager, this variable specifies the number of lines shown before search
 results. By default, search results will be top-aligned.
 
-3.229. send_charset
+3.230. send_charset
 
 Type: string
 Default: ?us-ascii:iso-8859-1:utf-8?
@@ -8582,7 +8931,7 @@ after ?iso-8859-1?.
 In case the text cannot be converted into one of these exactly, mutt uses
 $charset as a fallback.
 
-3.230. sendmail
+3.231. sendmail
 
 Type: path
 Default: ?/usr/sbin/sendmail -oem -oi?
@@ -8591,7 +8940,7 @@ Specifies the program and arguments used to deliver mail sent by Mutt. Mutt
 expects that the specified program interprets additional arguments as recipient
 addresses.
 
-3.231. sendmail_wait
+3.232. sendmail_wait
 
 Type: number
 Default: 0
@@ -8613,7 +8962,7 @@ Note that if you specify a value other than 0, the output of the child process
 will be put in a temporary file. If there is some error, you will be informed
 as to where to find the output.
 
-3.232. shell
+3.233. shell
 
 Type: path
 Default: (empty)
@@ -8621,7 +8970,7 @@ Default: (empty)
 Command to use when spawning a subshell. By default, the user's login shell
 from /etc/passwd is used.
 
-3.233. sig_dashes
+3.234. sig_dashes
 
 Type: boolean
 Default: yes
@@ -8631,9 +8980,9 @@ before your $signature. It is strongly recommended that you not unset this
 variable unless your signature contains just your name. The reason for this is
 because many software packages use ?-- \n? to detect your signature. For
 example, Mutt has the ability to highlight the signature in a different color
-in the builtin pager.
+in the built-in pager.
 
-3.234. sig_on_top
+3.235. sig_on_top
 
 Type: boolean
 Default: no
@@ -8643,30 +8992,30 @@ is strongly recommended that you do not set this variable unless you really
 know what you are doing, and are prepared to take some heat from netiquette
 guardians.
 
-3.235. signature
+3.236. signature
 
 Type: path
-Default: ??/.signature?
+Default: ?~/.signature?
 
 Specifies the filename of your signature, which is appended to all outgoing
 messages. If the filename ends with a pipe (?|?), it is assumed that filename
 is a shell command and input should be read from its standard output.
 
-3.236. simple_search
+3.237. simple_search
 
 Type: string
-Default: ??f %s | ?s %s?
+Default: ?~f %s | ~s %s?
 
 Specifies how Mutt should expand a simple search into a real search pattern. A
-simple search is one that does not contain any of the ??? pattern operators.
+simple search is one that does not contain any of the ?~? pattern operators.
 See ?patterns? for more information on search patterns.
 
 For example, if you simply type ?joe? at a search or limit prompt, Mutt will
 automatically expand it to the value specified by this variable by replacing
 ?%s? with the supplied string. For the default value, ?joe? would be expanded
-to: ??f joe | ?s joe?.
+to: ?~f joe | ~s joe?.
 
-3.237. sleep_time
+3.238. sleep_time
 
 Type: number
 Default: 1
@@ -8676,7 +9025,7 @@ messages, while moving from folder to folder and after expunging messages from
 the current folder. The default is to pause one second, so a value of zero for
 this option suppresses the pause.
 
-3.238. smart_wrap
+3.239. smart_wrap
 
 Type: boolean
 Default: yes
@@ -8685,7 +9034,7 @@ Controls the display of lines longer than the screen width in the internal
 pager. If set, long lines are wrapped at a word boundary. If unset, lines are
 simply wrapped at the screen edge. Also see the $markers variable.
 
-3.239. smileys
+3.240. smileys
 
 Type: regular expression
 Default: ?(>From )|(:[-^]?[][)(><}{|/DP])?
@@ -8694,7 +9043,7 @@ The pager uses this variable to catch some common false positives of
 $quote_regexp, most notably smileys and not consider a line quoted text if it
 also matches $smileys. This mostly happens at the beginning of a line.
 
-3.240. smime_ask_cert_label
+3.241. smime_ask_cert_label
 
 Type: boolean
 Default: yes
@@ -8703,7 +9052,7 @@ This flag controls whether you want to be asked to enter a label for a
 certificate about to be added to the database or not. It is set by default. (S/
 MIME only)
 
-3.241. smime_ca_location
+3.242. smime_ca_location
 
 Type: path
 Default: (empty)
@@ -8711,7 +9060,7 @@ Default: (empty)
 This variable contains the name of either a directory, or a file which contains
 trusted certificates for use with OpenSSL. (S/MIME only)
 
-3.242. smime_certificates
+3.243. smime_certificates
 
 Type: path
 Default: (empty)
@@ -8723,7 +9072,7 @@ hash-value retrieved from OpenSSL. There is an index file which contains
 mailbox-address keyid pairs, and which can be manually edited. This option
 points to the location of the certificates. (S/MIME only)
 
-3.243. smime_decrypt_command
+3.244. smime_decrypt_command
 
 Type: string
 Default: (empty)
@@ -8755,7 +9104,7 @@ For examples on how to configure these formats, see the smime.rc in the samples
 / subdirectory which has been installed on your system alongside the
 documentation. (S/MIME only)
 
-3.244. smime_decrypt_use_default_key
+3.245. smime_decrypt_use_default_key
 
 Type: boolean
 Default: yes
@@ -8765,7 +9114,7 @@ Otherwise, if managing multiple certificate-key-pairs, mutt will try to use the
 mailbox-address to determine the key to use. It will ask you to supply a key,
 if it can't find one. (S/MIME only)
 
-3.245. smime_default_key
+3.246. smime_default_key
 
 Type: string
 Default: (empty)
@@ -8773,7 +9122,7 @@ Default: (empty)
 This is the default key-pair to use for signing. This must be set to the keyid
 (the hash-value that OpenSSL generates) to work properly (S/MIME only)
 
-3.246. smime_encrypt_command
+3.247. smime_encrypt_command
 
 Type: string
 Default: (empty)
@@ -8783,7 +9132,7 @@ This command is used to create encrypted S/MIME messages.
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.247. smime_encrypt_with
+3.248. smime_encrypt_with
 
 Type: string
 Default: (empty)
@@ -8792,7 +9141,7 @@ This sets the algorithm that should be used for encryption. Valid choices are
 ?des?, ?des3?, ?rc2-40?, ?rc2-64?, ?rc2-128?. If unset, ?3des? (TripleDES) is
 used. (S/MIME only)
 
-3.248. smime_get_cert_command
+3.249. smime_get_cert_command
 
 Type: string
 Default: (empty)
@@ -8802,7 +9151,7 @@ This command is used to extract X509 certificates from a PKCS7 structure.
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.249. smime_get_cert_email_command
+3.250. smime_get_cert_email_command
 
 Type: string
 Default: (empty)
@@ -8814,7 +9163,7 @@ was issued for the sender's mailbox).
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.250. smime_get_signer_cert_command
+3.251. smime_get_signer_cert_command
 
 Type: string
 Default: (empty)
@@ -8826,7 +9175,7 @@ signature, so that the certificate's owner may get compared to the email's
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.251. smime_import_cert_command
+3.252. smime_import_cert_command
 
 Type: string
 Default: (empty)
@@ -8836,18 +9185,18 @@ This command is used to import a certificate via smime_keys.
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.252. smime_is_default
+3.253. smime_is_default
 
 Type: boolean
 Default: no
 
-The default behaviour of mutt is to use PGP on all auto-sign/encryption
+The default behavior of mutt is to use PGP on all auto-sign/encryption
 operations. To override and to use OpenSSL instead this must be set. However,
 this has no effect while replying, since mutt will automatically select the
 same application that was used to sign/encrypt the original message. (Note that
 this variable can be overridden by unsetting $crypt_autosmime.) (S/MIME only)
 
-3.253. smime_keys
+3.254. smime_keys
 
 Type: path
 Default: (empty)
@@ -8859,7 +9208,7 @@ the hash-value retrieved from OpenSSL. There is an index file which contains
 mailbox-address keyid pair, and which can be manually edited. This option
 points to the location of the private keys. (S/MIME only)
 
-3.254. smime_pk7out_command
+3.255. smime_pk7out_command
 
 Type: string
 Default: (empty)
@@ -8870,7 +9219,7 @@ to extract the public X509 certificate(s).
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.255. smime_sign_command
+3.256. smime_sign_command
 
 Type: string
 Default: (empty)
@@ -8881,7 +9230,7 @@ which can be read by all mail clients.
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.256. smime_sign_opaque_command
+3.257. smime_sign_opaque_command
 
 Type: string
 Default: (empty)
@@ -8893,7 +9242,7 @@ MIME extension.
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.257. smime_timeout
+3.258. smime_timeout
 
 Type: number
 Default: 300
@@ -8901,7 +9250,7 @@ Default: 300
 The number of seconds after which a cached passphrase will expire if not used.
 (S/MIME only)
 
-3.258. smime_verify_command
+3.259. smime_verify_command
 
 Type: string
 Default: (empty)
@@ -8911,7 +9260,7 @@ This command is used to verify S/MIME signatures of type multipart/signed.
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.259. smime_verify_opaque_command
+3.260. smime_verify_opaque_command
 
 Type: string
 Default: (empty)
@@ -8922,14 +9271,14 @@ x-pkcs7-mime.
 This is a format string, see the $smime_decrypt_command command for possible
 printf(3)-like sequences. (S/MIME only)
 
-3.260. smtp_authenticators
+3.261. smtp_authenticators
 
 Type: string
 Default: (empty)
 
 This is a colon-delimited list of authentication methods mutt may attempt to
 use to log in to an SMTP server, in the order mutt should try them.
-Authentication methods are any SASL mechanism, eg ?digest-md5?, ?gssapi? or
+Authentication methods are any SASL mechanism, e.g. ?digest-md5?, ?gssapi? or
 ?cram-md5?. This option is case-insensitive. If it is ?unset? (the default)
 mutt will try all available methods, in order from most-secure to least-secure.
 
@@ -8937,7 +9286,7 @@ Example:
 
 set smtp_authenticators="digest-md5:cram-md5"
 
-3.261. smtp_pass
+3.262. smtp_pass
 
 Type: string
 Default: (empty)
@@ -8950,20 +9299,20 @@ Warning: you should only use this option when you are on a fairly secure
 machine, because the superuser can read your muttrc even if you are the only
 one who can read the file.
 
-3.262. smtp_url
+3.263. smtp_url
 
 Type: string
 Default: (empty)
 
 Defines the SMTP smarthost where sent messages should relayed for delivery.
-This should take the form of an SMTP URL, eg:
+This should take the form of an SMTP URL, e.g.:
 
-smtp[s]://[user[:pass]@]host[:port]/
+smtp[s]://[user[:pass]@]host[:port]
 
 where ?[...]? denotes an optional part. Setting this variable overrides the
 value of the $sendmail variable.
 
-3.263. sort
+3.264. sort
 
 Type: sort order
 Default: date
@@ -8993,7 +9342,7 @@ Specifies how to sort messages in the ?index? menu. Valid values are:
 You may optionally use the ?reverse-? prefix to specify reverse sorting order
 (example: ?set sort=reverse-date-sent?).
 
-3.264. sort_alias
+3.265. sort_alias
 
 Type: sort order
 Default: alias
@@ -9007,7 +9356,7 @@ legal values:
 
   * unsorted (leave in order specified in .muttrc)
 
-3.265. sort_aux
+3.266. sort_aux
 
 Type: sort order
 Default: date
@@ -9028,7 +9377,7 @@ the last one displayed (or the first, if you have ?set sort=reverse-threads?.)
 Note: For reversed $sort order $sort_aux is reversed again (which is not the
 right thing to do, but kept to not break any existing configuration setting).
 
-3.266. sort_browser
+3.267. sort_browser
 
 Type: sort order
 Default: alpha
@@ -9047,7 +9396,7 @@ sorted alphabetically. Valid values:
 You may optionally use the ?reverse-? prefix to specify reverse sorting order
 (example: ?set sort_browser=reverse-date?).
 
-3.267. sort_re
+3.268. sort_re
 
 Type: boolean
 Default: yes
@@ -9060,7 +9409,7 @@ substring matching the setting of $reply_regexp. With $sort_re unset, mutt will
 attach the message whether or not this is the case, as long as the non-
 $reply_regexp parts of both messages are identical.
 
-3.268. spam_separator
+3.269. spam_separator
 
 Type: string
 Default: ?,?
@@ -9070,7 +9419,7 @@ unset, each successive header will overwrite any previous matches value for the
 spam label. If set, each successive match will append to the previous, using
 this variable's value as a separator.
 
-3.269. spoolfile
+3.270. spoolfile
 
 Type: path
 Default: (empty)
@@ -9080,7 +9429,7 @@ can specify its location with this variable. Mutt will initially set this
 variable to the value of the environment variable $MAIL or $MAILDIR if either
 is defined.
 
-3.270. ssl_ca_certificates_file
+3.271. ssl_ca_certificates_file
 
 Type: path
 Default: (empty)
@@ -9093,14 +9442,14 @@ Example:
 
 set ssl_ca_certificates_file=/etc/ssl/certs/ca-certificates.crt
 
-3.271. ssl_client_cert
+3.272. ssl_client_cert
 
 Type: path
 Default: (empty)
 
 The file containing a client certificate and its associated private key.
 
-3.272. ssl_force_tls
+3.273. ssl_force_tls
 
 Type: boolean
 Default: no
@@ -9110,7 +9459,7 @@ servers be encrypted. Furthermore it will attempt to negotiate TLS even if the
 server does not advertise the capability, since it would otherwise have to
 abort the connection anyway. This option supersedes $ssl_starttls.
 
-3.273. ssl_min_dh_prime_bits
+3.274. ssl_min_dh_prime_bits
 
 Type: number
 Default: 0
@@ -9119,7 +9468,7 @@ This variable specifies the minimum acceptable prime size (in bits) for use in
 any Diffie-Hellman key exchange. A value of 0 will use the default from the
 GNUTLS library.
 
-3.274. ssl_starttls
+3.275. ssl_starttls
 
 Type: quadoption
 Default: yes
@@ -9128,7 +9477,7 @@ If set (the default), mutt will attempt to use STARTTLS on servers advertising
 the capability. When unset, mutt will not attempt to use STARTTLS regardless of
 the server's capabilities.
 
-3.275. ssl_use_sslv2
+3.276. ssl_use_sslv2
 
 Type: boolean
 Default: no
@@ -9136,7 +9485,7 @@ Default: no
 This variable specifies whether to attempt to use SSLv2 in the SSL
 authentication process.
 
-3.276. ssl_use_sslv3
+3.277. ssl_use_sslv3
 
 Type: boolean
 Default: yes
@@ -9144,7 +9493,7 @@ Default: yes
 This variable specifies whether to attempt to use SSLv3 in the SSL
 authentication process.
 
-3.277. ssl_use_tlsv1
+3.278. ssl_use_tlsv1
 
 Type: boolean
 Default: yes
@@ -9152,7 +9501,7 @@ Default: yes
 This variable specifies whether to attempt to use TLSv1 in the SSL
 authentication process.
 
-3.278. ssl_usesystemcerts
+3.279. ssl_usesystemcerts
 
 Type: boolean
 Default: yes
@@ -9160,7 +9509,7 @@ Default: yes
 If set to yes, mutt will use CA certificates in the system-wide certificate
 store when checking if a server certificate is signed by a trusted CA.
 
-3.279. ssl_verify_dates
+3.280. ssl_verify_dates
 
 Type: boolean
 Default: yes
@@ -9169,7 +9518,7 @@ If set (the default), mutt will not automatically accept a server certificate
 that is either not yet valid or already expired. You should only unset this for
 particular known hosts, using the <account-hook> function.
 
-3.280. ssl_verify_host
+3.281. ssl_verify_host
 
 Type: boolean
 Default: yes
@@ -9178,7 +9527,7 @@ If set (the default), mutt will not automatically accept a server certificate
 whose host name does not match the host used in your folder URL. You should
 only unset this for particular known hosts, using the <account-hook> function.
 
-3.281. status_chars
+3.282. status_chars
 
 Type: string
 Default: ?-*%A?
@@ -9193,7 +9542,7 @@ indicate that the current folder has been opened in attach- message mode
 (Certain operations like composing a new mail, replying, forwarding, etc. are
 not permitted in this mode).
 
-3.282. status_format
+3.283. status_format
 
 Type: string
 Default: ?-%r-Mutt: %f [Msgs:%?M?%M/?%m%?n? New:%n?%?o? Old:%o?%?d? Del:%d?%?F?
@@ -9290,7 +9639,7 @@ If you prefix the sequence character with a colon (?:?) character, mutt will
 replace any dots in the expansion by underscores. This might be helpful with
 IMAP folders that don't like dots in folder names.
 
-3.283. status_on_top
+3.284. status_on_top
 
 Type: boolean
 Default: no
@@ -9299,7 +9648,7 @@ Setting this variable causes the ?status bar? to be displayed on the first line
 of the screen rather than near the bottom. If $help is set, too it'll be placed
 at the bottom.
 
-3.284. strict_threads
+3.285. strict_threads
 
 Type: boolean
 Default: no
@@ -9309,9 +9658,9 @@ fields when you $sort by message threads. By default, messages with the same
 subject are grouped together in ?pseudo threads.?. This may not always be
 desirable, such as in a personal mailbox where you might have several unrelated
 messages with the subjects like ?hi? which will get grouped together. See also
-$sort_re for a less drastic way of controlling this behaviour.
+$sort_re for a less drastic way of controlling this behavior.
 
-3.285. suspend
+3.286. suspend
 
 Type: boolean
 Default: yes
@@ -9320,7 +9669,7 @@ When unset, mutt won't stop when the user presses the terminal's susp key,
 usually ?^Z?. This is useful if you run mutt inside an xterm using a command
 like ?xterm -e mutt?.
 
-3.286. text_flowed
+3.287. text_flowed
 
 Type: boolean
 Default: no
@@ -9332,12 +9681,12 @@ this format's features, you'll need support in your editor.
 
 Note that $indent_string is ignored when this option is set.
 
-3.287. thorough_search
+3.288. thorough_search
 
 Type: boolean
-Default: no
+Default: yes
 
-Affects the ?b and ?h search operations described in section ?patterns?. If set
+Affects the ~b and ~h search operations described in section ?patterns?. If set
 , the headers and body/attachments of messages to be searched are decoded
 before searching. If unset, messages are searched as they appear in the folder.
 
@@ -9347,7 +9696,7 @@ conversions. Otherwise mutt will attempt to match against the raw message
 received (for example quoted-printable encoded or with encoded headers) which
 may lead to incorrect search results.
 
-3.288. thread_received
+3.289. thread_received
 
 Type: boolean
 Default: no
@@ -9355,15 +9704,15 @@ Default: no
 When set, mutt uses the date received rather than the date sent to thread
 messages by subject.
 
-3.289. tilde
+3.290. tilde
 
 Type: boolean
 Default: no
 
 When set, the internal-pager will pad blank lines to the bottom of the screen
-with a tilde (???).
+with a tilde (?~?).
 
-3.290. time_inc
+3.291. time_inc
 
 Type: number
 Default: 0
@@ -9375,22 +9724,22 @@ slow terminals, or when running mutt on a remote system.
 
 Also see the ?tuning? section of the manual for performance considerations.
 
-3.291. timeout
+3.292. timeout
 
 Type: number
 Default: 600
 
-When Mutt is waiting for user input either idleing in menus or in an
-interactive prompt, Mutt would block until input is present. Depending on the
-context, this would prevent certain operations from working, like checking for
-new mail or keeping an IMAP connection alive.
+When Mutt is waiting for user input either idling in menus or in an interactive
+prompt, Mutt would block until input is present. Depending on the context, this
+would prevent certain operations from working, like checking for new mail or
+keeping an IMAP connection alive.
 
 This variable controls how many seconds Mutt will at most wait until it aborts
 waiting for input, performs these operations and continues to wait for input.
 
 A value of zero or less will cause Mutt to never time out.
 
-3.292. tmpdir
+3.293. tmpdir
 
 Type: path
 Default: (empty)
@@ -9400,7 +9749,7 @@ needed for displaying and composing messages. If this variable is not set, the
 environment variable $TMPDIR is used. If $TMPDIR is not set then ?/tmp? is
 used.
 
-3.293. to_chars
+3.294. to_chars
 
 Type: string
 Default: ? +TCFL?
@@ -9415,7 +9764,7 @@ fifth character is used to indicate mail that was sent by you. The sixth
 character is used to indicate when a mail was sent to a mailing-list you
 subscribe to.
 
-3.294. tunnel
+3.295. tunnel
 
 Type: string
 Default: (empty)
@@ -9433,7 +9782,7 @@ When set, Mutt uses the tunnel for all remote connections. Please see ?
 account-hook? in the manual for how to use different tunnel commands per
 connection.
 
-3.295. uncollapse_jump
+3.296. uncollapse_jump
 
 Type: boolean
 Default: no
@@ -9441,7 +9790,7 @@ Default: no
 When set, Mutt will jump to the next unread message, if any, when the current
 thread is uncollapsed.
 
-3.296. use_8bitmime
+3.297. use_8bitmime
 
 Type: boolean
 Default: no
@@ -9453,7 +9802,7 @@ able to send mail.
 When set, Mutt will invoke $sendmail with the -B8BITMIME flag when sending
 8-bit messages to enable ESMTP negotiation.
 
-3.297. use_domain
+3.298. use_domain
 
 Type: boolean
 Default: yes
@@ -9461,7 +9810,7 @@ Default: yes
 When set, Mutt will qualify all local addresses (ones without the ?@host?
 portion) with the value of $hostname. If unset, no addresses will be qualified.
 
-3.298. use_envelope_from
+3.299. use_envelope_from
 
 Type: boolean
 Default: no
@@ -9475,7 +9824,7 @@ line switch. Therefore setting this option is not useful if the $sendmail
 variable already contains -f or if the executable pointed to by $sendmail
 doesn't support the -f switch.
 
-3.299. use_from
+3.300. use_from
 
 Type: boolean
 Default: yes
@@ -9484,7 +9833,7 @@ When set, Mutt will generate the ?From:? header field when sending messages. If
 unset, no ?From:? header field will be generated unless the user explicitly
 sets one using the ?my_hdr? command.
 
-3.300. use_idn
+3.301. use_idn
 
 Type: boolean
 Default: yes
@@ -9493,7 +9842,7 @@ When set, Mutt will show you international domain names decoded. Note: You can
 use IDNs for addresses even if this is unset. This variable only affects
 decoding.
 
-3.301. use_ipv6
+3.302. use_ipv6
 
 Type: boolean
 Default: yes
@@ -9502,7 +9851,7 @@ When set, Mutt will look for IPv6 addresses of hosts it tries to contact. If
 this option is unset, Mutt will restrict itself to IPv4 addresses. Normally,
 the default should work.
 
-3.302. user_agent
+3.303. user_agent
 
 Type: boolean
 Default: yes
@@ -9510,15 +9859,15 @@ Default: yes
 When set, mutt will add a ?User-Agent:? header to outgoing messages, indicating
 which version of mutt was used for composing them.
 
-3.303. visual
+3.304. visual
 
 Type: path
 Default: (empty)
 
-Specifies the visual editor to invoke when the ??v? command is given in the
-builtin editor.
+Specifies the visual editor to invoke when the ?~v? command is given in the
+built-in editor.
 
-3.304. wait_key
+3.305. wait_key
 
 Type: boolean
 Default: yes
@@ -9534,7 +9883,7 @@ is interactive.
 When set, Mutt will always ask for a key. When unset, Mutt will wait for a key
 only if the external command returned a non-zero status.
 
-3.305. weed
+3.306. weed
 
 Type: boolean
 Default: yes
@@ -9542,16 +9891,29 @@ Default: yes
 When set, mutt will weed headers when displaying, forwarding, printing, or
 replying to messages.
 
-3.306. wrap
+3.307. wrap
 
 Type: number
 Default: 0
 
 When set to a positive value, mutt will wrap text at $wrap characters. When set
 to a negative value, mutt will wrap text so that there are $wrap characters of
-empty space on the right side of the terminal.
+empty space on the right side of the terminal. Setting it to zero makes mutt
+wrap at the terminal width.
 
-3.307. wrap_search
+3.308. wrap_headers
+
+Type: number
+Default: 78
+
+This option specifies the number of characters to use for wrapping an outgoing
+message's headers. Allowed values are between 78 and 998 inclusive.
+
+Note: This option usually shouldn't be changed. RFC5233 recommends a line
+length of 78 (the default), so please only change this setting when you know
+what you're doing.
+
+3.309. wrap_search
 
 Type: boolean
 Default: yes
@@ -9561,14 +9923,14 @@ Controls whether searches wrap around the end.
 When set, searches will wrap around the first (or last) item. When unset,
 incremental searches will not wrap.
 
-3.308. wrapmargin
+3.310. wrapmargin
 
 Type: number
 Default: 0
 
 (DEPRECATED) Equivalent to setting $wrap with a negative value.
 
-3.309. write_bcc
+3.311. write_bcc
 
 Type: boolean
 Default: yes
@@ -9578,7 +9940,7 @@ be sent. Exim users may wish to unset this. If mutt is set to deliver directly
 via SMTP (see $smtp_url), this option does nothing: mutt will never write out
 the ?Bcc:? header in this case.
 
-3.310. write_inc
+3.312. write_inc
 
 Type: number
 Default: 10
@@ -9603,7 +9965,7 @@ The generic menu is not a real menu, but specifies common functions (such as
 movement) available in all menus except for pager and editor. Changing settings
 for this menu will affect the default bindings for all menus (except as noted).
 
-Table 9.2. Default generic Function Bindings
+Table 9.2. Default Generic Menu Bindings
 
 +-------------------------------------------------------------------------+
 |    Function     |Default key|                Description                |
@@ -9676,7 +10038,7 @@ Table 9.2. Default generic Function Bindings
 
 4.2. Index Menu
 
-Table 9.3. Default index Function Bindings
+Table 9.3. Default Index Menu Bindings
 
 +-----------------------------------------------------------------------------+
 |         Function         | Default |              Description               |
@@ -9727,6 +10089,8 @@ Table 9.3. Default index Function Bindings
 |<fetch-mail>              |G        |retrieve mail from POP server           |
 |--------------------------+---------+----------------------------------------|
 |<imap-fetch-mail>         |         |force retrieval of mail from IMAP server|
+|--------------------------+---------+----------------------------------------|
+|<imap-logout-all>         |         |logout from all IMAP servers            |
 |--------------------------+---------+----------------------------------------|
 |<display-toggle-weed>     |h        |display message and toggle header       |
 |                          |         |weeding                                 |
@@ -9848,7 +10212,7 @@ Table 9.3. Default index Function Bindings
 
 4.3. Pager Menu
 
-Table 9.4. Default pager Function Bindings
+Table 9.4. Default Pager Menu Bindings
 
 +-----------------------------------------------------------------------------+
 |        Function        | Default |               Description                |
@@ -9892,6 +10256,8 @@ Table 9.4. Default pager Function Bindings
 |------------------------+---------+------------------------------------------|
 |<imap-fetch-mail>       |         |force retrieval of mail from IMAP server  |
 |------------------------+---------+------------------------------------------|
+|<imap-logout-all>       |         |logout from all IMAP servers              |
+|------------------------+---------+------------------------------------------|
 |<display-toggle-weed>   |h        |display message and toggle header weeding |
 |------------------------+---------+------------------------------------------|
 |<next-undeleted>        |j        |move to the next undeleted message        |
@@ -9917,6 +10283,10 @@ Table 9.4. Default pager Function Bindings
 |<next-thread>           |^N       |jump to the next thread                   |
 |------------------------+---------+------------------------------------------|
 |<next-subthread>        |Esc n    |jump to the next subthread                |
+|------------------------+---------+------------------------------------------|
+|<sort-mailbox>          |o        |sort messages                             |
+|------------------------+---------+------------------------------------------|
+|<sort-reverse>          |O        |sort messages in reverse order            |
 |------------------------+---------+------------------------------------------|
 |<print-message>         |p        |print the current entry                   |
 |------------------------+---------+------------------------------------------|
@@ -10028,7 +10398,7 @@ Table 9.4. Default pager Function Bindings
 
 4.4. Alias Menu
 
-Table 9.5. Default alias Function Bindings
+Table 9.5. Default Alias Menu Bindings
 
 +-------------------------------------------------------+
 |    Function    |Default key|       Description        |
@@ -10041,7 +10411,7 @@ Table 9.5. Default alias Function Bindings
 
 4.5. Query Menu
 
-Table 9.6. Default query Function Bindings
+Table 9.6. Default Query Menu Bindings
 
 +----------------------------------------------------------------------+
 |   Function   |Default key|                Description                |
@@ -10056,9 +10426,9 @@ Table 9.6. Default query Function Bindings
 +----------------------------------------------------------------------+
 
 
-4.6. Attach Menu
+4.6. Attachment Menu
 
-Table 9.7. Default attach Function Bindings
+Table 9.7. Default Attachment Menu Bindings
 
 +-----------------------------------------------------------------------------+
 |       Function        | Default |                Description                |
@@ -10110,7 +10480,7 @@ Table 9.7. Default attach Function Bindings
 
 4.7. Compose Menu
 
-Table 9.8. Default compose Function Bindings
+Table 9.8. Default Compose Menu Bindings
 
 +-----------------------------------------------------------------------------+
 |      Function       | Default  |                Description                 |
@@ -10202,7 +10572,7 @@ Table 9.8. Default compose Function Bindings
 
 4.8. Postpone Menu
 
-Table 9.9. Default postpone Function Bindings
+Table 9.9. Default Postpone Menu Bindings
 
 +-------------------------------------------------------+
 |    Function    |Default key|       Description        |
@@ -10215,7 +10585,7 @@ Table 9.9. Default postpone Function Bindings
 
 4.9. Browser Menu
 
-Table 9.10. Default browser Function Bindings
+Table 9.10. Default Browser Menu Bindings
 
 +-----------------------------------------------------------------------------+
 |     Function      | Default  |                 Description                  |
@@ -10259,7 +10629,7 @@ Table 9.10. Default browser Function Bindings
 
 4.10. Pgp Menu
 
-Table 9.11. Default pgp Function Bindings
+Table 9.11. Default Pgp Menu Bindings
 
 +------------------------------------------------+
 |  Function  |Default key|      Description      |
@@ -10272,7 +10642,7 @@ Table 9.11. Default pgp Function Bindings
 
 4.11. Smime Menu
 
-Table 9.12. Default smime Function Bindings
+Table 9.12. Default Smime Menu Bindings
 
 +------------------------------------------------+
 |  Function  |Default key|      Description      |
@@ -10283,9 +10653,9 @@ Table 9.12. Default smime Function Bindings
 +------------------------------------------------+
 
 
-4.12. Mix Menu
+4.12. Mixmaster Menu
 
-Table 9.13. Default mix Function Bindings
+Table 9.13. Default Mixmaster Menu Bindings
 
 +-----------------------------------------------------------------+
 |  Function  |Default key|              Description               |
@@ -10306,7 +10676,7 @@ Table 9.13. Default mix Function Bindings
 
 4.13. Editor Menu
 
-Table 9.14. Default editor Function Bindings
+Table 9.14. Default Editor Menu Bindings
 
 +-----------------------------------------------------------------------------+
 |    Function     |Default key|                  Description                  |

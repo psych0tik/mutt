@@ -868,6 +868,7 @@ static int address_header_decode (char **h)
   int l, rp = 0;
 
   ADDRESS *a = NULL;
+  ADDRESS *cur = NULL;
 
   switch (tolower ((unsigned char) *s))
   {
@@ -937,6 +938,9 @@ static int address_header_decode (char **h)
   
   mutt_addrlist_to_local (a);
   rfc2047_decode_adrlist (a);
+  for (cur = a; cur; cur = cur->next)
+    if (cur->personal)
+      rfc822_dequote_comment (cur->personal);
 
   /* angle brackets for return path are mandated by RfC5322,
    * so leave Return-Path as-is */

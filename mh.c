@@ -146,7 +146,7 @@ static int mh_read_token (char *t, int *first, int *last)
   if ((p = strchr (t, '-')))
   {
     *p++ = '\0';
-    if (mutt_atoi (t, first) < 0 || mutt_atoi (t, last) < 0)
+    if (mutt_atoi (t, first) < 0 || mutt_atoi (p, last) < 0)
       return -1;
   }
   else
@@ -167,7 +167,7 @@ static int mh_read_sequences (struct mh_sequences *mhs, const char *path)
   size_t sz = 0;
 
   short f;
-  int first, last, rc;
+  int first, last, rc = 0;
 
   char pathname[_POSIX_PATH_MAX];
   snprintf (pathname, sizeof (pathname), "%s/.mh_sequences", path);
@@ -207,7 +207,7 @@ static int mh_read_sequences (struct mh_sequences *mhs, const char *path)
 out:
   FREE (&buff);
   safe_fclose (&fp);
-  return 0;
+  return rc;
 }
 
 static inline mode_t mh_umask (CONTEXT* ctx)
@@ -238,6 +238,7 @@ int mh_buffy (const char *path)
   for (i = 0; !r && i <= mhs.max; i++)
     if (mhs_check (&mhs, i) & MH_SEQ_UNSEEN)
       r = 1;
+  mhs_free_sequences (&mhs);
   return r;
 }
 
@@ -658,8 +659,8 @@ static HEADER *maildir_parse_message (int magic, const char *fname,
     if (!h->received)
       h->received = h->date_sent;
 
-    if (h->content->length <= 0)
-      h->content->length = st.st_size - h->content->offset;
+    /* always update the length since we have fresh information available. */
+    h->content->length = st.st_size - h->content->offset;
 
     h->index = -1;
 
@@ -1155,7 +1156,7 @@ int mh_read_dir (CONTEXT * ctx, const char *subdir)
 
   if (ctx->magic == M_MH)
   {
-    if (mh_read_sequences (&mhs, ctx->path) >= 0)
+    if (mh_read_sequences (&mhs, ctx->path) < 0)
       return -1;
     mh_update_maildir (md, &mhs);
     mhs_free_sequences (&mhs);

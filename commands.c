@@ -72,7 +72,7 @@ int mutt_display_message (HEADER *cur)
   mutt_parse_mime_message (Context, cur);
   mutt_message_hook (Context, cur, M_MESSAGEHOOK);
 
-  /* see if crytpo is needed for this message.  if so, we should exit curses */
+  /* see if crypto is needed for this message.  if so, we should exit curses */
   if (WithCrypto && cur->security)
   {
     if (cur->security & ENCRYPT)
@@ -109,7 +109,7 @@ int mutt_display_message (HEADER *cur)
   }
 
 
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if ((fpout = safe_fopen (tempfile, "w")) == NULL)
   {
     mutt_error _("Could not create temporary file!");
@@ -222,7 +222,8 @@ int mutt_display_message (HEADER *cur)
     if ((r = mutt_system (buf)) == -1)
       mutt_error (_("Error running \"%s\"!"), buf);
     unlink (tempfile);
-    keypad (stdscr, TRUE);
+    if (!option (OPTNOCURSES))
+      keypad (stdscr, TRUE);
     if (r != -1)
       mutt_set_flag (Context, cur, M_READ, 1);
     if (r != -1 && option (OPTPROMPTAFTER))
@@ -862,7 +863,7 @@ int mutt_save_message (HEADER *h, int delete,
     mx_close_mailbox (&ctx, NULL);
 
     if (need_buffy_cleanup)
-      mutt_buffy_cleanup (ctx.path, &st);
+      mutt_buffy_cleanup (buf, &st);
 
     mutt_clear_error ();
     return (0);

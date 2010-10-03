@@ -64,11 +64,12 @@ static int entropy_byte_count = 0;
  * open up another connection to the same server in this session */
 static STACK_OF(X509) *SslSessionCerts = NULL;
 
-typedef struct _sslsockdata
+typedef struct
 {
   SSL_CTX *ctx;
   SSL *ssl;
   X509 *cert;
+  unsigned char isopen;
 }
 sslsockdata;
 
@@ -80,6 +81,7 @@ static int ssl_socket_write (CONNECTION* conn, const char* buf, size_t len);
 static int ssl_socket_open (CONNECTION * conn);
 static int ssl_socket_close (CONNECTION * conn);
 static int tls_close (CONNECTION* conn);
+static void ssl_err (sslsockdata *data, int err);
 static int ssl_cache_trusted_cert (X509 *cert);
 static int ssl_check_certificate (CONNECTION *conn, sslsockdata * data);
 static int interactive_check_cert (X509 *cert, int idx, int len);
@@ -121,6 +123,8 @@ int mutt_ssl_starttls (CONNECTION* conn)
 
   if (ssl_negotiate (conn, ssldata))
     goto bail_ssl;
+
+  ssldata->isopen = 1;
 
   /* hmm. watch out if we're starting TLS over any method other than raw. */
   conn->sockdata = ssldata;
@@ -257,13 +261,28 @@ int mutt_ssl_socket_setup (CONNECTION * conn)
 static int ssl_socket_read (CONNECTION* conn, char* buf, size_t len)
 {
   sslsockdata *data = conn->sockdata;
-  return SSL_read (data->ssl, buf, len);
+  int rc;
+
+  rc = SSL_read (data->ssl, buf, len);
+  if (rc <= 0)
+  {
+    data->isopen = 0;
+    ssl_err (data, rc);
+  }
+
+  return rc;
 }
 
 static int ssl_socket_write (CONNECTION* conn, const char* buf, size_t len)
 {
   sslsockdata *data = conn->sockdata;
-  return SSL_write (data->ssl, buf, len);
+  int rc;
+
+  rc = SSL_write (data->ssl, buf, len);
+  if (rc <= 0)
+    ssl_err (data, rc);
+
+  return rc;
 }
 
 static int ssl_socket_open (CONNECTION * conn)
@@ -303,6 +322,8 @@ static int ssl_socket_open (CONNECTION * conn)
     mutt_socket_close (conn);
     return -1;
   }
+
+  data->isopen = 1;
 
   conn->ssf = SSL_CIPHER_get_bits (SSL_get_current_cipher (data->ssl),
     &maxbits);
@@ -366,7 +387,8 @@ static int ssl_socket_close (CONNECTION * conn)
   sslsockdata *data = conn->sockdata;
   if (data)
   {
-    SSL_shutdown (data->ssl);
+    if (data->isopen)
+      SSL_shutdown (data->ssl);
 
     /* hold onto this for the life of mutt, in case we want to reconnect.
      * The purist in me wants a mutt_exit hook. */
@@ -391,6 +413,63 @@ static int tls_close (CONNECTION* conn)
   conn->conn_close = raw_socket_close;
 
   return rc;
+}
+
+static void ssl_err (sslsockdata *data, int err)
+{
+  const char* errmsg;
+  unsigned long sslerr;
+
+  switch (SSL_get_error (data->ssl, err))
+  {
+  case SSL_ERROR_NONE:
+    return;
+  case SSL_ERROR_ZERO_RETURN:
+    errmsg = "SSL connection closed";
+    data->isopen = 0;
+    break;
+  case SSL_ERROR_WANT_READ:
+    errmsg = "retry read";
+    break;
+  case SSL_ERROR_WANT_WRITE:
+    errmsg = "retry write";
+    break;
+  case SSL_ERROR_WANT_CONNECT:
+    errmsg = "retry connect";
+    break;
+  case SSL_ERROR_WANT_ACCEPT:
+    errmsg = "retry accept";
+    break;
+  case SSL_ERROR_WANT_X509_LOOKUP:
+    errmsg = "retry x509 lookup";
+    break;
+  case SSL_ERROR_SYSCALL:
+    errmsg = "I/O error";
+    data->isopen = 0;
+    break;
+  case SSL_ERROR_SSL:
+    sslerr = ERR_get_error ();
+    switch (sslerr)
+    {
+    case 0:
+      switch (err)
+      {
+      case 0:
+	errmsg = "EOF";
+	break;
+      default:
+	errmsg = strerror(errno);
+      }
+      break;
+    default:
+      errmsg = ERR_error_string (sslerr, NULL);
+    }
+    break;
+  default:
+    errmsg = "unknown error";
+  }
+
+  dprint (1, (debugfile, "SSL error: %s\n", errmsg));
 }
 
 static char *x509_get_part (char *line, const char *ndx)
@@ -474,7 +553,7 @@ static int check_certificate_by_signer (X509 *peercert)
   if (X509_STORE_load_locations (ctx, SslCertFile, NULL))
     pass++;
   else
-    dprint (2, (debugfile, "X509_STORE_load_locations_failed\n"));
+    dprint (2, (debugfile, "X509_STORE_load_locations failed\n"));
 
   for (i = 0; i < sk_X509_num (SslSessionCerts); i++)
     pass += (X509_STORE_add_cert (ctx, sk_X509_value (SslSessionCerts, i)) != 0);
@@ -652,7 +731,7 @@ static int check_host (X509 *x509cert, const char *hostname, char *err, size_t e
   char *buf = NULL;
   int bufsize;
   /* needed to get the DNS subjectAltNames: */
-  STACK *subj_alt_names;
+  STACK_OF(GENERAL_NAME) *subj_alt_names;
   int subj_alt_names_count;
   GENERAL_NAME *subj_alt_name;
   /* did we find a name matching hostname? */
@@ -681,7 +760,9 @@ static int check_host (X509 *x509cert, const char *hostname, char *err, size_t e
       subj_alt_name = sk_GENERAL_NAME_value(subj_alt_names, i);
       if (subj_alt_name->type == GEN_DNS)
       {
-	if ((match_found = hostname_match(hostname_ascii,
+	if (subj_alt_name->d.ia5->length >= 0 &&
+	    mutt_strlen((char *)subj_alt_name->d.ia5->data) == (size_t)subj_alt_name->d.ia5->length &&
+	    (match_found = hostname_match(hostname_ascii,
 					  (char *)(subj_alt_name->d.ia5->data))))
 	{
 	  break;
@@ -700,9 +781,16 @@ static int check_host (X509 *x509cert, const char *hostname, char *err, size_t e
       goto out;
     }
 
+    /* first get the space requirements */
     bufsize = X509_NAME_get_text_by_NID(x509_subject, NID_commonName,
 					NULL, 0);
-    bufsize++;
+    if (bufsize == -1)
+    {
+      if (err && errlen)
+	strfcpy (err, _("cannot get certificate common name"), errlen);
+      goto out;
+    }
+    bufsize++; /* space for the terminal nul char */
     buf = safe_malloc((size_t)bufsize);
     if (X509_NAME_get_text_by_NID(x509_subject, NID_commonName,
 				  buf, bufsize) == -1)
@@ -711,7 +799,12 @@ static int check_host (X509 *x509cert, const char *hostname, char *err, size_t e
 	strfcpy (err, _("cannot get certificate common name"), errlen);
       goto out;
     }
-    match_found = hostname_match(hostname_ascii, buf);
+    /* cast is safe since bufsize is incremented above, so bufsize-1 is always
+     * zero or greater.
+     */
+    if (mutt_strlen(buf) == (size_t)bufsize - 1) {
+      match_found = hostname_match(hostname_ascii, buf);
+    }
   }
 
   if (!match_found)
@@ -735,7 +828,7 @@ static int ssl_cache_trusted_cert (X509 *c)
 {
   dprint (1, (debugfile, "trusted: %s\n", c->name));
   if (!SslSessionCerts)
-    SslSessionCerts = sk_new_null();
+    SslSessionCerts = sk_X509_new_null();
   return (sk_X509_push (SslSessionCerts, X509_dup(c)));
 }
 

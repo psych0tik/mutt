@@ -126,11 +126,13 @@ void mutt_exit (int);
 MUTT_LIB_WHERE FILE *debugfile MUTT_LIB_INITVAL(0);
 MUTT_LIB_WHERE int debuglevel MUTT_LIB_INITVAL(0);
 
-#  define dprint(N,X) do { if(debuglevel>=N && debugfile) fprintf X; } while (0)
+void mutt_debug (FILE *, const char *, ...);
+
+#  define dprint(N,X) do { if(debuglevel>=N && debugfile) mutt_debug X; } while (0)
 
 # else
 
-#  define dprint(N,X)
+#  define dprint(N,X) do { } while (0)
 
 # endif
 
@@ -180,6 +182,7 @@ int mutt_strcmp (const char *, const char *);
 int mutt_strncasecmp (const char *, const char *, size_t);
 int mutt_strncmp (const char *, const char *, size_t);
 int mutt_strcoll (const char *, const char *);
+int safe_asprintf (char **, const char *, ...);
 int safe_open (const char *, int);
 int safe_rename (const char *, const char *);
 int safe_symlink (const char *, const char *);

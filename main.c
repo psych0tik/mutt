@@ -111,8 +111,8 @@ static void mutt_usage (void)
 
   puts _(
 "usage: mutt [<options>] [-z] [-f <file> | -yZ]\n\
-       mutt [<options>] [-x] [-Hi <file>] [-s <subj>] [-bc <addr>] [-a <file> [...]] [--] <addr> [...]\n\
-       mutt [<options>] [-x] [-s <subj>] [-bc <addr>] [-a <file> [...]] [--] <addr> [...] < message\n\
+       mutt [<options>] [-x] [-Hi <file>] [-s <subj>] [-bc <addr>] [-a <file> [...] --] <addr> [...]\n\
+       mutt [<options>] [-x] [-s <subj>] [-bc <addr>] [-a <file> [...] --] <addr> [...] < message\n\
        mutt [<options>] -p\n\
        mutt [<options>] -A <alias> [...]\n\
        mutt [<options>] -Q <query> [...]\n\
@@ -122,7 +122,8 @@ static void mutt_usage (void)
   puts _("\
 options:\n\
   -A <alias>\texpand the given alias\n\
-  -a <file>\tattach a file to the message\n\
+  -a <file> [...] --\tattach file(s) to the message\n\
+\t\tthe list of files must be terminated with the \"--\" sequence\n\
   -b <address>\tspecify a blind carbon-copy (BCC) address\n\
   -c <address>\tspecify a carbon-copy (CC) address\n\
   -D\t\tprint the value of all variables to stdout");
@@ -149,8 +150,6 @@ options:\n\
   -z\t\texit immediately if there are no messages in the mailbox\n\
   -Z\t\topen the first folder with new message, exit immediately if none\n\
   -h\t\tthis help message");
-  puts _("  --\t\ttreat remaining arguments as addr even if starting with a dash\n\
-\t\twhen using -a with multiple filenames using -- is mandatory");
 
   exit (0);
 }
@@ -515,6 +514,7 @@ static void start_curses (void)
 #if HAVE_META
   meta (stdscr, TRUE);
 #endif
+init_extended_keys();
 }
 
 #define M_IGNORE  (1<<0)	/* -z */
@@ -896,7 +896,7 @@ int main (int argc, char **argv)
       else
 	fin = NULL;
 
-      mutt_mktemp (buf);
+      mutt_mktemp (buf, sizeof (buf));
       tempfile = safe_strdup (buf);
 
       if (draftFile)

@@ -172,7 +172,7 @@ smtp_data (CONNECTION * conn, const char *msgfile)
   progress_t progress;
   struct stat st;
   int r, term = 0;
-  size_t buflen;
+  size_t buflen = 0;
 
   fp = fopen (msgfile, "r");
   if (!fp)
@@ -454,12 +454,6 @@ static int smtp_open (CONNECTION* conn)
     }
 
 #ifdef USE_SASL
-    if (!(conn->account.flags & M_ACCT_PASS) && option (OPTNOCURSES))
-    {
-      mutt_error (_("Interactive SMTP authentication not supported"));
-      mutt_sleep (1);
-      return -1;
-    }
     return smtp_auth (conn);
 #else
     mutt_error (_("SMTP authentication requires SASL"));
@@ -603,7 +597,7 @@ static int smtp_auth_sasl (CONNECTION* conn, const char* mechlist)
       }
     }
     strfcpy (buf + len, "\r\n", sizeof (buf) - len);
-  } while (rc == smtp_ready);
+  } while (rc == smtp_ready && saslrc != SASL_FAIL);
 
   if (smtp_success (rc))
   {

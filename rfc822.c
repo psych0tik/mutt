@@ -60,7 +60,7 @@ const char *RFC822Errors[] = {
   "bad address spec"
 };
 
-static void rfc822_dequote_comment (char *s)
+void rfc822_dequote_comment (char *s)
 {
   char *w = s;
 
@@ -80,6 +80,46 @@ static void rfc822_dequote_comment (char *s)
     }
   }
   *w = 0;
+}
+
+static void free_address (ADDRESS *a)
+{
+  FREE(&a->personal);
+  FREE(&a->mailbox);
+#ifdef EXACT_ADDRESS
+  FREE(&a->val);
+#endif
+  FREE(&a);
+}
+
+int rfc822_remove_from_adrlist (ADDRESS **a, const char *mailbox)
+{
+  ADDRESS *p, *last = NULL, *t;
+  int rv = -1;
+
+  p = *a;
+  last = NULL;
+  while (p)
+  {
+    if (ascii_strcasecmp (mailbox, p->mailbox) == 0)
+    {
+      if (last)
+	last->next = p->next;
+      else
+	(*a) = p->next;
+      t = p;
+      p = p->next;
+      free_address (t);
+      rv = 0;
+    }
+    else
+    {
+      last = p;
+      p = p->next;
+    }
+  }
+
+  return (rv);
 }
 
 void rfc822_free_address (ADDRESS **p)
@@ -137,17 +177,10 @@ parse_comment (const char *s,
 static const char *
 parse_quote (const char *s, char *token, size_t *tokenlen, size_t tokenmax)
 {
-  if (*tokenlen < tokenmax)
-    token[(*tokenlen)++] = '"';
   while (*s)
   {
     if (*tokenlen < tokenmax)
       token[*tokenlen] = *s;
-    if (*s == '"')
-    {
-      (*tokenlen)++;
-      return (s + 1);
-    }
     if (*s == '\\')
     {
       if (!*++s)
@@ -156,6 +189,8 @@ parse_quote (const char *s, char *token, size_t *tokenlen, size_t tokenmax)
       if (*tokenlen < tokenmax)
 	token[*tokenlen] = *s;
     }
+    else if (*s == '"')
+      return (s + 1);
     (*tokenlen)++;
     s++;
   }
@@ -391,6 +426,17 @@ ADDRESS *rfc822_parse_adrlist (ADDRESS *top, const char *s)
       }
       s = ps;
     }
+    else if (*s == '"')
+    {
+      if (phraselen && phraselen < sizeof (phrase) - 1)
+        phrase[phraselen++] = ' ';
+      if ((ps = parse_quote (s + 1, phrase, &phraselen, sizeof (phrase) - 1)) == NULL)
+      {
+        rfc822_free_address (&top);
+        return NULL;
+      }
+      s = ps;
+    }
     else if (*s == ':')
     {
       cur = rfc822_new_address ();
@@ -450,13 +496,7 @@ ADDRESS *rfc822_parse_adrlist (ADDRESS *top, const char *s)
       terminate_buffer (phrase, phraselen);
       cur = rfc822_new_address ();
       if (phraselen)
-      {
-	if (cur->personal)
-	  FREE (&cur->personal);
-	/* if we get something like "Michael R. Elkins" remove the quotes */
-	rfc822_dequote_comment (phrase);
 	cur->personal = safe_strdup (phrase);
-      }
       if ((ps = parse_route_addr (s + 1, comment, &commentlen, sizeof (comment) - 1, cur)) == NULL)
       {
 	rfc822_free_address (&top);

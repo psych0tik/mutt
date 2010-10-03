@@ -109,6 +109,7 @@ AH_BOTTOM([/* fseeko portability defines */
 #endif
 ])
 MUTT_C99_INTTYPES
+AC_TYPE_LONG_LONG_INT
 
 ac_aux_path_sendmail=/usr/sbin:/usr/lib
 AC_PATH_PROG(SENDMAIL, sendmail, /usr/sbin/sendmail, $PATH:$ac_aux_path_sendmail)
@@ -541,8 +542,10 @@ AC_ARG_WITH(docdir, AC_HELP_STRING([--with-docdir=PATH], [Specify where to put t
         [mutt_cv_docdir=$withval],
         [mutt_cv_docdir='${datarootdir}/doc/mutt'])
 AC_MSG_RESULT($mutt_cv_docdir)
-
-docdir=$mutt_cv_docdir
+if test -z "$docdir" -o -n "$with_docdir"
+then
+  docdir=$mutt_cv_docdir
+fi
 AC_SUBST(docdir)
 
 if test x$mutt_cv_setgid = xyes; then
@@ -716,7 +719,7 @@ fi
 
 AM_CONDITIONAL(USE_SSL, test x$need_ssl = xyes)
 
-AC_ARG_WITH(sasl, AC_HELP_STRING([--with-sasl@<:@=PFX@:>@], [Use Cyrus SASL 2 network security library]),
+AC_ARG_WITH(sasl, AC_HELP_STRING([--with-sasl@<:@=PFX@:>@], [Use SASL network security library]),
         [	
         if test "$with_sasl" != "no"
         then
@@ -732,15 +735,19 @@ AC_ARG_WITH(sasl, AC_HELP_STRING([--with-sasl@<:@=PFX@:>@], [Use Cyrus SASL 2 ne
           fi
 
           saved_LIBS="$LIBS"
+          LIBS=
 
-          AC_CHECK_LIB(sasl2, sasl_client_init,,
-            AC_MSG_ERROR([could not find libsasl2]),)
+          # OpenSolaris provides a SASL2 interface in libsasl
+          sasl_libs="sasl2 sasl"
+          AC_SEARCH_LIBS(sasl_encode64, [$sasl_libs],,
+                  AC_MSG_ERROR([could not find sasl lib]),)
 
+          MUTTLIBS="$MUTTLIBS $LIBS"
           MUTT_LIB_OBJECTS="$MUTT_LIB_OBJECTS mutt_sasl.o"
-          MUTTLIBS="$MUTTLIBS -lsasl2"
           LIBS="$saved_LIBS"
+
           AC_DEFINE(USE_SASL,1,
-                  [ Define if want to use the Cyrus SASL library for POP/IMAP authentication. ])
+                  [ Define if want to use the SASL library for POP/IMAP authentication. ])
           need_sasl=yes
         fi
         ])
@@ -835,6 +842,7 @@ AC_ARG_WITH(gdbm, AC_HELP_STRING([--without-gdbm],
 AC_ARG_WITH(bdb, AC_HELP_STRING([--with-bdb@<:@=DIR@:>@],
   [Use BerkeleyDB4 if gdbm is not available]))
 
+db_found=no
 if test x$enable_hcache = xyes
 then
     AC_DEFINE(USE_HCACHE, 1, [Enable header caching])
@@ -1027,10 +1035,15 @@ then
 fi
 dnl -- end cache --
 
+AM_CONDITIONAL(BUILD_HCACHE, test x$db_found != xno)
+
 if test "$need_md5" = "yes"
 then
   MUTT_LIB_OBJECTS="$MUTT_LIB_OBJECTS md5.o"
-  MUTT_MD5="mutt_md5"
+fi
+
+if test x$db_found != xno ; then
+  MUTT_MD5="mutt_md5$EXEEXT"
 fi
 AC_SUBST(MUTT_MD5)
 
@@ -1209,7 +1222,7 @@ if test "$mutt_cv_wint_t" = no; then
 fi
 
 AC_CHECK_HEADERS(wctype.h)
-AC_CHECK_FUNCS(iswalnum iswalpha  iswcntrl iswdigit)
+AC_CHECK_FUNCS(iswalnum iswalpha iswblank iswcntrl iswdigit)
 AC_CHECK_FUNCS(iswgraph iswlower iswprint iswpunct iswspace iswupper)
 AC_CHECK_FUNCS(iswxdigit towupper towlower)
 
@@ -1237,14 +1250,14 @@ if test "$wc_funcs" != yes && test "$wc_funcs" != no; then
         AC_CACHE_CHECK([for wchar_t functions], mutt_cv_wc_funcs,
                 mutt_cv_wc_funcs=no
                 AC_TRY_LINK([
-#define _XOPEN_SOURCE 1
+#define _XOPEN_SOURCE 600
 #include <stddef.h>
 #include <stdlib.h>
-#ifdef HAVE_WCTYPE_H
-#include <wctype.h>
-#endif
 #ifdef HAVE_WCHAR_H
 #include <wchar.h>
+#endif
+#ifdef HAVE_WCTYPE_H
+#include <wctype.h>
 #endif],
                         [mbrtowc(0, 0, 0, 0); wctomb(0, 0); wcwidth(0);
         iswprint(0); iswspace(0); towlower(0); towupper(0); iswalnum(0)],
