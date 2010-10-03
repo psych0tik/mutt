@@ -53,7 +53,7 @@ in the "mutt-patched" package.
        rc = 1;
        break;
      }
-@@ -337,6 +343,33 @@
+@@ -337,6 +343,32 @@
  
    closedir (dirp);
  
@@ -65,7 +65,6 @@ in the "mutt-patched" package.
 +  if ((dirp = opendir (path)) == NULL)
 +  {
 +    mailbox->magic = 0;
-+    break;
 +  }
 +  while ((de = readdir (dirp)) != NULL)
 +  {
@@ -87,7 +86,14 @@ in the "mutt-patched" package.
    return rc;
  }
  
-@@ -351,8 +384,26 @@
+@@ -345,14 +377,33 @@
+ {
+   int rc = 0;
+   int statcheck;
++  CONTEXT *ctx;
+ 
+   if (option (OPTCHECKMBOXSIZE))
+     statcheck = sb->st_size > mailbox->size;
    else
      statcheck = sb->st_mtime > sb->st_atime
        || (mailbox->newly_created && sb->st_ctime == sb->st_mtime && sb->st_ctime == sb->st_atime);
@@ -115,7 +121,11 @@ in the "mutt-patched" package.
      if (!option(OPTMAILCHECKRECENT) || sb->st_mtime > mailbox->last_visited)
      {
        rc = 1;
-@@ -377,6 +428,7 @@
+@@ -374,9 +425,11 @@
+ int mutt_buffy_check (int force)
+ {
+   BUFFY *tmp;
++  struct dirent *de, *dp;
    struct stat sb;
    struct stat contex_sb;
    time_t t;
@@ -123,12 +133,12 @@ in the "mutt-patched" package.
  
    sb.st_size=0;
    contex_sb.st_dev=0;
-@@ -456,6 +508,20 @@
+@@ -456,6 +509,20 @@
        case M_MH:
  	if ((tmp->new = mh_buffy (tmp->path)) > 0)
  	  BuffyCount++;
 +
-+  if ((dp = opendir (path)) == NULL)
++  if ((dp = opendir (tmp->path)) == NULL)
 +    break;
 +  tmp->msgcount = 0;
 +  while ((de = readdir (dp)))
@@ -140,7 +150,7 @@ in the "mutt-patched" package.
 +    }
 +  }
 +  closedir (dp);
-+      }
++
  	break;
        }
      }

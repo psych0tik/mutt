@@ -175,7 +175,7 @@ The home page for this patch is:
 +  ctx->realpath = ctx->path;
 +
 +  /* Uncompress to /tmp */
-+  mutt_mktemp (tmppath);
++  mutt_mktemp (tmppath, sizeof(tmppath));
 +  ctx->path = safe_malloc (strlen (tmppath) + 1);
 +  strcpy (ctx->path, tmppath);
 +}
