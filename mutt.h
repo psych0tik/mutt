@@ -384,6 +384,7 @@ enum
   OPTINCLUDEONLYFIRST,
   OPTKEEPFLAGGED,
   OPTMAILCAPSANITIZE,
+  OPTMAILCHECKRECENT,
   OPTMAILDIRTRASH,
   OPTMARKERS,
   OPTMARKOLD,
@@ -554,6 +555,7 @@ int mutt_matches_ignore (const char *, LIST *);
 LIST *mutt_add_list (LIST *, const char *);
 LIST *mutt_add_list_n (LIST*, const void *, size_t);
 LIST *mutt_find_list (LIST *, const char *);
+int mutt_remove_from_rx_list (RX_LIST **l, const char *str);
 
 void mutt_init (int, LIST *);
 
@@ -693,6 +695,9 @@ typedef struct body
 
 } BODY;
 
+/* #3279: AIX defines conflicting struct thread */
+typedef struct mutt_thread THREAD;
+
 typedef struct header
 {
   unsigned int security : 11;  /* bit 0-6: flags, bit 7,8: application.
@@ -753,7 +758,7 @@ typedef struct header
   char *path;
   
   char *tree;           	/* character string to print thread tree */
-  struct thread *thread;
+  THREAD *thread;
 
   /* Number of qualifying attachments in message, if attach_valid */
   short attach_total;
@@ -773,7 +778,7 @@ typedef struct header
   char *maildir_flags;		/* unknown maildir flags */
 } HEADER;
 
-typedef struct thread
+struct mutt_thread
 {
   unsigned int fake_thread : 1;
   unsigned int duplicate_thread : 1;
@@ -783,13 +788,13 @@ typedef struct thread
   unsigned int deep : 1;
   unsigned int subtree_visible : 2;
   unsigned int next_subtree_visible : 1;
-  struct thread *parent;
-  struct thread *child;
-  struct thread *next;
-  struct thread *prev;
+  THREAD *parent;
+  THREAD *child;
+  THREAD *next;
+  THREAD *prev;
   HEADER *message;
   HEADER *sort_key;
-} THREAD;
+};
 
 
 /* flag to mutt_pattern_comp() */
@@ -928,13 +933,13 @@ typedef struct
 #define state_reset_prefix(s) ((s)->flags &= ~M_PENDINGPREFIX)
 #define state_puts(x,y) fputs(x,(y)->fpout)
 #define state_putc(x,y) fputc(x,(y)->fpout)
-#define state_putws(x,y) fputws(x,(y)->fpout)
-#define state_putwc(x,y) fputwc(x,(y)->fpout)
 
 void state_mark_attach (STATE *);
 void state_attach_puts (const char *, STATE *);
 void state_prefix_putc (char, STATE *);
 int  state_printf(STATE *, const char *, ...);
+int state_putwc (wchar_t, STATE *);
+int state_putws (const wchar_t *, STATE *);
 
 /* for attachment counter */
 typedef struct

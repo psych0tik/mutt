@@ -276,8 +276,17 @@ const char *mutt_attach_fmt (char *dest,
     case 'I':
       if (!optional)
       {
-	  snprintf (dest, destlen, "%c",
-		  (aptr->content->disposition == DISPINLINE) ? 'I' : 'A');
+	const char dispchar[] = { 'I', 'A', 'F', '-' };
+	char ch;
+
+	if (aptr->content->disposition < sizeof(dispchar))
+	  ch = dispchar[aptr->content->disposition];
+	else
+	{
+	  dprint(1, (debugfile, "ERROR: invalid content-disposition %d\n", aptr->content->disposition));
+	  ch = '!';
+	}
+	snprintf (dest, destlen, "%c", ch);
       }
       break;
     case 'm':
@@ -584,7 +593,7 @@ mutt_query_pipe_attachment (char *command, FILE *fp, BODY *body, int filter)
       CLEARLINE (LINES-1);
       return;
     }
-    mutt_mktemp (tfile);
+    mutt_mktemp (tfile, sizeof (tfile));
   }
   else
     tfile[0] = 0;
@@ -734,7 +743,7 @@ static void print_attachment_list (FILE *fp, int tag, BODY *top, STATE *state)
 	  char newfile[_POSIX_PATH_MAX] = "";
 	  FILE *ifp;
 
-	  mutt_mktemp (newfile);
+	  mutt_mktemp (newfile, sizeof (newfile));
 	  if (mutt_decode_save_attachment (fp, top, newfile, M_PRINTING, 0) == 0)
 	  {
 	    if ((ifp = fopen (newfile, "r")) != NULL)

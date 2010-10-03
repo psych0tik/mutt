@@ -129,6 +129,8 @@ HEADER* imap_hcache_get (IMAP_DATA* idata, unsigned int uid)
   {
     if (*uv == idata->uid_validity)
       h = mutt_hcache_restore ((unsigned char*)uv, NULL);
+    else
+      dprint (3, (debugfile, "hcache uidvalidity mismatch: %u", *uv));
     FREE (&uv);
   }
 
@@ -316,7 +318,7 @@ void imap_pretty_mailbox (char* path)
     {
       if (! hlen)
 	home_match = 1;
-      else
+      else if (ImapDelimChars)
 	for (delim = ImapDelimChars; *delim != '\0'; delim++)
 	  if (target.mbox[hlen] == *delim)
 	    home_match = 1;
@@ -421,14 +423,15 @@ char *imap_fix_path (IMAP_DATA *idata, const char *mailbox, char *path,
   while (mailbox && *mailbox && i < plen - 1)
   {
     if ((ImapDelimChars && strchr(ImapDelimChars, *mailbox))
-        || *mailbox == delim)
+        || (delim && *mailbox == delim))
     {
       /* use connection delimiter if known. Otherwise use user delimiter */
       if (!idata)
         delim = *mailbox;
 
-      while (*mailbox &&
-	     (strchr(ImapDelimChars, *mailbox) || *mailbox == delim))
+      while (*mailbox
+	     && ((ImapDelimChars && strchr(ImapDelimChars, *mailbox))
+	         || (delim && *mailbox == delim)))
         mailbox++;
       path[i] = delim;
     }
@@ -575,6 +578,21 @@ time_t imap_parse_date (char *s)
     tz = -tz;
 
   return (mutt_mktime (&t, 0) + tz);
+}
+
+/* format date in IMAP style: DD-MMM-YYYY HH:MM:SS +ZZzz.
+ * Caller should provide a buffer of IMAP_DATELEN bytes */
+void imap_make_date (char *buf, time_t timestamp)
+{
+  struct tm* tm = localtime (&timestamp);
+  time_t tz = mutt_local_tz (timestamp);
+
+  tz /= 60;
+
+  snprintf (buf, IMAP_DATELEN, "%02d-%s-%d %02d:%02d:%02d %+03d%02d",
+      tm->tm_mday, Months[tm->tm_mon], tm->tm_year + 1900,
+      tm->tm_hour, tm->tm_min, tm->tm_sec,
+      (int) tz / 60, (int) abs (tz) % 60);
 }
 
 /* imap_qualify_path: make an absolute IMAP folder target, given IMAP_MBOX
@@ -731,6 +749,8 @@ void imap_keepalive (void)
   {
     if (conn->account.type == M_ACCT_TYPE_IMAP)
     {
+      int need_free = 0;
+
       idata = (IMAP_DATA*) conn->data;
 
       if (idata->state >= IMAP_AUTHENTICATED
@@ -742,9 +762,17 @@ void imap_keepalive (void)
 	{
 	  ctx = safe_calloc (1, sizeof (CONTEXT));
 	  ctx->data = idata;
+	  /* imap_close_mailbox will set ctx->iadata->ctx to NULL, so we can't
+	   * rely on the value of iadata->ctx to determine if this placeholder
+	   * context needs to be freed.
+	   */
+	  need_free = 1;
 	}
+	/* if the imap connection closes during this call, ctx may be invalid
+	 * after this point, and thus should not be read.
+	 */
 	imap_check_mailbox (ctx, NULL, 1);
-	if (!idata->ctx)
+	if (need_free)
 	  FREE (&ctx);
       }
     }

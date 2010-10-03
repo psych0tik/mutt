@@ -108,6 +108,7 @@ struct binding_t OpMain[] = { /* map: index */
 #endif
 #ifdef USE_IMAP
   { "imap-fetch-mail",		OP_MAIN_IMAP_FETCH,		NULL },
+  { "imap-logout-all",		OP_MAIN_IMAP_LOGOUT_ALL,	NULL },
 #endif
   { "display-toggle-weed",		OP_DISPLAY_HEADERS,		"h" },
   { "next-undeleted",		OP_MAIN_NEXT_UNDELETED,		"j" },
@@ -192,6 +193,7 @@ struct binding_t OpPager[] = { /* map: pager */
   { "group-reply",	OP_GROUP_REPLY,			"g" },
 #ifdef USE_IMAP
   { "imap-fetch-mail",  OP_MAIN_IMAP_FETCH,		NULL },
+  { "imap-logout-all",  OP_MAIN_IMAP_LOGOUT_ALL,	NULL },
 #endif
   { "display-toggle-weed",	OP_DISPLAY_HEADERS,		"h" },
   { "next-undeleted",	OP_MAIN_NEXT_UNDELETED,		"j" },
@@ -206,6 +208,8 @@ struct binding_t OpPager[] = { /* map: pager */
   { "search-next",	OP_SEARCH_NEXT,			"n" },
   { "next-thread",	OP_MAIN_NEXT_THREAD,		"\016" },
   { "next-subthread",	OP_MAIN_NEXT_SUBTHREAD,		"\033n" },
+  { "sort-mailbox",	OP_SORT,			"o" },
+  { "sort-reverse",	OP_SORT_REVERSE,		"O" },
   { "print-message",	OP_PRINT,			"p" },
   { "previous-thread",	OP_MAIN_PREV_THREAD,		"\020" },
   { "previous-subthread",OP_MAIN_PREV_SUBTHREAD,	"\033p" },
@@ -271,7 +275,7 @@ struct binding_t OpPager[] = { /* map: pager */
   { NULL,		0,				NULL }
 };
 
-struct binding_t OpAttach[] = { /* map: attach */
+struct binding_t OpAttach[] = { /* map: attachment */
   { "bounce-message",	OP_BOUNCE_MESSAGE,		"b" },
   { "display-toggle-weed",	OP_DISPLAY_HEADERS,	"h" },
   { "edit-type",	OP_EDIT_TYPE,			"\005" },
@@ -441,7 +445,7 @@ struct binding_t OpSmime[] = { /* map: smime */
 
 
 #ifdef MIXMASTER
-struct binding_t OpMix[] = { /* map: mix */
+struct binding_t OpMix[] = { /* map: mixmaster */
   { "accept",		OP_MIX_USE,	M_ENTER_S },
   { "append",		OP_MIX_APPEND,	"a"       },
   { "insert",		OP_MIX_INSERT,	"i"       },

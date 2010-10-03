@@ -411,7 +411,6 @@ int mx_get_magic (const char *path)
   {
     dprint (1, (debugfile, "mx_get_magic(): unable to open file %s for reading.\n",
 		path));
-    mutt_perror (path);
     return (-1);
   }
 
@@ -706,6 +705,10 @@ void mx_fastclose_mailbox (CONTEXT *ctx)
   if(!ctx) 
     return;
 
+  /* never announce that a mailbox we've just left has new mail. #3290
+   * XXX: really belongs in mx_close_mailbox, but this is a nice hook point */
+  mutt_buffy_setnotified(ctx->path);
+
   if (ctx->mx_close)
     ctx->mx_close (ctx);
 
@@ -927,6 +930,8 @@ int mx_close_mailbox (CONTEXT *ctx, int *index_hint)
   {
     if (!ctx->quiet)
       mutt_message _("Mailbox is unchanged.");
+    if (ctx->magic == M_MBOX || ctx->magic == M_MMDF)
+      mbox_reset_atime (ctx, NULL);
     mx_fastclose_mailbox (ctx);
     return 0;
   }
@@ -1111,10 +1116,8 @@ int mx_sync_mailbox (CONTEXT *ctx, int *index_hint)
     {
       if (!ctx->changed)
 	return 0; /* nothing to do! */
-#ifdef USE_IMAP
       /* let IMAP servers hold on to D flags */
       if (ctx->magic != M_IMAP)
-#endif
       {
         for (i = 0 ; i < ctx->msgcount ; i++)
           ctx->hdrs[i]->deleted = 0;
@@ -1172,10 +1175,8 @@ int mx_sync_mailbox (CONTEXT *ctx, int *index_hint)
      */
     if (purge || (ctx->magic != M_MAILDIR && ctx->magic != M_MH))
     {
-#ifdef USE_IMAP
       /* IMAP does this automatically after handling EXPUNGE */
       if (ctx->magic != M_IMAP)
-#endif
       {
 	mx_update_tables (ctx, 1);
 	mutt_sort_headers (ctx, 1); /* rethread from scratch */
@@ -1200,7 +1201,7 @@ static int imap_open_new_message (MESSAGE *msg, CONTEXT *dest, HEADER *hdr)
 {
   char tmp[_POSIX_PATH_MAX];
 
-  mutt_mktemp(tmp);
+  mutt_mktemp (tmp, sizeof (tmp));
   if ((msg->fp = safe_fopen (tmp, "w")) == NULL)
   {
     mutt_perror (tmp);
@@ -1329,7 +1330,11 @@ int mx_check_mailbox (CONTEXT *ctx, int *index_hint, int lock)
 
 #ifdef USE_IMAP
       case M_IMAP:
-	return (imap_check_mailbox (ctx, index_hint, 0));
+	/* caller expects that mailbox may change */
+        imap_allow_reopen (ctx);
+	rc = imap_check_mailbox (ctx, index_hint, 0);
+        imap_disallow_reopen (ctx);
+	return rc;
 #endif /* USE_IMAP */
 
 #ifdef USE_POP
@@ -1471,13 +1476,7 @@ int mx_close_message (MESSAGE **msg)
   int r = 0;
 
   if ((*msg)->magic == M_MH || (*msg)->magic == M_MAILDIR
-#ifdef USE_IMAP
-      || (*msg)->magic == M_IMAP
-#endif
-#ifdef USE_POP
-      || (*msg)->magic == M_POP
-#endif
-      )
+      || (*msg)->magic == M_IMAP || (*msg)->magic == M_POP)
   {
     r = safe_fclose (&(*msg)->fp);
   }

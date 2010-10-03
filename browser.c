@@ -40,6 +40,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <locale.h>
 
 static struct mapping_t FolderHelp[] = {
   { N_("Exit"),  OP_EXIT },
@@ -161,11 +162,27 @@ folder_format_str (char *dest, size_t destlen, size_t col, char op, const char *
       break;
       
     case 'd':
+    case 'D':
       if (folder->ff->st != NULL)
       {
-	tnow = time (NULL);
-	t_fmt = tnow - folder->ff->st->st_mtime < 31536000 ? "%b %d %H:%M" : "%b %d  %Y";
+	int do_locales = TRUE;
+
+	if (op == 'D') {
+	  t_fmt = NONULL(DateFmt);
+	  if (*t_fmt == '!') {
+	    ++t_fmt;
+	    do_locales = FALSE;
+	  }
+	} else {
+	  tnow = time (NULL);
+	  t_fmt = tnow - folder->ff->st->st_mtime < 31536000 ? "%b %d %H:%M" : "%b %d  %Y";
+	}
+	if (do_locales)
+	  setlocale(LC_TIME, NONULL (Locale)); /* use environment if $locale is not set */
+	else
+	  setlocale(LC_TIME, "C");
 	strftime (date, sizeof (date), t_fmt, localtime (&folder->ff->st->st_mtime));
+
 	mutt_format_s (dest, destlen, fmt, date);
       }
       else
@@ -1068,7 +1085,6 @@ void _mutt_select_file (char *f, size_t flen, int flags, char ***files, int *num
 	  if ((err = REGCOMP (rx, s, REG_NOSUB)) != 0)
 	  {
 	    regerror (err, rx, buf, sizeof (buf));
-	    regfree (rx);
 	    FREE (&rx);
 	    mutt_error ("%s", buf);
 	  }

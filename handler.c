@@ -807,7 +807,7 @@ static int text_enriched_handler (BODY *a, STATE *s)
   {
     if (state != ST_EOF)
     {
-      if (!bytes || (wc = fgetwc (s->fpin)) == EOF)
+      if (!bytes || (wc = fgetwc (s->fpin)) == WEOF)
 	state = ST_EOF;
       else
 	bytes--;
@@ -1090,7 +1090,7 @@ static int message_handler (BODY *a, STATE *s)
     mutt_copy_hdr (s->fpin, s->fpout, off_start, b->parts->offset,
 	(((s->flags & M_WEED) || ((s->flags & (M_DISPLAY|M_PRINTING)) && option (OPTWEED))) ? (CH_WEED | CH_REORDER) : 0) |
 	(s->prefix ? CH_PREFIX : 0) | CH_DECODE | CH_FROM |
-	(s->flags & M_DISPLAY) ? CH_DISPLAY : 0, s->prefix);
+	((s->flags & M_DISPLAY) ? CH_DISPLAY : 0), s->prefix);
 
     if (s->prefix)
       state_puts (s->prefix, s);
@@ -1492,16 +1492,14 @@ void mutt_decode_attachment (BODY *b, STATE *s)
  */
 static int text_plain_handler (BODY *b, STATE *s)
 {
-  char buf[LONG_STRING];
-  size_t l;
+  char *buf = NULL;
+  size_t l = 0, sz = 0;
 
-  while (fgets (buf, sizeof (buf), s->fpin))
+  while ((buf = mutt_read_line (buf, &sz, s->fpin, NULL, 0)))
   {
-    l = mutt_strlen (buf);
-    if (l > 0 && buf[l-1] == '\n')
-      buf[--l] = 0;
-    if (option (OPTTEXTFLOWED))
+    if (mutt_strcmp (buf, "-- ") != 0 && option (OPTTEXTFLOWED))
     {
+      l = mutt_strlen (buf);
       while (l > 0 && buf[l-1] == ' ')
 	buf[--l] = 0;
     }
@@ -1511,6 +1509,7 @@ static int text_plain_handler (BODY *b, STATE *s)
     state_putc ('\n', s);
   }
 
+  FREE (&buf);
   return 0;
 }
 
@@ -1645,7 +1644,7 @@ int mutt_body_handler (BODY *b, STATE *s)
       {
 	/* decode to a tempfile, saving the original destination */
 	fp = s->fpout;
-	mutt_mktemp (tempfile);
+	mutt_mktemp (tempfile, sizeof (tempfile));
 	if ((s->fpout = safe_fopen (tempfile, "w")) == NULL)
 	{
 	  mutt_error _("Unable to open temporary file!");

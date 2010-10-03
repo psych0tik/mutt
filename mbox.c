@@ -85,7 +85,7 @@ int mmdf_parse_mailbox (CONTEXT *ctx)
   char return_path[LONG_STRING];
   int count = 0, oldmsgcount = ctx->msgcount;
   int lines;
-  time_t t, tz;
+  time_t t;
   LOFF_T loc, tmploc;
   HEADER *hdr;
   struct stat sb;
@@ -111,10 +111,6 @@ int mmdf_parse_mailbox (CONTEXT *ctx)
     utime (ctx->path, &newtime);
   }
 #endif
-
-  /* precompute the local timezone to speed up calculation of the
-     received time */
-  tz = mutt_local_tz (0);
 
   buf[sizeof (buf) - 1] = 0;
 
@@ -163,7 +159,7 @@ int mmdf_parse_mailbox (CONTEXT *ctx)
 	}
       } 
       else
-	hdr->received = t - tz;
+	hdr->received = t - mutt_local_tz (t);
 
       hdr->env = mutt_read_rfc822_header (ctx->fp, hdr, 0, 0);
 
@@ -237,7 +233,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
   struct stat sb;
   char buf[HUGE_STRING], return_path[STRING];
   HEADER *curhdr;
-  time_t t, tz;
+  time_t t;
   int count = 0, lines = 0;
   LOFF_T loc;
 #ifdef NFS_ATTRIBUTE_HACK
@@ -267,10 +263,6 @@ int mbox_parse_mailbox (CONTEXT *ctx)
 
   if (!ctx->readonly)
     ctx->readonly = access (ctx->path, W_OK) ? 1 : 0;
-
-  /* precompute the local timezone to speed up calculation of the
-     date received */
-  tz = mutt_local_tz (0);
 
   if (!ctx->quiet)
   {
@@ -308,7 +300,7 @@ int mbox_parse_mailbox (CONTEXT *ctx)
 	mx_alloc_memory (ctx);
       
       curhdr = ctx->hdrs[ctx->msgcount] = mutt_new_header ();
-      curhdr->received = t - tz;
+      curhdr->received = t - mutt_local_tz (t);
       curhdr->offset = loc;
       curhdr->index = ctx->msgcount;
 	
@@ -679,24 +671,46 @@ int mbox_check_mailbox (CONTEXT *ctx, int *index_hint)
   return (-1);
 }
 
+/*
+ * Returns 1 if the mailbox has at least 1 new messages (not old)
+ * otherwise returns 0.
+ */
+static int mbox_has_new(CONTEXT *ctx)
+{
+  int i;
+
+  for (i = 0; i < ctx->msgcount; i++)
+    if (!ctx->hdrs[i]->deleted && !ctx->hdrs[i]->read && !ctx->hdrs[i]->old)
+      return 1;
+  return 0;
+}
+
 /* if mailbox has at least 1 new message, sets mtime > atime of mailbox
  * so buffy check reports new mail */
-static void reset_atime (CONTEXT *ctx)
+void mbox_reset_atime (CONTEXT *ctx, struct stat *st)
 {
   struct utimbuf utimebuf;
   int i;
-  time_t now = time (NULL);
+  struct stat _st;
 
-  for (i = 0; i < ctx->msgcount; i++)
+  if (!st)
   {
-    if (!ctx->hdrs[i]->deleted && !ctx->hdrs[i]->read && !ctx->hdrs[i]->old)
-    {
-      utimebuf.actime = now - 1;
-      utimebuf.modtime = now;
-      utime (ctx->path, &utimebuf);
+    if (stat (ctx->path, &_st) < 0)
       return;
-    }
+    st = &_st;
   }
+
+  utimebuf.actime = st->st_atime;
+  utimebuf.modtime = st->st_mtime;
+
+  /*
+   * When $mbox_check_recent is set, existing new mail is ignored, so do not
+   * recent the atime to mtime-1 to signal new mail.
+   */
+  if (!option(OPTMAILCHECKRECENT) && utimebuf.actime >= utimebuf.modtime && mbox_has_new(ctx))
+    utimebuf.actime = utimebuf.modtime - 1;
+
+  utime (ctx->path, &utimebuf);
 }
 
 /* return values:
@@ -712,6 +726,7 @@ int mbox_sync_mailbox (CONTEXT *ctx, int *index_hint)
   int need_sort = 0; /* flag to resort mailbox if new mail arrives */
   int first = -1;	/* first message to be written */
   LOFF_T offset;	/* location in mailbox to write changed messages */
+  struct stat statbuf;
   struct m_update_t *newOffset = NULL;
   struct m_update_t *oldOffset = NULL;
   FILE *fp = NULL;
@@ -760,7 +775,7 @@ int mbox_sync_mailbox (CONTEXT *ctx, int *index_hint)
     return (-1);
 
   /* Create a temporary file to write the new version of the mailbox in. */
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if ((i = open (tempfile, O_WRONLY | O_EXCL | O_CREAT, 0600)) == -1 ||
       (fp = fdopen (i, "w")) == NULL)
   {
@@ -903,6 +918,15 @@ int mbox_sync_mailbox (CONTEXT *ctx, int *index_hint)
   }
   fp = NULL;
 
+  /* Save the state of this folder. */
+  if (stat (ctx->path, &statbuf) == -1)
+  {
+    mutt_perror (ctx->path);
+    mutt_sleep (5);
+    unlink (tempfile);
+    goto bail;
+  }
+
   if ((fp = fopen (tempfile, "r")) == NULL)
   {
     mutt_unblock_signals ();
@@ -972,6 +996,9 @@ int mbox_sync_mailbox (CONTEXT *ctx, int *index_hint)
     return (-1);
   }
 
+  /* Restore the previous access/modification times */
+  mbox_reset_atime (ctx, &statbuf);
+
   /* reopen the mailbox in read-only mode */
   if ((ctx->fp = fopen (ctx->path, "r")) == NULL)
   {
@@ -997,11 +1024,6 @@ int mbox_sync_mailbox (CONTEXT *ctx, int *index_hint)
   FREE (&oldOffset);
   unlink (tempfile); /* remove partial copy of the mailbox */
   mutt_unblock_signals ();
-
-  /* if mailbox has new mail, mangle atime+mtime to make buffy check
-   * report new mail for it */
-  if (!option (OPTCHECKMBOXSIZE))
-    reset_atime (ctx);
 
   return (0); /* signal success */
 

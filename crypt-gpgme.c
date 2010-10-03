@@ -403,7 +403,7 @@ static gpgme_data_t body_to_data_object (BODY *a, int convert)
   int err = 0;
   gpgme_data_t data;
   
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   fptmp = safe_fopen (tempfile, "w+");
   if (!fptmp)
     {
@@ -525,7 +525,7 @@ static char *data_object_to_tempfile (gpgme_data_t data, FILE **ret_fp)
   FILE *fp;
   size_t nread = 0;
 
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   fp = safe_fopen (tempfile, "w+");
   if (!fp)
     {
@@ -918,7 +918,7 @@ static BODY *sign_message (BODY *a, int use_smime)
     {
       t->subtype = safe_strdup ("pgp-signature");
       t->use_disp = 0;
-      t->disposition = DISPINLINE;
+      t->disposition = DISPNONE;
       t->encoding = ENC7BIT;
     }
   t->filename = sigfile;
@@ -991,7 +991,7 @@ BODY *pgp_gpgme_encrypt_message (BODY *a, char *keylist, int sign)
   t->parts->next->encoding = ENC7BIT;
   t->parts->next->filename = outfile;
   t->parts->next->use_disp = 1;
-  t->parts->next->disposition = DISPINLINE;
+  t->parts->next->disposition = DISPATTACH;
   t->parts->next->unlink = 1; /* delete after sending the message */
   t->parts->next->d_filename = safe_strdup ("msg.asc"); /* non pgp/mime
                                                            can save */
@@ -1711,7 +1711,7 @@ int pgp_gpgme_decrypt_mime (FILE *fpin, FILE **fpout, BODY *b, BODY **cur)
   
   memset (&s, 0, sizeof (s));
   s.fpin = fpin;
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (!(*fpout = safe_fopen (tempfile, "w+")))
   {
     mutt_perror (tempfile);
@@ -1756,7 +1756,7 @@ int smime_gpgme_decrypt_mime (FILE *fpin, FILE **fpout, BODY *b, BODY **cur)
   memset (&s, 0, sizeof (s));
   s.fpin = fpin;
   fseeko (s.fpin, b->offset, 0); 
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (!(tmpfp = safe_fopen (tempfile, "w+")))
     {
       mutt_perror (tempfile);
@@ -1774,7 +1774,7 @@ int smime_gpgme_decrypt_mime (FILE *fpin, FILE **fpout, BODY *b, BODY **cur)
   memset (&s, 0, sizeof (s));
   s.fpin = tmpfp;
   s.fpout = 0;
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (!(*fpout = safe_fopen (tempfile, "w+")))
     {
       mutt_perror (tempfile);
@@ -1810,7 +1810,7 @@ int smime_gpgme_decrypt_mime (FILE *fpin, FILE **fpout, BODY *b, BODY **cur)
       memset (&s, 0, sizeof (s));
       s.fpin = *fpout;
       fseeko (s.fpin, bb->offset, 0); 
-      mutt_mktemp (tempfile);
+      mutt_mktemp (tempfile, sizeof (tempfile));
       if (!(tmpfp = safe_fopen (tempfile, "w+")))
         {
           mutt_perror (tempfile);
@@ -1829,7 +1829,7 @@ int smime_gpgme_decrypt_mime (FILE *fpin, FILE **fpout, BODY *b, BODY **cur)
       memset (&s, 0, sizeof (s));
       s.fpin = tmpfp;
       s.fpout = 0;
-      mutt_mktemp (tempfile);
+      mutt_mktemp (tempfile, sizeof (tempfile));
       if (!(*fpout = safe_fopen (tempfile, "w+")))
         {
           mutt_perror (tempfile);
@@ -1908,7 +1908,7 @@ static int pgp_gpgme_extract_keys (gpgme_data_t keydata, FILE** fp, int dryrun)
     goto err_tmpdir;
   }
 
-  mutt_mktemp (tmpfile);
+  mutt_mktemp (tmpfile, sizeof (tmpfile));
   *fp = safe_fopen (tmpfile, "w+");
   if (!*fp)
   {
@@ -1985,7 +1985,7 @@ static int pgp_check_traditional_one_body (FILE *fp, BODY *b, int tagged_only)
   if (tagged_only && !b->tagged)
     return 0;
 
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (mutt_decode_save_attachment (fp, b, tempfile, 0, 0) != 0)
   {
     unlink (tempfile);
@@ -2371,16 +2371,14 @@ int pgp_gpgme_application_handler (BODY *m, STATE *s)
               safe_fclose (&pgpout);
             }
         }
-#if 0
       else
       {
-        /* why would we want to display this at all? */
+	/* A traditional PGP part may mix signed and unsigned content */
         /* XXX - we may wish to recode here */
         if (s->prefix)
           state_puts (s->prefix, s);
         state_puts (buf, s);
       }
-#endif
     }
 
   m->goodsig = (maybe_goodsig && have_any_sigs);
@@ -2426,7 +2424,7 @@ int pgp_gpgme_encrypted_handler (BODY *a, STATE *s)
   /* Move forward to the application/pgp-encrypted body. */
   a = a->next;
 
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (!(fpout = safe_fopen (tempfile, "w+")))
     {
       if (s->flags & M_DISPLAY)
@@ -2492,7 +2490,7 @@ int smime_gpgme_application_handler (BODY *a, STATE *s)
   dprint (2, (debugfile, "Entering smime_encrypted handler\n"));
   
   a->warnsig = 0;
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (!(fpout = safe_fopen (tempfile, "w+")))
     {
       if (s->flags & M_DISPLAY)
@@ -3452,7 +3450,7 @@ verify_key (crypt_key_t *key)
   gpgme_key_t k = NULL;
   int maxdepth = 100;
 
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (!(fp = safe_fopen (tempfile, "w")))
     {
       mutt_perror _("Can't create temporary file");
@@ -4484,37 +4482,66 @@ static int verify_sender (HEADER *h, gpgme_protocol_t protocol)
     }
 
   if (sender)
+  {
+    if (signature_key)
     {
-      if (signature_key)
-	{
-	  gpgme_key_t key = signature_key;
-	  gpgme_user_id_t uid = NULL;
-	  int sender_length = 0;
-	  int uid_length = 0;
+      gpgme_key_t key = signature_key;
+      gpgme_user_id_t uid = NULL;
+      int sender_length = 0;
+      int uid_length = 0;
 
-	  sender_length = strlen (sender->mailbox);
-	  for (uid = key->uids; uid && ret; uid = uid->next)
-	    {
-	      uid_length = strlen (uid->email);
-	      if (1
-		  && (uid->email[0] == '<')
-		  && (uid->email[uid_length - 1] == '>')
-		  && (uid_length == sender_length + 2)
-		  && (! strncmp (uid->email + 1, sender->mailbox, sender_length)))
-		ret = 0;
-	    }
+      sender_length = strlen (sender->mailbox);
+      for (uid = key->uids; uid && ret; uid = uid->next)
+      {
+	uid_length = strlen (uid->email);
+	if (1
+	    && (uid->email[0] == '<')
+	    && (uid->email[uid_length - 1] == '>')
+	    && (uid_length == sender_length + 2))
+	{
+	  const char* at_sign = strchr(uid->email + 1, '@');
+	  if (at_sign == NULL)
+	  {
+	    if (! strncmp (uid->email + 1, sender->mailbox, sender_length))
+	      ret = 0;
+	  }
+	  else
+	  {
+	    /*
+	     * Assume address is 'mailbox@domainname'.
+	     * The mailbox part is case-sensitive,
+	     * the domainname is not. (RFC 2821)
+	     */
+	    const char* tmp_email = uid->email + 1;
+	    const char* tmp_sender = sender->mailbox;
+	    /* length of mailbox part including '@' */
+	    int mailbox_length = at_sign - tmp_email + 1;
+	    int domainname_length = sender_length - mailbox_length;
+	    int mailbox_match, domainname_match;
+
+	    mailbox_match = (! strncmp (tmp_email, tmp_sender,
+		mailbox_length));
+	    tmp_email += mailbox_length;
+	    tmp_sender += mailbox_length;
+	    domainname_match = (! strncasecmp (tmp_email, tmp_sender,
+		domainname_length));
+	    if (mailbox_match && domainname_match)
+	      ret = 0;
+	  }
 	}
-      else
-	mutt_any_key_to_continue (_("Failed to verify sender"));
+      }
     }
+    else
+      mutt_any_key_to_continue (_("Failed to verify sender"));
+  }
   else
     mutt_any_key_to_continue (_("Failed to figure out sender"));
 
   if (signature_key)
-    {
-      gpgme_key_release (signature_key);
-      signature_key = NULL;
-    }
+  {
+    gpgme_key_release (signature_key);
+    signature_key = NULL;
+  }
 
   return ret;
 }

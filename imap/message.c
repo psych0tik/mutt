@@ -62,7 +62,7 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
 {
   CONTEXT* ctx;
   char buf[LONG_STRING];
-  char hdrreq[STRING];
+  char *hdrreq = NULL;
   FILE *fp;
   char tempfile[_POSIX_PATH_MAX];
   int msgno, idx;
@@ -73,6 +73,7 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
   int maxuid = 0;
   const char *want_headers = "DATE FROM SUBJECT TO CC MESSAGE-ID REFERENCES CONTENT-TYPE CONTENT-DESCRIPTION IN-REPLY-TO REPLY-TO LINES LIST-POST X-LABEL";
   progress_t progress;
+  int retval = -1;
 
 #if USE_HCACHE
   unsigned int *uid_validity = NULL;
@@ -85,29 +86,29 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
 
   if (mutt_bit_isset (idata->capabilities,IMAP4REV1))
   {
-    snprintf (hdrreq, sizeof (hdrreq), "BODY.PEEK[HEADER.FIELDS (%s%s%s)]",
-	      want_headers, ImapHeaders ? " " : "", ImapHeaders ? ImapHeaders : "");
+    safe_asprintf (&hdrreq, "BODY.PEEK[HEADER.FIELDS (%s%s%s)]",
+                           want_headers, ImapHeaders ? " " : "", NONULL (ImapHeaders));
   }
   else if (mutt_bit_isset (idata->capabilities,IMAP4))
   {
-    snprintf (hdrreq, sizeof (hdrreq), "RFC822.HEADER.LINES (%s%s%s)",
-	      want_headers, ImapHeaders ? " " : "", ImapHeaders ? ImapHeaders : "");
+    safe_asprintf (&hdrreq, "RFC822.HEADER.LINES (%s%s%s)",
+                           want_headers, ImapHeaders ? " " : "", NONULL (ImapHeaders));
   }
   else
   {	/* Unable to fetch headers for lower versions */
     mutt_error _("Unable to fetch headers from this IMAP server version.");
     mutt_sleep (2);	/* pause a moment to let the user see the error */
-    return -1;
+    goto error_out_0;
   }
 
   /* instead of downloading all headers and then parsing them, we parse them
    * as they come in. */
-  mutt_mktemp (tempfile);
+  mutt_mktemp (tempfile, sizeof (tempfile));
   if (!(fp = safe_fopen (tempfile, "w+")))
   {
     mutt_error (_("Could not create temporary file %s"), tempfile);
     mutt_sleep (2);
-    return -1;
+    goto error_out_0;
   }
   unlink (tempfile);
 
@@ -220,8 +221,7 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
         if (h.data)
           imap_free_header_data ((void**) (void*) &h.data);
         imap_hcache_close (idata);
-        safe_fclose (&fp);
-        return -1;
+	goto error_out_1;
       }
     }
     /* could also look for first null header in case hcache is holey */
@@ -239,13 +239,13 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
     /* we may get notification of new mail while fetching headers */
     if (msgno + 1 > fetchlast)
     {
+      char *cmd;
+
       fetchlast = msgend + 1;
-
-      snprintf (buf, sizeof (buf),
-        "FETCH %d:%d (UID FLAGS INTERNALDATE RFC822.SIZE %s)", msgno + 1,
-        fetchlast, hdrreq);
-
-      imap_cmd_start (idata, buf);
+      safe_asprintf (&cmd, "FETCH %d:%d (UID FLAGS INTERNALDATE RFC822.SIZE %s)",
+                     msgno + 1, fetchlast, hdrreq);
+      imap_cmd_start (idata, cmd);
+      FREE (&cmd);
     }
 
     rewind (fp);
@@ -338,8 +338,7 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
 #if USE_HCACHE
       imap_hcache_close (idata);
 #endif
-      safe_fclose (&fp);
-      return -1;
+      goto error_out_1;
     }
 
     /* in case we get new mail while fetching the headers */
@@ -371,8 +370,6 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
   imap_hcache_close (idata);
 #endif /* USE_HCACHE */
 
-  safe_fclose (&fp);
-
   if (ctx->msgcount > oldmsgcount)
   {
     mx_alloc_memory(ctx);
@@ -380,7 +377,16 @@ int imap_read_headers (IMAP_DATA* idata, int msgbegin, int msgend)
   }
 
   idata->reopen |= IMAP_REOPEN_ALLOW;
-  return msgend;
+
+  retval = msgend;
+
+error_out_1:
+  safe_fclose (&fp);
+
+error_out_0:
+  FREE (&hdrreq);
+
+  return retval;
 }
 
 int imap_fetch_message (MESSAGE *msg, CONTEXT *ctx, int msgno)
@@ -437,7 +443,7 @@ int imap_fetch_message (MESSAGE *msg, CONTEXT *ctx, int msgno)
   if (!(msg->fp = msg_cache_put (idata, h)))
   {
     cache->uid = HEADER_DATA(h)->uid;
-    mutt_mktemp (path);
+    mutt_mktemp (path, sizeof (path));
     cache->path = safe_strdup (path);
     if (!(msg->fp = safe_fopen (path, "w+")))
     {
@@ -594,6 +600,7 @@ int imap_append_message (CONTEXT *ctx, MESSAGE *msg)
   char buf[LONG_STRING];
   char mbox[LONG_STRING];
   char mailbox[LONG_STRING];
+  char internaldate[IMAP_DATELEN];
   size_t len;
   progress_t progressbar;
   size_t sent;
@@ -635,12 +642,14 @@ int imap_append_message (CONTEXT *ctx, MESSAGE *msg)
 		      M_PROGRESS_SIZE, NetInc, len);
 
   imap_munge_mbox_name (mbox, sizeof (mbox), mailbox);
-  snprintf (buf, sizeof (buf), "APPEND %s (%s%s%s%s%s) {%lu}", mbox,
+  imap_make_date (internaldate, msg->received);
+  snprintf (buf, sizeof (buf), "APPEND %s (%s%s%s%s%s) \"%s\" {%lu}", mbox,
 	    msg->flags.read    ? "\\Seen"      : "",
 	    msg->flags.read && (msg->flags.replied || msg->flags.flagged) ? " " : "",
 	    msg->flags.replied ? "\\Answered" : "",
 	    msg->flags.replied && msg->flags.flagged ? " " : "",
 	    msg->flags.flagged ? "\\Flagged"  : "",
+	    internaldate,
 	    (unsigned long) len);
 
   imap_cmd_start (idata, buf);

@@ -43,6 +43,7 @@ typedef struct flowed_state
 {
   size_t width;
   size_t spaces;
+  int delsp;
 } flowed_state_t;
 
 static int get_quote_level (const char *line)
@@ -110,6 +111,7 @@ static void print_flowed_line (char *line, STATE *s, int ql,
 {
   size_t width, w, words = 0;
   char *p;
+  char last;
 
   if (!line || !*line)
   {
@@ -121,6 +123,7 @@ static void print_flowed_line (char *line, STATE *s, int ql,
   }
 
   width = quote_width (s, ql);
+  last = line[mutt_strlen (line) - 1];
 
   dprint (4, (debugfile, "f=f: line [%s], width = %ld, spaces = %d\n",
 	      NONULL(line), (long)width, fst->spaces));
@@ -143,8 +146,12 @@ static void print_flowed_line (char *line, STATE *s, int ql,
 
     w = mutt_strwidth (p);
     /* see if we need to break the line but make sure the first
-       word is put on the line regardless */
-    if (w < width && w + fst->width + fst->spaces > width)
+       word is put on the line regardless;
+       if for DelSp=yes only one trailing space is used, we probably
+       have a long word that we should break within (we leave that
+       up to the pager or user) */
+    if (!(!fst->spaces && fst->delsp && last != ' ') &&
+	w < width && w + fst->width + fst->spaces > width)
     {
       dprint(4,(debugfile,"f=f: break line at %d, %d spaces left\n",
 		fst->width, fst->spaces));
@@ -186,12 +193,10 @@ static void print_fixed_line (const char *line, STATE *s, int ql,
 
 int rfc3676_handler (BODY * a, STATE * s)
 {
-  int bytes = a->length;
-  char buf[LONG_STRING];
-  char *t = NULL;
+  char *buf = NULL, *t = NULL;
   unsigned int quotelevel = 0, newql = 0, sigsep = 0;
-  int buf_off = 0, buf_len;
-  int delsp = 0, fixed = 0;
+  int buf_off = 0, delsp = 0, fixed = 0;
+  size_t buf_len = 0, sz = 0;
   flowed_state_t fst;
 
   memset (&fst, 0, sizeof (fst));
@@ -201,16 +206,14 @@ int rfc3676_handler (BODY * a, STATE * s)
   {
     delsp = mutt_strlen (t) == 3 && ascii_strncasecmp (t, "yes", 3) == 0;
     t = NULL;
+    fst.delsp = 1;
   }
 
   dprint (4, (debugfile, "f=f: DelSp: %s\n", delsp ? "yes" : "no"));
 
-  while (bytes > 0 && fgets (buf, sizeof (buf), s->fpin))
+  while ((buf = mutt_read_line (buf, &sz, s->fpin, NULL, 0)))
   {
-
     buf_len = mutt_strlen (buf);
-    bytes -= buf_len;
-
     newql = get_quote_level (buf);
 
     /* end flowed paragraph (if we're within one) if quoting level
@@ -220,18 +223,6 @@ int rfc3676_handler (BODY * a, STATE * s)
       flush_par (s, &fst);
 
     quotelevel = newql;
-
-    /* XXX - If a line is longer than buf (shouldn't happen), it is split.
-     * This will almost always cause an unintended line break, and
-     * possibly a change in quoting level. But that's better than not
-     * displaying it at all.
-     */
-    if ((t = strrchr (buf, '\r')) || (t = strrchr (buf, '\n')))
-    {
-      *t = '\0';
-      buf_len = t - buf;
-    }
-
     buf_off = newql;
 
     /* respect sender's space-stuffing by removing one leading space */
@@ -264,6 +255,7 @@ int rfc3676_handler (BODY * a, STATE * s)
 
   flush_par (s, &fst);
 
+  FREE (&buf);
   return (0);
 }
 
@@ -300,7 +292,7 @@ void rfc3676_space_stuff (HEADER* hdr)
   if ((in = safe_fopen (hdr->content->filename, "r")) == NULL)
     return;
 
-  mutt_mktemp (tmpfile);
+  mutt_mktemp (tmpfile, sizeof (tmpfile));
   if ((out = safe_fopen (tmpfile, "w+")) == NULL)
   {
     safe_fclose (&in);

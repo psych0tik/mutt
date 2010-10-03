@@ -758,7 +758,8 @@ char *mutt_read_line (char *s, size_t *size, FILE *fp, int *line, int flags)
     }
     if ((ch = strchr (s + offset, '\n')) != NULL)
     {
-      (*line)++;
+      if (line)
+	(*line)++;
       if (flags & M_EOL)
 	return s;
       *ch = 0;
@@ -779,7 +780,8 @@ char *mutt_read_line (char *s, size_t *size, FILE *fp, int *line, int flags)
       if (c == EOF)
       {
         /* The last line of fp isn't \n terminated */
-        (*line)++;
+	if (line)
+	  (*line)++;
         return s;
       }
       else
@@ -1007,6 +1009,24 @@ mutt_strsysexit(int e)
   return sysexits_h[i].str;
 }
 
+void mutt_debug (FILE *fp, const char *fmt, ...)
+{
+  va_list ap;
+  time_t now = time (NULL);
+  static char buf[23] = "";
+  static time_t last = 0;
+
+  if (now > last)
+  {
+    strftime (buf, sizeof (buf), "%Y-%m-%d %H:%M:%S", localtime (&now));
+    last = now;
+  }
+  fprintf (fp, "[%s] ", buf);
+  va_start (ap, fmt);
+  vfprintf (fp, fmt, ap);
+  va_end (ap);
+}
+
 int mutt_atos (const char *str, short *dst)
 {
   int rc;
@@ -1057,7 +1077,8 @@ int mutt_atol (const char *str, long *dst)
   }
 
   *res = strtol (str, &e, 10);
-  if (e && *e != '\0')
+  if ((*res == LONG_MAX && errno == ERANGE) ||
+      (e && *e != '\0'))
     return -1;
   return 0;
 }
