@@ -9,10 +9,8 @@ This patch enables mutt to find these dots and
 
 I hope, it's usefull for someone ;)
 
-Index: mutt/sidebar.c
-===================================================================
---- mutt.orig/sidebar.c	2009-06-25 12:36:53.000000000 +0200
-+++ mutt/sidebar.c	2009-06-25 12:36:59.000000000 +0200
+--- a/sidebar.c
++++ b/sidebar.c
 @@ -255,14 +255,23 @@
  			int i;
  			tmp_folder_name = tmp->path + strlen(Maildir);
@@ -40,11 +38,9 @@ Index: mutt/sidebar.c
  			}
  		}
  		printw( "%.*s", SidebarWidth - delim_len + 1,
-Index: mutt/init.h
-===================================================================
---- mutt.orig/init.h	2009-06-25 12:36:53.000000000 +0200
-+++ mutt/init.h	2009-06-25 12:36:59.000000000 +0200
-@@ -1969,6 +1969,11 @@
+--- a/init.h
++++ b/init.h
+@@ -1981,6 +1981,11 @@
    ** .pp
    ** The width of the sidebar.
    */
@@ -56,11 +52,9 @@ Index: mutt/init.h
    { "pgp_use_gpg_agent", DT_BOOL, R_NONE, OPTUSEGPGAGENT, 0},
    /*
    ** .pp
-Index: mutt/mutt.h
-===================================================================
---- mutt.orig/mutt.h	2009-06-25 12:36:53.000000000 +0200
-+++ mutt/mutt.h	2009-06-25 12:36:59.000000000 +0200
-@@ -426,6 +426,7 @@
+--- a/mutt.h
++++ b/mutt.h
+@@ -432,6 +432,7 @@
    OPTSAVENAME,
    OPTSCORE,
    OPTSIDEBAR,

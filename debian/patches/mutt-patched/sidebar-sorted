@@ -11,10 +11,8 @@ I hope, it's usefull for someone ;)
 PS: This has to be applied ontop of my sidebar-dotted patch, but it
 should be easy to adopt it to a vanilla mutt.
 
-Index: mutt/sidebar.c
-===================================================================
---- mutt.orig/sidebar.c	2009-06-25 12:36:59.000000000 +0200
-+++ mutt/sidebar.c	2009-06-25 12:37:03.000000000 +0200
+--- a/sidebar.c
++++ b/sidebar.c
 @@ -54,6 +54,35 @@
  	for ( ; tmp->next != 0; tmp = tmp->next )
  		tmp->next->prev = tmp;
@@ -51,11 +49,9 @@ Index: mutt/sidebar.c
  	if ( TopBuffy == 0 && BottomBuffy == 0 )
  		TopBuffy = Incoming;
  	if ( BottomBuffy == 0 ) {
-Index: mutt/init.h
-===================================================================
---- mutt.orig/init.h	2009-06-25 12:36:59.000000000 +0200
-+++ mutt/init.h	2009-06-25 12:37:03.000000000 +0200
-@@ -1974,6 +1974,11 @@
+--- a/init.h
++++ b/init.h
+@@ -1986,6 +1986,11 @@
    ** .pp
    ** Should the sidebar shorten the path showed.
    */
@@ -67,11 +63,9 @@ Index: mutt/init.h
    { "pgp_use_gpg_agent", DT_BOOL, R_NONE, OPTUSEGPGAGENT, 0},
    /*
    ** .pp
-Index: mutt/mutt.h
-===================================================================
---- mutt.orig/mutt.h	2009-06-25 12:36:59.000000000 +0200
-+++ mutt/mutt.h	2009-06-25 12:37:03.000000000 +0200
-@@ -427,6 +427,7 @@
+--- a/mutt.h
++++ b/mutt.h
+@@ -433,6 +433,7 @@
    OPTSCORE,
    OPTSIDEBAR,
    OPTSIDEBARSHORTPATH,
