@@ -1,10 +1,5 @@
 mutt (1.5.21-1) experimental; urgency=low
 
-  [ Christoph Berg ]
-  * debian/patches: features/imap_fast_trash: Make "move to trash folder" use
-    IMAP COPY, by Paul Miller (jettero).
-
-  [ Antonio Radici ]
   * New upstream version (Closes: 597487)
   * debian/patches:
     + refreshed all patches
@@ -13,6 +8,13 @@ mutt (1.5.21-1) experimental; urgency=low
     + Standards-Version bumped to 3.9.1, no change required
 
  -- Antonio Radici <antonio@dyne.org>  Sun, 03 Oct 2010 22:48:50 +0100
+
+mutt (1.5.20-10) experimental; urgency=low
+
+  * debian/patches: features/imap_fast_trash: Make "move to trash folder" use
+    IMAP COPY, by Paul Miller (jettero).
+
+ -- Christoph Berg <myon@debian.org>  Wed, 25 Aug 2010 11:11:43 +0200
 
 mutt (1.5.20-9) unstable; urgency=low
 
