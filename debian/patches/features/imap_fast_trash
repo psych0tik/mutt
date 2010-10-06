@@ -6,7 +6,20 @@ by Paul Miller (jettero)
 
 --- a/imap/imap.c
 +++ b/imap/imap.c
-@@ -2028,3 +2028,54 @@
+@@ -893,6 +893,12 @@ static int imap_make_msg_set (IMAP_DATA*
+           if (hdrs[n]->deleted != HEADER_DATA(hdrs[n])->deleted)
+             match = invert ^ hdrs[n]->deleted;
+ 	  break;
++        case M_EXPIRED: /* imap_fast_trash version of M_DELETED */
++	  if (hdrs[n]->purged)
++	    break;
++          if (hdrs[n]->deleted != HEADER_DATA(hdrs[n])->deleted)
++            match = invert ^ hdrs[n]->deleted;
++	  break;
+         case M_FLAG:
+           if (hdrs[n]->flagged != HEADER_DATA(hdrs[n])->flagged)
+             match = invert ^ hdrs[n]->flagged;
+@@ -2028,3 +2034,54 @@ int imap_complete(char* dest, size_t dle
  
    return -1;
  }
@@ -30,7 +43,7 @@ by Paul Miller (jettero)
 +                    strfcpy (mbox, "INBOX", sizeof (mbox));
 +                imap_munge_mbox_name (mmbox, sizeof (mmbox), mbox);
 +
-+                rc = imap_exec_msgset (idata, "UID COPY", mmbox, M_DELETED, 0, 0);
++                rc = imap_exec_msgset (idata, "UID COPY", mmbox, M_EXPIRED, 0, 0);
 +                if (!rc) {
 +                    dprint (1, (debugfile, "imap_copy_messages: No messages del-tagged\n"));
 +                    rc = -1;
@@ -63,7 +76,7 @@ by Paul Miller (jettero)
 +}
 --- a/imap/imap.h
 +++ b/imap/imap.h
-@@ -72,4 +72,7 @@
+@@ -72,4 +72,7 @@ void imap_keepalive (void);
  
  int imap_account_match (const ACCOUNT* a1, const ACCOUNT* a2);
  
@@ -73,7 +86,7 @@ by Paul Miller (jettero)
  #endif
 --- a/mx.c
 +++ b/mx.c
-@@ -802,6 +802,11 @@
+@@ -802,6 +802,11 @@ static int trash_append (CONTEXT *ctx)
  	&& stc.st_dev == st.st_dev && stc.st_rdev == st.st_rdev)
        return 0;  /* we are in the trash folder: simple sync */
  
