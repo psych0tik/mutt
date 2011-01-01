@@ -1,3 +1,10 @@
+mutt (1.5.21-2) experimental; urgency=low
+  mailto-mutt has been replaced by a wrapper as per #576313, because mutt is now
+  able to handle the mailto: urls; additionally it will also do some checks on
+  attachments and it will allow us to be as close to upstream as possible
+
+ -- Antonio Radici <antonio@dyne.org>  Sat, 01 Jan 2011 12:56:29 +0000
+
 mutt (1.5.20-6) unstable; urgency=low
   The behavior of the write_bcc option has changed, now write_bcc is only
   used to decide if an Fcc message should have its Bcc header written;
