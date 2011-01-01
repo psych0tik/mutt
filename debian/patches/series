@@ -43,6 +43,7 @@ upstream/383769-score-match.patch
 upstream/578087-header-strchr.patch
 
 upstream/603288-split-fetches.patch
+upstream/537061-dont-recode-saved-attachments.patch
 upstream/path_max
 
 mutt.org
