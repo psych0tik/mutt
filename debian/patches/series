@@ -39,6 +39,7 @@ upstream/547980-smime_keys-chaining.patch
 upstream/528233-readonly-open.patch
 upstream/228671-pipe-mime.patch
 upstream/383769-score-match.patch
+upstream/578087-header-strchr.patch
 
 upstream/path_max
 

@@ -1,8 +1,14 @@
 mutt (1.5.21-2) UNRELEASED; urgency=low
 
+  [ Christoph Berg ]
   * debian/patches: features/imap_fast_trash: Support purging of messages.
 
- -- Christoph Berg <myon@debian.org>  Wed, 06 Oct 2010 14:13:53 +0200
+  [ Antonio Radici ]
+  * debian/patches:
+    + upstream/578087-header-strchr.patch: prevent from segfaulting on malformed
+      messages (Closes: 578087)
+
+ -- Antonio Radici <antonio@dyne.org>  Sat, 01 Jan 2011 12:56:29 +0000
 
 mutt (1.5.21-1) experimental; urgency=low
 
