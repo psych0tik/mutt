@@ -7,10 +7,12 @@ mutt (1.5.21-2) UNRELEASED; urgency=low
   * debian/patches:
     + upstream/578087-header-strchr.patch: prevent from segfaulting on malformed
       messages (Closes: 578087, 578583)
+    + upstream/603288-split-fetches.patch: split FETCH's into smaller chunks,
+      workaround for Exchange 2010 (Closes: 603288)
   * debian/extra/lib/mailto-mutt: replaced by a wrapper, added the reason to
     NEWS.Debian (Closes: 576313)
 
- -- Antonio Radici <antonio@dyne.org>  Sat, 01 Jan 2011 12:56:29 +0000
+ -- Antonio Radici <antonio@dyne.org>  Sat, 01 Jan 2011 18:24:16 +0000
 
 mutt (1.5.21-1) experimental; urgency=low
 

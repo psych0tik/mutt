@@ -41,6 +41,7 @@ upstream/228671-pipe-mime.patch
 upstream/383769-score-match.patch
 upstream/578087-header-strchr.patch
 
+upstream/603288-split-fetches.patch
 upstream/path_max
 
 mutt.org
