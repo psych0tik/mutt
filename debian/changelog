@@ -6,7 +6,7 @@ mutt (1.5.21-2) UNRELEASED; urgency=low
   [ Antonio Radici ]
   * debian/patches:
     + upstream/578087-header-strchr.patch: prevent from segfaulting on malformed
-      messages (Closes: 578087)
+      messages (Closes: 578087, 578583)
 
  -- Antonio Radici <antonio@dyne.org>  Sat, 01 Jan 2011 12:56:29 +0000
 
