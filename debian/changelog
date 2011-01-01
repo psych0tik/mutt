@@ -9,6 +9,8 @@ mutt (1.5.21-2) UNRELEASED; urgency=low
       messages (Closes: 578087, 578583)
     + upstream/603288-split-fetches.patch: split FETCH's into smaller chunks,
       workaround for Exchange 2010 (Closes: 603288)
+    + debian-specific/566076-build_doc_adjustments.patch: use w3m to build the
+      manual (Closes: 566076)
   * debian/extra/lib/mailto-mutt: replaced by a wrapper, added the reason to
     NEWS.Debian (Closes: 576313)
 

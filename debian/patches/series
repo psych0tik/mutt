@@ -21,6 +21,7 @@ debian-specific/dont_document_not_present_features.diff
 debian-specific/document_debian_defaults
 debian-specific/assumed_charset-compat
 debian-specific/467432-write_bcc.patch
+debian-specific/566076-build_doc_adjustments.patch
 misc/define-pgp_getkeys_command.diff 
 misc/gpg.rc-paths
 misc/smime.rc
