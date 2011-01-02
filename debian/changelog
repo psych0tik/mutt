@@ -11,6 +11,8 @@ mutt (1.5.21-2) experimental; urgency=low
       workaround for Exchange 2010 (Closes: 603288)
     + upstream/537061-dont-recode-saved-attachments.patch: as the patch says,
       see the patch for more info (Closes: 537061)
+    + upstream/608706-fix-spelling-errors.patch: to fix some spelling errors
+      (Closes: 608706)
     + debian-specific/566076-build_doc_adjustments.patch: use w3m to build the
       manual (Closes: 566076)
   * debian/extra/lib/mailto-mutt: replaced by a wrapper, added the reason to
@@ -20,7 +22,7 @@ mutt (1.5.21-2) experimental; urgency=low
   * debian/*.lintian-overrides: ignore 'binary without manpage' errors due to
     the diversions to mutt-org/mutt-patched
 
- -- Antonio Radici <antonio@dyne.org>  Sat, 01 Jan 2011 18:24:16 +0000
+ -- Antonio Radici <antonio@dyne.org>  Sun, 02 Jan 2011 21:05:25 +0000
 
 mutt (1.5.21-1) experimental; urgency=low
 
