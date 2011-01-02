@@ -1,2 +1,3 @@
 mutt: setgid-binary usr/bin/mutt_dotlock 2755 root/mail
 mutt: arch-dep-package-has-big-usr-share
+mutt: binary-without-manpage usr/bin/mutt-org

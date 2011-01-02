@@ -17,6 +17,8 @@ mutt (1.5.21-2) experimental; urgency=low
     NEWS.Debian (Closes: 576313)
   * debian/extra/rc/compressed-folders.rc: added support for xz-compressed
     folders (Closes: 578099)
+  * debian/*.lintian-overrides: ignore 'binary without manpage' errors due to
+    the diversions to mutt-org/mutt-patched
 
  -- Antonio Radici <antonio@dyne.org>  Sat, 01 Jan 2011 18:24:16 +0000
 

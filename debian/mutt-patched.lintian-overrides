@@ -1,1 +1,1 @@
-mutt-patched: binary-without-manpage usr/bin/mutt
+mutt-patched: binary-without-manpage usr/bin/mutt-patched
