@@ -1,3 +1,11 @@
+mutt (1.5.21-4) unstable; urgency=low
+
+  * debian/paches:
+    + mutt-patched/sidebar: added a closedir() so the fds will not be starved 
+      (Closes: 620854)
+
+ -- Antonio Radici <antonio@dyne.org>  Mon, 11 Apr 2011 16:23:35 +0100
+
 mutt (1.5.21-3) unstable; urgency=low
 
   * Uploading to unstable

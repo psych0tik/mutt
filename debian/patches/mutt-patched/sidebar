@@ -53,7 +53,7 @@ in the "mutt-patched" package.
        rc = 1;
        break;
      }
-@@ -337,6 +343,32 @@
+@@ -337,6 +343,34 @@
  
    closedir (dirp);
  
@@ -83,10 +83,12 @@ in the "mutt-patched" package.
 +    }
 +  }
 +
++  closedir (dirp);
++
    return rc;
  }
  
-@@ -345,14 +377,33 @@
+@@ -345,14 +379,33 @@
  {
    int rc = 0;
    int statcheck;
@@ -121,7 +123,7 @@ in the "mutt-patched" package.
      if (!option(OPTMAILCHECKRECENT) || sb->st_mtime > mailbox->last_visited)
      {
        rc = 1;
-@@ -374,9 +425,11 @@
+@@ -374,9 +427,11 @@
  int mutt_buffy_check (int force)
  {
    BUFFY *tmp;
@@ -133,7 +135,7 @@ in the "mutt-patched" package.
  
    sb.st_size=0;
    contex_sb.st_dev=0;
-@@ -456,6 +509,20 @@
+@@ -456,6 +511,20 @@
        case M_MH:
  	if ((tmp->new = mh_buffy (tmp->path)) > 0)
  	  BuffyCount++;
@@ -1304,7 +1306,7 @@ in the "mutt-patched" package.
  # Name: crypt_autosign
 --- a/imap/imap.c
 +++ b/imap/imap.c
-@@ -1521,7 +1521,7 @@
+@@ -1527,7 +1527,7 @@
  
      imap_munge_mbox_name (munged, sizeof (munged), name);
      snprintf (command, sizeof (command),
