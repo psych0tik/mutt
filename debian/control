@@ -8,7 +8,7 @@ Build-Depends: automake, debhelper (>> 7), docbook-xml, docbook-xsl,
  libgpgme11-dev, libidn11-dev, libkrb5-dev, libncurses5-dev, libncursesw5-dev,
  libsasl2-dev, pkg-config, quilt, xsltproc, zlib1g-dev,
  libtokyocabinet-dev [!hurd-i386], libgdbm-dev [hurd-i386]
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2.0
 Vcs-Git: git://git.debian.org/git/pkg-mutt/mutt.git
 Vcs-Browser: http://git.debian.org/?p=pkg-mutt/mutt.git
 Homepage: http://www.mutt.org/

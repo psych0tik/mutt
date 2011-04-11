@@ -5,6 +5,8 @@ mutt (1.5.21-4) unstable; urgency=low
       (Closes: 620854)
     + upstream/620854-pop3-segfault.patch: prevent segfault when
       $message_cachedir is set and a pop3 mailbox is open (Closes: 620854)
+  * debian/control:
+    + Standards-Version upgraded to 3.9.2.0, no changes required
 
  -- Antonio Radici <antonio@dyne.org>  Mon, 11 Apr 2011 16:23:35 +0100
 
