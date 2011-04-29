@@ -62,3 +62,18 @@ I hope, it's usefull for someone ;)
    OPTSIGDASHES,
    OPTSIGONTOP,
    OPTSORTRE,
+--- a/debian/extra/samples/sidebar.muttrc
++++ b/debian/extra/samples/sidebar.muttrc
+@@ -50,7 +50,11 @@
+ # 
+ # sidebar_delim (string)
+ # Specifies the delimiter between the sidebar and other screens
+-# 
++#
++# sidebar_shortpath (boolean)
++# When using IMAP, a '.' is often used as a separator. This option
++# allows to shorten the folder name to the part after the last dot.
++#
+ # color sidebar_new [fg] [bg]
+ # The foreground (fg) and background (bg) color of folders that contain new
+ # mail.
