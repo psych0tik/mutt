@@ -5,6 +5,8 @@ mutt (1.5.21-5) unstable; urgency=low
       (Closes: 619822)
     + sidebar-{dotted,sorted}: documented the options that those two patches are
       introducing; documentation submitted by Julien Valroff (Closes: 603186)
+    + sidebar-sorted: use strcoll() to sort the sidebar using the locale
+      settings of the system, patch by Arnaud Riess (Closes: 589240)
     + multiple-fccs: added a patch that allows multiple FCC separated by commas,
       written by Omen Wild (Closes: 586454)
 

@@ -26,7 +26,7 @@ should be easy to adopt it to a vanilla mutt.
 +			needsort=0;
 +			tmp = Incoming;
 +			for ( ; tmp ; tmp=tmp->next ) {
-+				if (tmp->next != NULL && strcmp(tmp->path, tmp->next->path) > 0) {
++				if (tmp->next != NULL && strcoll(tmp->path, tmp->next->path) > 0) {
 +					needsort=1;
 +					prev = tmp->prev;
 +					next = tmp->next;
