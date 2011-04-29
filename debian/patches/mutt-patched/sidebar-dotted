@@ -17,7 +17,7 @@ I hope, it's usefull for someone ;)
  			for (i = 0; i < strlen(tmp->path) - strlen(Maildir); i++) {
 -				if (tmp_folder_name[i] == '/') sidebar_folder_depth++;
 + 				if (tmp_folder_name[i] == '/'  || tmp_folder_name[i] == '.') sidebar_folder_depth++;
- 			}
+ 			}   
  			if (sidebar_folder_depth > 0) {
 -				sidebar_folder_name = malloc(strlen(basename(tmp->path)) + sidebar_folder_depth + 1);
 + 				if (option(OPTSIDEBARSHORTPATH)) {
@@ -25,7 +25,7 @@ I hope, it's usefull for someone ;)
 + 					if (tmp_folder_name == NULL)
 + 						tmp_folder_name = tmp->path;
 + 					else
-+ 						tmp_folder_name++;
++						tmp_folder_name++;
 + 				}
 + 				else
 + 					tmp_folder_name = tmp->path;
