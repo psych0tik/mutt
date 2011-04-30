@@ -3,6 +3,8 @@ mutt (1.5.21-5) unstable; urgency=low
   * debian/patches/mutt-patched:
     + sidebar: patch replaced with the one written by Stuart Henderson
       (Closes: 619822)
+    + sidebar: don't overwrite the status if status_on_top is enabled 
+      (Closes: 494735)
     + sidebar-{dotted,sorted}: documented the options that those two patches are
       introducing; documentation submitted by Julien Valroff (Closes: 603186)
     + sidebar-sorted: use strcoll() to sort the sidebar using the locale

@@ -965,7 +965,7 @@ in the "mutt-patched" package.
  	break;
 --- /dev/null
 +++ b/sidebar.c
-@@ -0,0 +1,333 @@
+@@ -0,0 +1,336 @@
 +/*
 + * Copyright (C) ????-2004 Justin Hibbits <jrh29@po.cwru.edu>
 + * Copyright (C) 2004 Thomer M. Gil <mutt@thomer.com>
@@ -1105,6 +1105,8 @@ in the "mutt-patched" package.
 +int draw_sidebar(int menu) {
 +
 +	int lines = option(OPTHELP) ? 1 : 0;
++    lines += option(OPTSTATUSONTOP) ? 1 : 0;
++
 +	BUFFY *tmp;
 +#ifndef USE_SLANG_CURSES
 +        attr_t attrs;
@@ -1184,6 +1186,7 @@ in the "mutt-patched" package.
 +
 +	if ( Incoming == 0 ) return 0;
 +	lines = option(OPTHELP) ? 1 : 0; /* go back to the top */
++    lines += option(OPTSTATUSONTOP) ? 1 : 0;
 +
 +	if ( known_lines != LINES || TopBuffy == 0 || BottomBuffy == 0 ) 
 +		calc_boundaries(menu);
