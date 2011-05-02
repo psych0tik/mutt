@@ -68,13 +68,3 @@
  ##
  ## *** DEFAULT SETTINGS FOR THE ATTACHMENTS PATCH ***
  ##
-@@ -96,6 +128,9 @@
- attachments   -A message/external-body
- attachments   -I message/external-body
- 
-+# enable mime lookup by extension
-+mime_lookup application/octet-stream
-+
- ##
- ## More settings
- ##

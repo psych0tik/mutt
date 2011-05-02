@@ -12,6 +12,9 @@ mutt (1.5.21-5) unstable; urgency=low
     + sidebar-utf8: rewrites make_sidebar_entry() to allow correct padding of
       utf-8 strings and also prevents segfaults due to overflows 
       (Closes: 584581, 603287)
+  * debian/patches/debian-specific:
+    + Muttrc: remove a hook for application/octet-stream, already upstream
+      (Closes: 611405)
   * debian/extra/samples/sidebar.muttrc: documented the options that
     the sidebar-{sorted,dotted} patches are introducing; documentation 
     submitted by Julien Valroff (Closes: 603186)
