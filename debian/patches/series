@@ -54,6 +54,7 @@ mutt.org
 mutt-patched/sidebar
 mutt-patched/sidebar-dotted
 mutt-patched/sidebar-sorted
+mutt-patched/sidebar-utf8
 mutt-patched/multiple-fcc
 
 # not applying cleanly at the moment
