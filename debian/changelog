@@ -15,6 +15,9 @@ mutt (1.5.21-5) unstable; urgency=low
   * debian/patches/debian-specific:
     + Muttrc: remove a hook for application/octet-stream, already upstream
       (Closes: 611405)
+  * debian/patches/upstream:
+    + 611412-bts-regexp.patch: fixes a regexp for BTS in the mutt manual 
+      (Closes: 611412)
   * debian/extra/samples/sidebar.muttrc: documented the options that
     the sidebar-{sorted,dotted} patches are introducing; documentation 
     submitted by Julien Valroff (Closes: 603186)

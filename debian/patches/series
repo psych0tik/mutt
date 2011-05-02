@@ -47,6 +47,7 @@ upstream/537061-dont-recode-saved-attachments.patch
 upstream/608706-fix-spelling-errors.patch
 upstream/620854-pop3-segfault.patch
 
+upstream/611412-bts-regexp.patch
 upstream/path_max
 
 mutt.org
