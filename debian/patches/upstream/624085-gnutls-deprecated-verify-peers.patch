@@ -2,6 +2,7 @@ Remove the deprecated gnutls_certificate_verify_peers() in favour of the new
 gnutls_certificate_veirfy_peers2()
 
 Reported on http://bugs.debian.org/624085
+Reported upstream on http://bugs.mutt.org/3516
 
 --- a/mutt_ssl_gnutls.c
 +++ b/mutt_ssl_gnutls.c

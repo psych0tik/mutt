@@ -2,6 +2,7 @@ Replace the deprecated gnutls_protocol_set_priority() with
 gnutls_priority_set_direct()
 
 Reported on http://bugs.debian.org/624058
+Report upstream on http://bugs.mutt.org/3515
 
 --- a/mutt_ssl_gnutls.c
 +++ b/mutt_ssl_gnutls.c
