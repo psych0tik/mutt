@@ -22,7 +22,7 @@ The home page for this patch is:
 == END PATCH
 --- /dev/null
 +++ b/compress.c
-@@ -0,0 +1,496 @@
+@@ -0,0 +1,499 @@
 +/*
 + * Copyright (C) 1997 Alain Penders <Alain@Finale-Dev.com>
 + *
@@ -303,6 +303,9 @@ The home page for this patch is:
 +    ctx->magic = 0;
 +    FREE (&ctx->compressinfo);
 +    mutt_error (_("Error executing: %s : unable to open the mailbox!\n"), cmd);
++    // remove the partial uncompressed file
++    remove_file (ctx);
++    restore_path (ctx);
 +  }
 +  FREE (&cmd);
 +  if (rc)

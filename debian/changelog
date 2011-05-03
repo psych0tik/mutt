@@ -22,6 +22,8 @@ mutt (1.5.21-5) unstable; urgency=low
       (Closes: 624058)
     + 624085-gnutls-deprecated-verify-peers.patch: deprecate
       gnutls_certificate_verify_peers() (Closes: 624085)
+  * debian/patches/compressed-folders: remove partially uncompressed folder if
+      the open fails (Closes: 578098)
   * debian/extra/samples/sidebar.muttrc: documented the options that
     the sidebar-{sorted,dotted} patches are introducing; documentation 
     submitted by Julien Valroff (Closes: 603186)
