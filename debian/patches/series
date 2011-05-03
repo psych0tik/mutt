@@ -32,7 +32,7 @@ upstream/531430-imapuser.patch
 upstream/537818-emptycharset.patch
 upstream/543467-thread-segfault.patch
 upstream/542817-smimekeys-tmpdir.patch
-upstream/537694-segv-imap-headers.patch
+#upstream/537694-segv-imap-headers.patch
 upstream/548577-gpgme-1.2.patch
 upstream/553321-ansi-escape-segfault.patch
 upstream/568295-references.patch
@@ -49,6 +49,7 @@ upstream/620854-pop3-segfault.patch
 upstream/611412-bts-regexp.patch
 upstream/624058-gnutls-deprecated-set-priority.patch
 upstream/624085-gnutls-deprecated-verify-peers.patch
+upstream/584138-mx_update_context-segfault.patch
 upstream/path_max
 
 mutt.org
