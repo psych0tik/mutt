@@ -25,6 +25,8 @@ mutt (1.5.21-5) unstable; urgency=low
     + 584138-mx_update_context-segfault.patch: fix a segfault due to holes in
       IMAP headers, 537694-segv-imap-headers.patch is removed as part of this fix
       (Closes: 584138)
+    + 619216-gnutls-CN-validation.patch: fix the validation of the
+      commonname in the gnutls code (Closes: 619216)
   * debian/patches/compressed-folders: remove partially uncompressed folder if
       the open fails (Closes: 578098)
   * debian/extra/samples/sidebar.muttrc: documented the options that
