@@ -20,7 +20,7 @@ http://bugs.debian.org/619216
      rc = tls_check_preauth(&cert_list[i], certstat, conn->account.host, i,
                             &certerr, &savedcert);
 +    if (i ==0)
-+      rcpeeer = rc;
++      rcpeer = rc;
 +
      preauthrc += rc;
  
