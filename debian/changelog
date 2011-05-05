@@ -34,6 +34,8 @@ mutt (1.5.21-5) unstable; urgency=low
   * debian/extra/samples/sidebar.muttrc: documented the options that
     the sidebar-{sorted,dotted} patches are introducing; documentation 
     submitted by Julien Valroff (Closes: 603186)
+  * added mutt.desktop and to debian/extra and installed through mutt.install, 
+    it contains a MimeType handler for mailto (Closes: 613781)
 
  -- Antonio Radici <antonio@dyne.org>  Thu, 05 May 2011 15:00:56 +0000
 

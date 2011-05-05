@@ -15,4 +15,5 @@ debian/tmp/gpg.rc			etc/Muttrc.d
 contrib/smime.rc			etc/Muttrc.d
 debian/extra/rc/*.rc			etc/Muttrc.d
 debian/extra/mutt.xpm			usr/share/pixmaps
+debian/extra/mutt.desktop       usr/share/applications
 debian/tmp/usr/share/doc/*.html		usr/share/doc/mutt/html
