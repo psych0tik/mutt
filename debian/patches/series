@@ -51,6 +51,7 @@ upstream/624058-gnutls-deprecated-set-priority.patch
 upstream/624085-gnutls-deprecated-verify-peers.patch
 upstream/584138-mx_update_context-segfault.patch
 upstream/619216-gnutls-CN-validation.patch
+upstream/611410-no-implicit_autoview-for-text-html.patch
 upstream/path_max
 
 mutt.org
