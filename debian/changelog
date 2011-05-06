@@ -1,5 +1,7 @@
 mutt (1.5.21-5) unstable; urgency=low
 
+  * debian/control: Standards-Version moved from 3.9.2.0 to 3.9.2 for
+    cosmetic reasons
   * debian/patches/mutt-patched:
     + sidebar: patch replaced with the one written by Stuart Henderson
       (Closes: 619822)
