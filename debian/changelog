@@ -30,7 +30,8 @@ mutt (1.5.21-5) unstable; urgency=low
     + 619216-gnutls-CN-validation.patch: fix the validation of the
       commonname in the gnutls code (Closes: 619216)
     + 611410-no-implicit_autoview-for-text-html.patch: blacklist
-      text/html from implicit_autoview, patch by Loïc Minier (Closes: 611410)
+      text/html from implicit_autoview, patch by Loïc Minier 
+      (Closes: 611410, 620945)
   * debian/patches/compressed-folders: remove partially uncompressed folder if
       the open fails (Closes: 578098)
   * debian/extra/samples/sidebar.muttrc: documented the options that
