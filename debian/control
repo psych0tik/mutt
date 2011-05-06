@@ -42,7 +42,7 @@ Package: mutt-patched
 Architecture: any
 Priority: extra
 Depends: ${shlibs:Depends}, ${misc:Depends}, mutt (= ${binary:Version})
-Description: the Mutt Mail User Agent with extra patches
+Description: Mutt Mail User Agent with extra patches
  Mutt is a sophisticated text-based Mail User Agent.
  .
  This package adds the "sidebar" patch that lists mailboxes with new mail
