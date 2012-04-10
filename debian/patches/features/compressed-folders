@@ -552,6 +552,8 @@ The home page for this patch is:
 +int mutt_test_compress_command (const char *);
 +int mutt_check_mailbox_compressed (CONTEXT *);
 +void mutt_fast_close_compressed (CONTEXT *);
++void restore_path (CONTEXT* ctx);
++void remove_file (CONTEXT* ctx);
 --- a/configure.ac
 +++ b/configure.ac
 @@ -812,6 +812,11 @@
