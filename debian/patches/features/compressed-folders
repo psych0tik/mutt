@@ -87,6 +87,19 @@ The home page for this patch is:
 +  return (r);
 +}
 +
++void restore_path (CONTEXT* ctx)
++{
++  FREE (&ctx->path);
++  ctx->path = ctx->realpath;
++}
++
++/* remove the temporary mailbox */
++void remove_file (CONTEXT* ctx)
++{
++  if (ctx->magic == M_MBOX || ctx->magic == M_MMDF)
++    remove (ctx->path);
++}
++
 +void mbox_unlock_compressed (CONTEXT *ctx, FILE *fp)
 +{
 +  if (ctx->locked)
@@ -317,19 +330,6 @@ The home page for this patch is:
 +  ctx->magic = mx_get_magic (ctx->path);
 +
 +  return (0);
-+}
-+
-+void restore_path (CONTEXT* ctx)
-+{
-+  FREE (&ctx->path);
-+  ctx->path = ctx->realpath;
-+}
-+
-+/* remove the temporary mailbox */
-+void remove_file (CONTEXT* ctx)
-+{
-+  if (ctx->magic == M_MBOX || ctx->magic == M_MMDF)
-+    remove (ctx->path);
 +}
 +
 +int mutt_open_append_compressed (CONTEXT *ctx)
